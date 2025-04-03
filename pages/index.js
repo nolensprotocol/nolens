@@ -10,7 +10,7 @@ export default function Home() {
       </Head>
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 flex items-center justify-between w-full">
-        <div className="flex items-center space-x-1.0">
+        <div className="flex items-center space-x-1.3">
           <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6 mt-2" />
           <span className="text-gray-900 text-lg font-sans tracking-wide lowercase font-sans">nolens</span>
         </div>
