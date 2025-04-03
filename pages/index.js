@@ -11,8 +11,8 @@ export default function Home() {
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 flex items-center justify-between w-full">
         <div className="flex items-center space-x-1.3">
-          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6 mt-2" />
-          <span className="text-gray-900 text-lg font-sans tracking-wide lowercase font-sans">nolens</span>
+          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6 mt-1.8" />
+          <span className="text-gray-900 text-lg font-sans tracking-widest lowercase font-sans">nolens</span>
         </div>
         <nav className="hidden md:flex items-center space-x-6 text-sm text-gray-800 font-medium">
           <a href="/" className="hover:text-black">Home</a>
