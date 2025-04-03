@@ -1,49 +1,47 @@
-// pages/docs.js
 import Head from 'next/head'
+import Link from 'next/link'
 
-export default function Docs() {
+export default function Home() {
   return (
     <>
       <Head>
-        <title>Nolens Documentation</title>
-        <meta name="description" content="Read about the Nolens Protocol, its mission, tokenomics, and roadmap." />
+        <title>Nolens Protocol</title>
+        <meta name="description" content="Own less. Access more. Nolens is building the protocol for the access-first economy." />
       </Head>
 
-      <section className="min-h-screen py-24 px-6 bg-white text-gray-900">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center">Nolens Whitepaper</h1>
+      <section className="relative overflow-hidden py-24 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-white">
+        <div className="max-w-4xl mx-auto px-6 text-center z-10 relative">
+          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-20 mx-auto mb-4 animate-fade-in" />
+          <h1 className="text-5xl font-extrabold tracking-tight leading-tight mb-4 animate-slide-up">Own less. Access more.</h1>
+          <p className="text-lg text-gray-300 mb-6 animate-slide-up delay-100">Designed for the next era of shared living.</p>
+          <div className="space-x-4 animate-fade-in delay-200">
+            <a href="https://t.me/nolensprotocol" className="px-6 py-2 border border-white rounded-full hover:bg-white hover:text-gray-900 transition">Telegram</a>
+            <a href="https://x.com/nolensprotocol" className="px-6 py-2 border border-white rounded-full hover:bg-white hover:text-gray-900 transition">Twitter</a>
+            <Link href="/docs" passHref>
+              <a className="px-6 py-2 border border-white rounded-full hover:bg-white hover:text-gray-900 transition">Learn More</a>
+            </Link>
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-fuchsia-500/20 via-indigo-500/10 to-transparent opacity-30 blur-3xl z-0"></div>
+      </section>
 
-          <h2 className="text-2xl font-semibold mb-4">What is Nolens?</h2>
-          <p className="mb-6">Nolens is a Web3 protocol designed for the next era of shared living. It enables a decentralized, token-powered infrastructure for rentals, access, and flexible consumption — without ownership friction. Powered by the $NOL token, Nolens gives users tools to stake, access, and interact with utility-driven assets in a decentralized way.</p>
-
-          <h2 className="text-2xl font-semibold mb-4">Mission Statement</h2>
-          <p className="mb-6">Own less. Access more. Designed for the next era of shared living.</p>
-
-          <h2 className="text-2xl font-semibold mb-4">Token Utility</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li><strong>Access & Payments:</strong> Pay for rental access, subscriptions, or on-demand services.</li>
-            <li><strong>Escrow & Security:</strong> Use $NOL for peer-to-peer escrow and collateral on-chain.</li>
-            <li><strong>Staking & Reputation:</strong> Stake tokens to build a profile and earn privileges across the ecosystem.</li>
-          </ul>
-
-          <h2 className="text-2xl font-semibold mb-4">Tokenomics</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li>30% – Community & Ecosystem (airdrop, rewards)</li>
-            <li>20% – Growth Fund (partnerships, grants)</li>
-            <li>15% – Liquidity & Listings</li>
-            <li>15% – Team & Advisors (vesting)</li>
-            <li>10% – Investors (optional)</li>
-            <li>5% – DAO Treasury</li>
-            <li>5% – Staking Incentives</li>
-          </ul>
-
-          <h2 className="text-2xl font-semibold mb-4">Roadmap (Phases)</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li><strong>Phase 1:</strong> Branding, whitepaper, community</li>
-            <li><strong>Phase 2:</strong> MVP product, token distribution</li>
-            <li><strong>Phase 3:</strong> dApps, partnerships, governance</li>
-            <li><strong>Phase 4:</strong> Full DAO transition, real-world expansion</li>
-          </ul>
+      <section className="py-24 bg-white text-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-10">Token Utility</h2>
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in">
+              <h3 className="font-semibold text-lg mb-2">Access & Payments</h3>
+              <p>Use $NOL to unlock rental, service, or on-demand experiences on-chain.</p>
+            </div>
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in delay-100">
+              <h3 className="font-semibold text-lg mb-2">Escrow Deposits</h3>
+              <p>Secure peer-to-peer rentals using $NOL as trustless collateral.</p>
+            </div>
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in delay-200">
+              <h3 className="font-semibold text-lg mb-2">Staking & Reputation</h3>
+              <p>Stake $NOL to boost your on-chain profile, credibility, and access.</p>
+            </div>
+          </div>
         </div>
       </section>
     </>
