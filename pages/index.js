@@ -58,7 +58,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
       </section>
 
-      <section className="py-24 bg-white text-gray-900">
+      <section className="py-24 bg-gray-50 text-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-sm uppercase text-blue-600 font-semibold tracking-widest mb-4">Built to Enable</p>
           <h2 className="text-3xl md:text-4xl font-extrabold leading-snug mb-8 max-w-3xl">
@@ -97,6 +97,30 @@ export default function Home() {
                   Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.
                 </p>
               )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-white text-gray-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold mb-12 text-center">Milestones</h2>
+          <div className="space-y-12">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 1: Foundation</div>
+              <div className="text-gray-700">Branding, token identity, and protocol vision. Launch of nolens.xyz and community channels.</div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 2: Infrastructure</div>
+              <div className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Launch contribute portal.</div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 3: Shared Pilots</div>
+              <div className="text-gray-700">Pilot launches for rentable modules, ecosystem partnerships, and governance exploration.</div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 4: Scaling Utility</div>
+              <div className="text-gray-700">Protocol integrations with services and DAOs. Nolens becomes a foundation for non-ownership.</div>
             </div>
           </div>
         </div>
