@@ -39,9 +39,9 @@ export default function Home() {
           </div>
           <div className="relative h-80 md:h-full flex items-center justify-center">
             <img
-              src="/nolens_globe_wireframe.svg"
-              alt="Nolens Globe"
-              className="w-full max-w-md opacity-100 animate-spin-slow drop-shadow-xl"
+              src="/nolens_social_globe.svg"
+              alt="Nolens Connected Globe"
+              className="w-full max-w-md opacity-90 animate-spin-slow drop-shadow-xl"
             />
           </div>
         </div>
