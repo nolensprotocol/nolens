@@ -1,7 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Home() {
+  const [active, setActive] = useState('access')
+
   return (
     <>
       <Head>
@@ -57,43 +60,43 @@ export default function Home() {
 
       <section className="py-24 bg-white text-gray-900">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-12 text-center">Where to Use?</h2>
-          <div className="space-y-12">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Access & Payments</div>
-              <div className="text-gray-700">Use $NOL to unlock rental, service, or on-demand experiences on-chain.</div>
+          <p className="text-sm uppercase text-blue-600 font-semibold tracking-widest mb-4">Built to Enable</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold leading-snug mb-8 max-w-3xl">
+            Nolens powers the access-first economy through modular infrastructure and trustless collaboration.
+          </h2>
+          <div className="space-y-4">
+            <div
+              onMouseEnter={() => setActive('access')}
+              className="border-b pb-4 cursor-pointer"
+            >
+              <h3 className="text-lg font-semibold text-gray-800">Access & Payments</h3>
+              {active === 'access' && (
+                <p className="text-gray-600 mt-2">
+                  Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.
+                </p>
+              )}
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Escrow Deposits</div>
-              <div className="text-gray-700">Secure peer-to-peer rentals using $NOL as trustless collateral.</div>
+            <div
+              onMouseEnter={() => setActive('escrow')}
+              className="border-b pb-4 cursor-pointer"
+            >
+              <h3 className="text-lg font-semibold text-gray-800">Escrow Deposits</h3>
+              {active === 'escrow' && (
+                <p className="text-gray-600 mt-2">
+                  Rent securely using smart contract-based collateralization. Trustless and fair.
+                </p>
+              )}
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Staking & Reputation</div>
-              <div className="text-gray-700">Stake $NOL to boost your on-chain profile, credibility, and access.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 bg-white text-gray-900">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-12 text-center">Milestones</h2>
-          <div className="space-y-12">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 1: Foundation</div>
-              <div className="text-gray-700">Branding, token identity, and protocol vision. Launch of nolens.xyz and community channels.</div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 2: Infrastructure</div>
-              <div className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Launch contribute portal.</div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 3: Shared Pilots</div>
-              <div className="text-gray-700">Pilot launches for rentable modules, ecosystem partnerships, and governance exploration.</div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 4: Scaling Utility</div>
-              <div className="text-gray-700">Protocol integrations with services and DAOs. Nolens becomes a foundation for non-ownership.</div>
+            <div
+              onMouseEnter={() => setActive('stake')}
+              className="pb-4 cursor-pointer"
+            >
+              <h3 className="text-lg font-semibold text-gray-800">Staking & Reputation</h3>
+              {active === 'stake' && (
+                <p className="text-gray-600 mt-2">
+                  Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.
+                </p>
+              )}
             </div>
           </div>
         </div>
