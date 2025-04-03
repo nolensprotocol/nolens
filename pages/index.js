@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Script from 'next/script'
 
 export default function Home() {
   return (
@@ -41,7 +42,7 @@ export default function Home() {
             <img
               src="/nolens_globe_background.svg"
               alt="Nolens Mesh Globe"
-              className="w-full max-w-md opacity-80 animate-spin-slow fade-on-scroll drop-shadow-xl"
+              className="w-full max-w-md opacity-90 animate-spin-slow fade-on-scroll drop-shadow-xl"
             />
           </div>
         </div>
@@ -70,20 +71,19 @@ export default function Home() {
         .fade-on-scroll {
           transition: opacity 0.5s ease;
         }
-        .fade-on-scroll.scrolled {
-          opacity: 0.15;
-        }
       `}</style>
 
-      <script dangerouslySetInnerHTML={{ __html: `
-        window.addEventListener('scroll', () => {
-          const globe = document.querySelector('.fade-on-scroll');
-          if (globe) {
-            const opacity = Math.max(1 - window.scrollY / 300, 0.15);
-            globe.style.opacity = opacity;
-          }
-        });
-      `}} />
+      <Script id="fade-on-scroll" strategy="afterInteractive">
+        {`
+          window.addEventListener('scroll', () => {
+            const globe = document.querySelector('.fade-on-scroll');
+            if (globe) {
+              const opacity = Math.max(1 - window.scrollY / 300, 0.15);
+              globe.style.opacity = opacity;
+            }
+          });
+        `}
+      </Script>
     </>
   )
 }
