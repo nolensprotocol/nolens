@@ -56,44 +56,44 @@ export default function Home() {
       </section>
 
       <section className="py-24 bg-white text-gray-900">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-10">Where to Use?</h2>
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Access & Payments</h3>
-              <p>Use $NOL to unlock rental, service, or on-demand experiences on-chain.</p>
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold mb-12 text-center">Where to Use?</h2>
+          <div className="space-y-12">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Access & Payments</div>
+              <div className="text-gray-700">Use $NOL to unlock rental, service, or on-demand experiences on-chain.</div>
             </div>
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Escrow Deposits</h3>
-              <p>Secure peer-to-peer rentals using $NOL as trustless collateral.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Escrow Deposits</div>
+              <div className="text-gray-700">Secure peer-to-peer rentals using $NOL as trustless collateral.</div>
             </div>
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Staking & Reputation</h3>
-              <p>Stake $NOL to boost your on-chain profile, credibility, and access.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Staking & Reputation</div>
+              <div className="text-gray-700">Stake $NOL to boost your on-chain profile, credibility, and access.</div>
             </div>
           </div>
         </div>
       </section>
 
       <section className="py-24 bg-white text-gray-900">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold mb-12 text-center">Milestones</h2>
-          <div className="space-y-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-2">Phase 1: Foundation</h3>
-              <p className="text-gray-700">Branding, token identity, and protocol vision. Launch of nolens.xyz and community channels.</p>
+          <div className="space-y-12">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 1: Foundation</div>
+              <div className="text-gray-700">Branding, token identity, and protocol vision. Launch of nolens.xyz and community channels.</div>
             </div>
-            <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-2">Phase 2: Infrastructure</h3>
-              <p className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Open contribute channel.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 2: Infrastructure</div>
+              <div className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Launch contribute portal.</div>
             </div>
-            <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-2">Phase 3: Shared Pilots</h3>
-              <p className="text-gray-700">Pilot launches for rentable modules, ecosystem partnerships, and governance exploration.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 3: Shared Pilots</div>
+              <div className="text-gray-700">Pilot launches for rentable modules, ecosystem partnerships, and governance exploration.</div>
             </div>
-            <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold mb-2">Phase 4: Scaling Utility</h3>
-              <p className="text-gray-700">Protocol integrations with services and DAOs. Nolens becomes a foundation for non-ownership.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="font-semibold text-lg">Phase 4: Scaling Utility</div>
+              <div className="text-gray-700">Protocol integrations with services and DAOs. Nolens becomes a foundation for non-ownership.</div>
             </div>
           </div>
         </div>
