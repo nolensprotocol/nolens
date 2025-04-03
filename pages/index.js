@@ -41,7 +41,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-300 via-indigo-300 to-transparent opacity-40 blur-3xl rounded-full animate-pulse-slow"></div>
             <svg className="w-full h-full text-gray-200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill="currentColor" d="M100,20 C150,20 180,60 180,100 C180,140 150,180 100,180 C50,180 20,140 20,100 C20,60 50,20 100,20 Z"/>
-            </svg>
+            <svg>
           </div>
         </div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
