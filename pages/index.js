@@ -12,14 +12,14 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 flex items-center justify-between w-full">
         <div className="flex items-center space-x-1.5">
           <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
-          <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase font-sans">nolens</span>
+          <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase">nolens</span>
         </div>
         <nav className="hidden md:flex items-center space-x-6 text-sm text-gray-800 font-medium">
           <a href="/" className="hover:text-black">Home</a>
           <a href="/docs" className="hover:text-black">Docs</a>
           <a href="https://t.me/nolensprotocol" target="_blank" className="hover:text-black">Telegram</a>
           <a href="https://x.com/nolensprotocol" target="_blank" className="hover:text-black">X</a>
-          <a href="#" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Start Exploring</a>
+          <a href="/contribute" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Contribute</a>
         </nav>
       </header>
 
@@ -41,30 +41,21 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-300 via-indigo-300 to-transparent opacity-40 blur-3xl rounded-full animate-pulse-slow"></div>
             <svg className="w-full h-full text-gray-200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill="currentColor" d="M100,20 C150,20 180,60 180,100 C180,140 150,180 100,180 C50,180 20,140 20,100 C20,60 50,20 100,20 Z"/>
-            <svg>
+            </svg>
           </div>
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
-      </section>
 
-      <section className="py-24 bg-white text-gray-900">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-10">Token Utility</h2>
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Access & Payments</h3>
-              <p>Use $NOL to unlock rental, service, or on-demand experiences on-chain.</p>
-            </div>
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Escrow Deposits</h3>
-              <p>Secure peer-to-peer rentals using $NOL as trustless collateral.</p>
-            </div>
-            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
-              <h3 className="font-semibold text-lg mb-2">Staking & Reputation</h3>
-              <p>Stake $NOL to boost your on-chain profile, credibility, and access.</p>
-            </div>
-          </div>
+        <div className="absolute inset-0 z-0">
+          <img src="/nolens_network_background.svg" alt="" className="w-full h-full object-cover opacity-50 animate-fade-in" />
         </div>
+
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 opacity-10">
+          <svg width="480" height="480" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-spin-slow">
+            <path d="M120,20 C170,20 220,70 220,120 C220,170 170,220 120,220 C70,220 20,170 20,120 C20,70 70,20 120,20 Z" stroke="white" strokeWidth="4" fill="none"/>
+          </svg>
+        </div>
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
       </section>
     </>
   )
