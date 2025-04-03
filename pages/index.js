@@ -61,39 +61,39 @@ export default function Home() {
       <section className="py-24 bg-gray-50 text-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-sm uppercase text-blue-600 font-semibold tracking-widest mb-4">Built to Enable</p>
-          <h2 className="text-3xl md:text-4xl font-extrabold leading-snug mb-8 max-w-3xl">
+          <h2 className="text-3xl md:text-4xl font-extrabold leading-snug mb-12 max-w-3xl">
             Nolens powers the access-first economy through modular infrastructure and trustless collaboration.
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-10">
             <div
               onMouseEnter={() => setActive('access')}
-              className="border-b pb-4 cursor-pointer"
+              className="border-b pb-6 cursor-pointer"
             >
               <h3 className="text-lg font-semibold text-gray-800">Access & Payments</h3>
               {active === 'access' && (
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 mt-4">
                   Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.
                 </p>
               )}
             </div>
             <div
               onMouseEnter={() => setActive('escrow')}
-              className="border-b pb-4 cursor-pointer"
+              className="border-b pb-6 cursor-pointer"
             >
               <h3 className="text-lg font-semibold text-gray-800">Escrow Deposits</h3>
               {active === 'escrow' && (
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 mt-4">
                   Rent securely using smart contract-based collateralization. Trustless and fair.
                 </p>
               )}
             </div>
             <div
               onMouseEnter={() => setActive('stake')}
-              className="pb-4 cursor-pointer"
+              className="pb-6 cursor-pointer"
             >
               <h3 className="text-lg font-semibold text-gray-800">Staking & Reputation</h3>
               {active === 'stake' && (
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 mt-4">
                   Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.
                 </p>
               )}
