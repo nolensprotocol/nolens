@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <main className="max-w-4xl mx-auto px-4 py-20 text-center animate-fade-in">
+    <main className="max-w-4xl mx-auto px-4 py-20 text-center">
       <img src="/nolens_icon.png" alt="Nolens Logo" className="w-20 mx-auto mb-4" />
       <h1 className="text-4xl font-bold mb-2">Own less. Access more.</h1>
       <p className="mb-6 text-lg text-gray-600">Designed for the next era of shared living.</p>
