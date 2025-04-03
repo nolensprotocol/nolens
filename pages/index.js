@@ -33,7 +33,7 @@ export default function Home() {
               Nolens is building flexible infrastructure for the on-demand, tokenized, and trustless access economy.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href="/docs" className="bg-black text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition">Read Docs</a>
+              <a href="/docs" className="bg-black text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition">Contribute</a>
               <a href="https://t.me/nolensprotocol" className="border border-gray-400 text-gray-800 px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-100 transition">Join Telegram</a>
             </div>
           </div>
