@@ -37,11 +37,12 @@ export default function Home() {
               <a href="https://t.me/nolensprotocol" className="border border-gray-400 text-gray-800 px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-100 transition">Join Telegram</a>
             </div>
           </div>
-          <div className="relative h-80 md:h-full">
-            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-300 via-indigo-300 to-transparent opacity-40 blur-3xl rounded-full animate-pulse-slow"></div>
-            <svg className="w-full h-full text-gray-200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill="currentColor" d="M100,20 C150,20 180,60 180,100 C180,140 150,180 100,180 C50,180 20,140 20,100 C20,60 50,20 100,20 Z"/>
-            </svg>
+          <div className="relative h-80 md:h-full flex items-center justify-center">
+            <img
+              src="/nolens_globe_background.svg"
+              alt="Nolens Mesh Globe"
+              className="w-full max-w-md opacity-80 animate-spin-slow fade-on-scroll drop-shadow-xl"
+            />
           </div>
         </div>
 
@@ -57,6 +58,32 @@ export default function Home() {
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
       </section>
+
+      <style jsx>{`
+        @keyframes spin-slow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 60s linear infinite;
+        }
+        .fade-on-scroll {
+          transition: opacity 0.5s ease;
+        }
+        .fade-on-scroll.scrolled {
+          opacity: 0.15;
+        }
+      `}</style>
+
+      <script dangerouslySetInnerHTML={{ __html: `
+        window.addEventListener('scroll', () => {
+          const globe = document.querySelector('.fade-on-scroll');
+          if (globe) {
+            const opacity = Math.max(1 - window.scrollY / 300, 0.15);
+            globe.style.opacity = opacity;
+          }
+        });
+      `}} />
     </>
   )
 }
