@@ -3,58 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nolens Protocol | Coming Soon</title>
+  <title>Nolens Protocol | Own less. Access more.</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background-color: #f5f5f5;
       font-family: 'Manrope', sans-serif;
+      background: #f5f5f5;
       color: #121212;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      line-height: 1.6;
+    }
+    header, section, footer {
+      padding: 60px 20px;
       text-align: center;
-      padding: 0 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
     }
-    img.logo {
-      width: 100px;
-      margin-bottom: 1.5rem;
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    p {
-      font-size: 1rem;
+    .hero p {
+      font-size: 1.2rem;
       margin-bottom: 2rem;
-      max-width: 500px;
     }
-    .links a {
+    .hero .cta a {
       display: inline-block;
       margin: 0 10px;
       text-decoration: none;
-      color: #121212;
       border: 1px solid #121212;
       padding: 10px 20px;
       border-radius: 30px;
+      color: #121212;
       transition: background 0.2s ease;
     }
-    .links a:hover {
-      background-color: #121212;
+    .hero .cta a:hover {
+      background: #121212;
       color: #fff;
+    }
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .grid-item {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 250px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .timeline {
+      text-align: left;
+      margin-top: 40px;
+    }
+    .timeline-item {
+      margin-bottom: 20px;
+    }
+    footer {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    footer a {
+      color: #555;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <img src="nolens_icon.png" alt="Nolens Logo" class="logo">
-  <h1>Own less. Access more.</h1>
-  <p>Nolens is a decentralized protocol for the next era of shared living. A tokenized layer for trustless renting, staking, and access. Coming soon to Web3.</p>
-  <div class="links">
-    <a href="https://t.me/nolensprotocol" target="_blank">Telegram</a>
-    <a href="https://x.com/nolensprotocol" target="_blank">Twitter</a>
-  </div>
+  <header class="hero">
+    <img src="nolens_icon.png" alt="Nolens Logo" style="width:80px; margin-bottom: 1rem;">
+    <h1>Own less. Access more.</h1>
+    <p>Designed for the next era of shared living.</p>
+    <div class="cta">
+      <a href="https://t.me/nolensprotocol" target="_blank">Join Telegram</a>
+      <a href="https://x.com/nolensprotocol" target="_blank">Follow on X</a>
+    </div>
+  </header>
+
+  <section>
+    <h2 class="section-title">What is Nolens?</h2>
+    <p>Nolens is building the infrastructure for the access economy — a future where living, working, and moving are all on-demand, tokenized, and community-owned.</p>
+    <p><strong>Web3 has built finance. Nolens is building flexibility.</strong></p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Token Utility</h2>
+    <div class="grid">
+      <div class="grid-item">
+        <h3>💳 Access & Payments</h3>
+        <p>Use $NOL to pay for rentals, subscriptions, and digital services.</p>
+      </div>
+      <div class="grid-item">
+        <h3>🔐 Escrow Deposits</h3>
+        <p>Secure smart contract rentals with trustless collateral.</p>
+      </div>
+      <div class="grid-item">
+        <h3>🎖️ Staking & Reputation</h3>
+        <p>Stake $NOL to unlock access tiers, verified profiles, and platform status.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Roadmap</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <strong>Phase 1:</strong> Branding, Whitepaper, Community
+      </div>
+      <div class="timeline-item">
+        <strong>Phase 2:</strong> MVP Launch, Token Distribution
+      </div>
+      <div class="timeline-item">
+        <strong>Phase 3:</strong> Ecosystem Growth, dApps, Governance
+      </div>
+      <div class="timeline-item">
+        <strong>Phase 4:</strong> Full DAO Transition, Multi-chain Expansion
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Nolens Protocol — All rights reserved.</p>
+    <p><a href="#">Disclaimer</a></p>
+  </footer>
 </body>
 </html>
