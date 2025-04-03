@@ -85,7 +85,7 @@ export default function Home() {
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
               <h3 className="text-xl font-semibold mb-2">Phase 2: Infrastructure</h3>
-              <p className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Open `/contribute` channel.</p>
+              <p className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Open contribute channel.</p>
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
               <h3 className="text-xl font-semibold mb-2">Phase 3: Shared Pilots</h3>
