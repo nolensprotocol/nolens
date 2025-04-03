@@ -55,6 +55,26 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
       </section>
 
+      <section className="py-24 bg-white text-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-10">Token Utility</h2>
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+              <h3 className="font-semibold text-lg mb-2">Access & Payments</h3>
+              <p>Use $NOL to unlock rental, service, or on-demand experiences on-chain.</p>
+            </div>
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+              <h3 className="font-semibold text-lg mb-2">Escrow Deposits</h3>
+              <p>Secure peer-to-peer rentals using $NOL as trustless collateral.</p>
+            </div>
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+              <h3 className="font-semibold text-lg mb-2">Staking & Reputation</h3>
+              <p>Stake $NOL to boost your on-chain profile, credibility, and access.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <style jsx>{`
         @keyframes spin-slow {
           0% { transform: rotate(0deg); }
