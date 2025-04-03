@@ -77,7 +77,7 @@ export default function Home() {
 
       <section className="py-24 bg-white text-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-12">Nolens Roadmap</h2>
+          <h2 className="text-3xl font-bold mb-12">Milestones</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-md transition">
               <h3 className="text-lg font-semibold mb-2">Phase 1: Foundation</h3>
