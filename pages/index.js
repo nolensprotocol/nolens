@@ -1,20 +1,6 @@
 import Head from 'next/head'
-import { useEffect } from 'react'
 
 export default function Home() {
-  useEffect(() => {
-    const elements = document.querySelectorAll('.fade-slide')
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('show')
-        }
-      })
-    }, { threshold: 0.1 })
-
-    elements.forEach(el => observer.observe(el))
-  }, [])
-
   return (
     <>
       <Head>
@@ -39,15 +25,15 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-10">Token Utility</h2>
           <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
-            <div className="fade-slide opacity-0 translate-y-6 transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in">
               <h3 className="font-semibold text-lg mb-2">Access & Payments</h3>
               <p>Use $NOL to unlock rental, service, or on-demand experiences on-chain.</p>
             </div>
-            <div className="fade-slide opacity-0 translate-y-6 transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in delay-100">
               <h3 className="font-semibold text-lg mb-2">Escrow Deposits</h3>
               <p>Secure peer-to-peer rentals using $NOL as trustless collateral.</p>
             </div>
-            <div className="fade-slide opacity-0 translate-y-6 transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white">
+            <div className="transition duration-700 ease-out bg-gray-100 p-6 rounded-xl shadow hover:shadow-lg hover:scale-105 hover:bg-white animate-fade-in delay-200">
               <h3 className="font-semibold text-lg mb-2">Staking & Reputation</h3>
               <p>Stake $NOL to boost your on-chain profile, credibility, and access.</p>
             </div>
