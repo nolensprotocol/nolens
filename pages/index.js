@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Nolens Protocol</title>
+        <title>Nolens</title>
         <meta name="description" content="Own less. Access more. Nolens is building the protocol for the access-first economy." />
       </Head>
 
