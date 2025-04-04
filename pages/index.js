@@ -96,12 +96,13 @@ export default function Home() {
                   <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-40 mb-6 bg-white rounded-full" />
                   <div className="text-lg font-semibold">{`Phase ${phase}`}</div>
                   <div className="text-base text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
-                    {
-                      phase === 1 ? 'Branding, token identity, website, and community setup.' :
-                      phase === 2 ? 'Infrastructure: smart contracts, staking logic, and contribute portal.' :
-                      phase === 3 ? 'Pilot modules, shared utility demos, and ecosystem collaborations.' :
-                      'Protocol integrations, DAO contributions, and scaling adoption.'
-                    }
+                    {phase === 1
+                      ? 'Branding, token identity, website, and community setup.'
+                      : phase === 2
+                      ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
+                      : phase === 3
+                      ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
+                      : 'Protocol integrations, DAO contributions, and scaling adoption.'}
                   </div>
                 </div>
               ))}
@@ -120,5 +121,5 @@ export default function Home() {
         }
       `}</style>
     </>
-  )
+  );
 }
