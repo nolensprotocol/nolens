@@ -8,9 +8,9 @@ export default function Contribute() {
         <meta name="description" content="Join Nolens and help build the future of access-first economies." />
       </Head>
 
-      <main className="relative min-h-screen bg-white text-gray-900 py-24 px-6 overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center mb-24 mt-2">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 opacity-0 animate-fade-in-up leading-snug">
+      <main className=\"relative min-h-screen bg-white text-gray-900 pt-28 pb-32 px-6 overflow-visible\">
+        <div className="max-w-5xl mx-auto text-center mb-20">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 opacity-0 animate-fade-in-up leading-normal">
             <span className="inline-block bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
               Help Build Nolens
             </span>
