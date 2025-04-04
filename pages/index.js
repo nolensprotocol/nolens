@@ -98,7 +98,6 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-16">Milestones</h2>
 
           <div className="relative h-60 flex items-start justify-between border-t-2 border-gray-300">
-            <!-- Phase 1 -->
             <div className="relative text-center w-1/4 group">
               <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
               <img src="/milestone_icon1.png" alt="Phase 1" className="mx-auto mt-6 h-10 mb-2" />
@@ -108,7 +107,6 @@ export default function Home() {
               </div>
             </div>
 
-            <!-- Phase 2 -->
             <div className="relative text-center w-1/4 group">
               <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
               <img src="/milestone_icon2.png" alt="Phase 2" className="mx-auto mt-6 h-10 mb-2" />
@@ -118,7 +116,6 @@ export default function Home() {
               </div>
             </div>
 
-            <!-- Phase 3 -->
             <div className="relative text-center w-1/4 group">
               <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
               <img src="/milestone_icon3.png" alt="Phase 3" className="mx-auto mt-6 h-10 mb-2" />
@@ -128,7 +125,6 @@ export default function Home() {
               </div>
             </div>
 
-            <!-- Phase 4 -->
             <div className="relative text-center w-1/4 group">
               <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
               <img src="/milestone_icon4.png" alt="Phase 4" className="mx-auto mt-6 h-10 mb-2" />
