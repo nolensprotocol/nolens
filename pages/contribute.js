@@ -1,4 +1,3 @@
-// pages/contribute.js
 import Head from 'next/head'
 
 export default function Contribute() {
@@ -6,43 +5,40 @@ export default function Contribute() {
     <>
       <Head>
         <title>Contribute to Nolens</title>
-        <meta name="description" content="Join Nolens as an early contributor. Help build the protocol for the shared access economy." />
+        <meta name="description" content="Join Nolens and help build the future of access-first economies." />
       </Head>
 
-      <section className="min-h-screen py-24 px-6 bg-white text-gray-900">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center">Contribute to Nolens</h1>
-
-          <p className="mb-6 text-lg text-gray-700 text-center">
-            Nolens is an early-stage protocol redefining access, ownership, and trust in the digital and physical world. If you align with our mission — we want to build with you.
+      <main className="min-h-screen bg-white text-gray-900 py-24 px-6">
+        <div className="max-w-5xl mx-auto text-center mb-20">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-6">Help Build Nolens</h1>
+          <p className="text-lg text-gray-600">
+            Nolens is an open protocol. We welcome contributors across design, development, and community to build the access-first economy together.
           </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-            <div className="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-              <h2 className="text-xl font-semibold mb-2">🧑‍💻 Developer</h2>
-              <p>Help us build smart contracts, token utilities, and dApps. Solidity, EVM, or frontend skills welcome.</p>
-            </div>
-            <div className="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-              <h2 className="text-xl font-semibold mb-2">🌐 Community</h2>
-              <p>Manage Telegram, create memes, run campaigns, or grow the Nolens voice online.</p>
-            </div>
-            <div className="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-              <h2 className="text-xl font-semibold mb-2">🎨 Design / Branding</h2>
-              <p>Love web3 aesthetics? Help shape the visual language of Nolens — interfaces, merch, or memes.</p>
-            </div>
-            <div className="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-              <h2 className="text-xl font-semibold mb-2">🤝 Partnerships</h2>
-              <p>Know DAOs, protocols, or builders? Help us find early collabs, exchanges, or shared missions.</p>
-            </div>
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+          {/* Dev */}
+          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
+            <h3 className="text-xl font-semibold mb-2">🛠️ Development</h3>
+            <p className="text-sm text-gray-600 mb-4">Smart contracts, DApp UI, integrations, GitHub PRs — builders welcome.</p>
+            <a href="https://github.com/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Explore GitHub</a>
           </div>
 
-          <div className="mt-12 text-center">
-            <a href="https://t.me/nolensprotocol" className="inline-block bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition">
-              Join Our Telegram to Start →
-            </a>
+          {/* Design */}
+          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
+            <h3 className="text-xl font-semibold mb-2">🎨 Design</h3>
+            <p className="text-sm text-gray-600 mb-4">Help craft the identity of Nolens — UI/UX, visuals, animations, storytelling.</p>
+            <a href="https://t.me/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Join Telegram</a>
+          </div>
+
+          {/* Community */}
+          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
+            <h3 className="text-xl font-semibold mb-2">📣 Community</h3>
+            <p className="text-sm text-gray-600 mb-4">Spread the word, translate, create educational content, or moderate.</p>
+            <a href="https://x.com/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Follow us on X</a>
           </div>
         </div>
-      </section>
+      </main>
     </>
   )
 }
