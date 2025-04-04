@@ -1,5 +1,8 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
 export default function Home() {
   return (
@@ -32,7 +35,7 @@ export default function Home() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover opacity-60 z-0"
           >
-            <source src="/nolens_particles_background.webm" type="video/webm" />
+            <source src="/nolens_particles_background_v3.webm" type="video/webm" />
             Your browser does not support the video tag.
           </video>
 
