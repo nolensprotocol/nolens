@@ -91,13 +91,13 @@ export default function Home() {
         <section className="py-24 bg-gradient-to-b from-white to-gray-50 text-gray-900">
           <div className="max-w-6xl mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-16">Milestones</h2>
-            <div className="relative h-60 flex items-start justify-between">
+            <div className="relative h-72 flex items-start justify-between">
               <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
               {[1, 2, 3, 4].map((phase) => (
                 <div key={phase} className="relative text-center w-1/4 group z-10">
-                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-6 h-14 mb-2 bg-white rounded-full" />
-                  <div className="text-sm font-semibold">{`Phase ${phase}`}</div>
-                  <div className="text-xs text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
+                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-10 h-24 mb-4 bg-white rounded-full" />
+                  <div className="text-base font-semibold">{`Phase ${phase}`}</div>
+                  <div className="text-sm text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
                     {
                       phase === 1 ? 'Branding, token identity, website, and community setup.' :
                       phase === 2 ? 'Infrastructure: smart contracts, staking logic, and contribute portal.' :
