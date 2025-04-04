@@ -78,29 +78,54 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 bg-white text-gray-900">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-12 text-center">Milestones</h2>
-          <div className="space-y-12">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 1: Foundation</div>
-              <div className="text-gray-700">Branding, token identity, and protocol vision. Launch of nolens.xyz and community channels.</div>
+      <section className="py-24 bg-gradient-to-b from-white to-gray-50 text-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-16">Milestones</h2>
+
+          <div className="relative h-60 flex items-start justify-between border-t-2 border-gray-300">
+            <!-- Phase 1 -->
+            <div className="relative text-center w-1/4 group">
+              <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
+              <img src="/milestone_icon1.png" alt="Phase 1" className="mx-auto mt-6 h-10 mb-2" />
+              <div className="text-sm font-semibold">Phase 1</div>
+              <div className="text-xs text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
+                Branding, token identity, website, and community setup.
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 2: Infrastructure</div>
-              <div className="text-gray-700">Token contracts, staking logic, and experimentation with access modules. Launch contribute portal.</div>
+
+            <!-- Phase 2 -->
+            <div className="relative text-center w-1/4 group">
+              <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
+              <img src="/milestone_icon2.png" alt="Phase 2" className="mx-auto mt-6 h-10 mb-2" />
+              <div className="text-sm font-semibold">Phase 2</div>
+              <div className="text-xs text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
+                Infrastructure: smart contracts, staking logic, and contribute portal.
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 3: Shared Pilots</div>
-              <div className="text-gray-700">Pilot launches for rentable modules, ecosystem partnerships, and governance exploration.</div>
+
+            <!-- Phase 3 -->
+            <div className="relative text-center w-1/4 group">
+              <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
+              <img src="/milestone_icon3.png" alt="Phase 3" className="mx-auto mt-6 h-10 mb-2" />
+              <div className="text-sm font-semibold">Phase 3</div>
+              <div className="text-xs text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
+                Pilot modules, shared utility demos, and ecosystem collaborations.
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="font-semibold text-lg">Phase 4: Scaling Utility</div>
-              <div className="text-gray-700">Protocol integrations with services and DAOs. Nolens becomes a foundation for non-ownership.</div>
+
+            <!-- Phase 4 -->
+            <div className="relative text-center w-1/4 group">
+              <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-5 h-5 bg-black rounded-full"></div>
+              <img src="/milestone_icon4.png" alt="Phase 4" className="mx-auto mt-6 h-10 mb-2" />
+              <div className="text-sm font-semibold">Phase 4</div>
+              <div className="text-xs text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
+                Protocol integrations, DAO contributions, and scaling adoption.
+              </div>
             </div>
           </div>
         </div>
       </section>
+
 
       <style jsx>{`
         @keyframes spin-slow {
