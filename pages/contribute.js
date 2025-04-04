@@ -9,7 +9,7 @@ export default function Contribute() {
       </Head>
 
       <main className="relative min-h-screen bg-white text-gray-900 py-24 px-6 overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center mb-20 pt-6">
+        <div className="max-w-5xl mx-auto text-center mb-20 -mt-8">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-6 opacity-0 animate-fade-in-up leading-tight">
             <span className="inline-block bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
               Help Build Nolens
