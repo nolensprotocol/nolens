@@ -1,8 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
 export default function Home() {
   return (
@@ -50,38 +46,6 @@ export default function Home() {
               <div className="flex flex-wrap gap-4">
                 <a href="/contribute" className="bg-white text-black px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-100 transition">Contribute</a>
                 <a href="https://t.me/nolensprotocol" className="border border-gray-300 text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition">Join Telegram</a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 bg-gray-50 text-gray-900">
-          <div className="max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-snug mb-16">
-              Nolens powers the access-first economy through modular infrastructure and trustless collaboration.
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-12">
-              <div className="text-center">
-                <img src="/utility_access.png" alt="Access & Payments" className="mx-auto h-28 mb-6" />
-                <h3 className="text-xl font-semibold mb-2">Access & Payments</h3>
-                <p className="text-gray-600">
-                  Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.
-                </p>
-              </div>
-              <div className="text-center">
-                <img src="/utility_escrow.png" alt="Escrow Deposits" className="mx-auto h-28 mb-6" />
-                <h3 className="text-xl font-semibold mb-2">Escrow Deposits</h3>
-                <p className="text-gray-600">
-                  Rent securely using smart contract-based collateralization. Trustless and fair.
-                </p>
-              </div>
-              <div className="text-center">
-                <img src="/utility_staking.png" alt="Staking & Reputation" className="mx-auto h-28 mb-6" />
-                <h3 className="text-xl font-semibold mb-2">Staking & Reputation</h3>
-                <p className="text-gray-600">
-                  Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.
-                </p>
               </div>
             </div>
           </div>
