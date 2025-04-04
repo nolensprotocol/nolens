@@ -24,36 +24,32 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="relative min-h-[90vh] pt-40 pb-20 px-6 bg-white overflow-hidden">
+        <section className="relative min-h-[90vh] pt-40 pb-20 px-6 overflow-hidden bg-black text-white">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-60 z-0"
+          >
+            <source src="/nolens_particles_background.webm" type="video/webm" />
+            Your browser does not support the video tag.
+          </video>
+
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-12 relative z-10">
             <div>
-              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6">
+              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
                 Own less. <br /> Access more.
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-200 mb-8">
                 Nolens is building flexible infrastructure for the on-demand, tokenized, and trustless access economy.
               </p>
               <div className="flex flex-wrap gap-4">
-                <a href="/contribute" className="bg-black text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition">Contribute</a>
-                <a href="https://t.me/nolensprotocol" className="border border-gray-400 text-gray-800 px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-100 transition">Join Telegram</a>
+                <a href="/contribute" className="bg-white text-black px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-100 transition">Contribute</a>
+                <a href="https://t.me/nolensprotocol" className="border border-gray-300 text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition">Join Telegram</a>
               </div>
             </div>
-            <div className="relative h-80 md:h-full flex items-center justify-center">
-              <img
-                src="/nolens_social_globe.svg"
-                alt="Nolens Mesh Globe"
-                className="w-full max-w-md opacity-100 animate-spin-slow drop-shadow-xl"
-              />
-            </div>
           </div>
-
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 opacity-10">
-            <svg width="480" height="480" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-spin-slow">
-              <path d="M120,20 C170,20 220,70 220,120 C220,170 170,220 120,220 C70,220 20,170 20,120 C20,70 70,20 120,20 Z" stroke="white" strokeWidth="4" fill="none"/>
-            </svg>
-          </div>
-
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(240,240,255,0.25),_transparent_80%)] z-0"></div>
         </section>
 
         <section className="py-24 bg-gray-50 text-gray-900">
