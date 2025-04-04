@@ -24,7 +24,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="relative min-h-[90vh] pt-40 pb-20 px-6 bg-white overflow-hidden">
+    <section className="relative min-h-[90vh] pt-40 pb-20 px-6 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-12 relative z-10">
           <div>
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6">
@@ -61,23 +61,38 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-extrabold leading-snug mb-16">
             Nolens powers the access-first economy through modular infrastructure and trustless collaboration.
           </h2>
+
           <div className="grid md:grid-cols-3 gap-12">
+            {/* Access & Payments */}
             <div className="text-center">
-              $1 mb-6">Access & Payments</h3>
-              <p className="text-gray-600">Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.</p>
+              <img src="/utility_access.png" alt="Access & Payments" className="mx-auto h-28 mb-6" />
+              <h3 className="text-xl font-semibold mb-2">Access & Payments</h3>
+              <p className="text-gray-600">
+                Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.
+              </p>
             </div>
+
+            {/* Escrow Deposits */}
             <div className="text-center">
-              $1 mb-6">Escrow Deposits</h3>
-              <p className="text-gray-600">Rent securely using smart contract-based collateralization. Trustless and fair.</p>
+              <img src="/utility_escrow.png" alt="Escrow Deposits" className="mx-auto h-28 mb-6" />
+              <h3 className="text-xl font-semibold mb-2">Escrow Deposits</h3>
+              <p className="text-gray-600">
+                Rent securely using smart contract-based collateralization. Trustless and fair.
+              </p>
             </div>
+
+            {/* Staking & Reputation */}
             <div className="text-center">
-              $1 mb-6">Staking & Reputation</h3>
-              <p className="text-gray-600">Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.</p>
+              <img src="/utility_staking.png" alt="Staking & Reputation" className="mx-auto h-28 mb-6" />
+              <h3 className="text-xl font-semibold mb-2">Staking & Reputation</h3>
+              <p className="text-gray-600">
+                Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.
+              </p>
             </div>
           </div>
         </div>
       </section>
-
+              
       <section className="py-24 bg-gradient-to-b from-white to-gray-50 text-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-16">Milestones</h2>
