@@ -63,17 +63,17 @@ export default function Home() {
           </h2>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <img src="/utility_access.png"$1>
+              <img src="/utility_access.png" alt="Access Payments" />
               <h3 className="text-xl font-semibold mb-2">Access & Payments</h3>
               <p className="text-gray-600">Use $NOL to unlock rental, service, or digital experiences — tokenized and on-demand.</p>
             </div>
             <div className="text-center">
-              <img src="/utility_escrow.png"$1>
+              <img src="/utility_escrow.png" alt="Escrow Deposits" />
               <h3 className="text-xl font-semibold mb-2">Escrow Deposits</h3>
               <p className="text-gray-600">Rent securely using smart contract-based collateralization. Trustless and fair.</p>
             </div>
             <div className="text-center">
-              <img src="/utility_staking.png"$1>
+              <img src="/utility_staking.png" alt="Staking & Reputation" />
               <h3 className="text-xl font-semibold mb-2">Staking & Reputation</h3>
               <p className="text-gray-600">Stake $NOL to build a verified reputation, earn benefits, and unlock higher tiers.</p>
             </div>
