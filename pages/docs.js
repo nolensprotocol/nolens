@@ -1,51 +1,61 @@
-// pages/docs.js
-import Head from 'next/head'
+import Head from 'next/head';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Docs() {
   return (
     <>
       <Head>
         <title>Nolens Documentation</title>
-        <meta name="description" content="Read about the Nolens Protocol, its mission, tokenomics, and roadmap." />
+        <meta name="description" content="Learn how Nolens works — shared, tokenized access for the next era." />
       </Head>
 
-      <section className="min-h-screen py-24 px-6 bg-white text-gray-900">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center">Nolens Whitepaper</h1>
+      {/* Interactive Logo */}
+      <div className="absolute top-4 left-4 z-50">
+        <Link href="/">
+          <Image
+            src="/nolens_icon.png"
+            alt="Nolens Logo"
+            width={48}
+            height={48}
+            className="cursor-pointer transition-transform hover:scale-110"
+          />
+        </Link>
+      </div>
 
-          <h2 className="text-2xl font-semibold mb-4">What is Nolens?</h2>
-          <p className="mb-6">Nolens is a Web3 protocol designed for the next era of shared living. It enables a decentralized, token-powered infrastructure for rentals, access, and flexible consumption — without ownership friction. Powered by the $NOL token, Nolens gives users tools to stake, access, and interact with utility-driven assets in a decentralized way.</p>
-
-          <h2 className="text-2xl font-semibold mb-4">Mission Statement</h2>
-          <p className="mb-6">Own less. Access more. Designed for the next era of shared living.</p>
-
-          <h2 className="text-2xl font-semibold mb-4">Token Utility</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li><strong>Access & Payments:</strong> Pay for rental access, subscriptions, or on-demand services.</li>
-            <li><strong>Escrow & Security:</strong> Use $NOL for peer-to-peer escrow and collateral on-chain.</li>
-            <li><strong>Staking & Reputation:</strong> Stake tokens to build a profile and earn privileges across the ecosystem.</li>
-          </ul>
-
-          <h2 className="text-2xl font-semibold mb-4">Tokenomics</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li>30% – Community & Ecosystem (airdrop, rewards)</li>
-            <li>20% – Growth Fund (partnerships, grants)</li>
-            <li>15% – Liquidity & Listings</li>
-            <li>15% – Team & Advisors (vesting)</li>
-            <li>10% – Investors (optional)</li>
-            <li>5% – DAO Treasury</li>
-            <li>5% – Staking Incentives</li>
-          </ul>
-
-          <h2 className="text-2xl font-semibold mb-4">Roadmap (Phases)</h2>
-          <ul className="list-disc list-inside mb-6">
-            <li><strong>Phase 1:</strong> Branding, whitepaper, community</li>
-            <li><strong>Phase 2:</strong> MVP product, token distribution</li>
-            <li><strong>Phase 3:</strong> dApps, partnerships, governance</li>
-            <li><strong>Phase 4:</strong> Full DAO transition, real-world expansion</li>
-          </ul>
+      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-20 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-5xl font-bold mb-6">Nolens Documentation</h1>
+          <p className="text-lg text-gray-600">
+            Welcome to the early docs for Nolens. We’re building shared, tokenized access tools for the next era of onchain coordination.
+          </p>
         </div>
-      </section>
+
+        <div className="max-w-4xl mx-auto mt-16 space-y-10">
+          <section>
+            <h2 className="text-2xl font-semibold mb-2">What is Nolens?</h2>
+            <p className="text-gray-700">
+              Nolens is a protocol that enables communities to share and tokenize access to real and digital spaces, services, and experiences. Designed for flexibility and modularity, Nolens supports new models of coordination beyond static ownership.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-2">Use Cases</h2>
+            <ul className="list-disc pl-5 text-gray-700 space-y-1">
+              <li>Shared co-living and resource access</li>
+              <li>Tokenized access passes for services or experiences</li>
+              <li>Network-driven contribution systems</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-2">How to Get Involved</h2>
+            <p className="text-gray-700">
+              Join our contributor network or Telegram group. We’re always looking for designers, developers, and onchain thinkers who want to shape the future of shared living and economic coordination.
+            </p>
+          </section>
+        </div>
+      </main>
     </>
-  )
+  );
 }
