@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import fetch from 'node-fetch'; // ✅ add this line
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,16 +12,14 @@ export default async function handler(req, res) {
     }
 
     try {
-      // Send to Google Sheets (optional - already implemented)
+      // Save to Google Sheet
       await fetch('https://script.google.com/macros/s/AKfycbyYDa6MucVAEGDQLq7M9zAKsRsK0g_FL6YOIM-sp0I/dev', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
-      // Send welcome email via Resend
+      // Send welcome email
       await resend.emails.send({
         from: 'onboarding@resend.dev',
         to: email,
@@ -36,12 +35,13 @@ export default async function handler(req, res) {
       });
 
       console.log('✅ Email stored & welcome email sent to:', email);
-
       return res.status(200).json({ message: 'Email received and welcome sent' });
+
     } catch (err) {
       console.error('❌ Error in contributor flow:', err);
       return res.status(500).json({ message: 'Internal error' });
     }
+
   } else {
     res.setHeader('Allow', ['POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
