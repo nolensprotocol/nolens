@@ -23,7 +23,7 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="relative min-h-[90vh] pt-40 pb-20 px-6 overflow-hidden bg-black text-white">
+        <section className="relative min-h-[100vh] pt-56 pb-32 px-6 overflow-hidden bg-black text-white">
           <video
             autoPlay
             loop
@@ -35,7 +35,7 @@ export default function Home() {
             Your browser does not support the video tag.
           </video>
 
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-12 relative z-10">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-end gap-12 relative z-10 transform scale-105 md:scale-110 translate-y-10 transition-all duration-500 ease-out">
             <div>
               <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
                 Own less. <br /> Access more.
