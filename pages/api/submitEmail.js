@@ -25,9 +25,13 @@ export default async function handler(req, res) {
         console.error('❌ Google Sheets response not OK:', sheetRes.status);
         throw new Error('Failed to save to Google Sheets');
       }
-      /*
+
+      // ✅ Log before Resend
+      console.log('🔐 Resend key:', process.env.RESEND_API_KEY ? 'Loaded ✅' : 'Missing ❌');
+      console.log('📧 Sending welcome email to:', email);
+
       // ✅ Send welcome email via Resend
-      const emailRes = await resend.emails.send({
+      await resend.emails.send({
         from: 'onboarding@resend.dev',
         to: email,
         subject: 'Welcome to Nolens 🌌',
@@ -40,7 +44,6 @@ export default async function handler(req, res) {
           </div>
         `
       });
-      */
 
       console.log('✅ Email stored in sheet & welcome email sent:', email);
       return res.status(200).json({ message: 'Email received and welcome sent' });
