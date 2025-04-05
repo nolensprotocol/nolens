@@ -10,17 +10,19 @@ export default function Docs() {
         <meta name="description" content="Nolens Whitepaper — the future of shared, tokenized access." />
       </Head>
 
-      {/* Interactive Logo with Text */}
-      <div className="absolute top-4 left-4 z-50 flex items-center space-x-2">
-        <Link href="/" className="flex items-center space-x-2 cursor-pointer group">
+      {/* Matching Interactive Logo */}
+      <div className="absolute top-6 left-6 z-50">
+        <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/nolens_icon.png"
             alt="Nolens Logo"
-            width={32}
-            height={32}
-            className="transition-transform group-hover:scale-110"
+            width={40}
+            height={40}
+            className="transition-transform hover:scale-105"
           />
-          <span className="font-semibold text-lg text-gray-800 group-hover:text-black transition-colors">nolens</span>
+          <span className="text-xl font-semibold text-gray-900 hover:text-black transition-colors">
+            nolens
+          </span>
         </Link>
       </div>
 
