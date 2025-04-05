@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     try {
       // Save to Google Sheet
-      await fetch('https://script.google.com/macros/s/AKfycbyYDa6MucVAEGDQLq7M9zAKsRsK0g_FL6YOIM-sp0I/dev', {
+      await fetch('https://docs.google.com/spreadsheets/d/13Ea_IPI16Rb6kFoaYRUIxwBaSTgs-C2dVTTbUHje9lY/edit?gid=0#gid=0', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
