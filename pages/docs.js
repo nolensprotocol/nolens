@@ -6,28 +6,29 @@ export default function Docs() {
   return (
     <>
       <Head>
-        <title>Nolens Documentation</title>
-        <meta name="description" content="Learn how Nolens works — shared, tokenized access for the next era." />
+        <title>Nolens Whitepaper</title>
+        <meta name="description" content="Nolens Whitepaper — the future of shared, tokenized access." />
       </Head>
 
-      {/* Interactive Logo */}
-      <div className="absolute top-4 left-4 z-50">
-        <Link href="/">
+      {/* Interactive Logo with Text */}
+      <div className="absolute top-4 left-4 z-50 flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2 cursor-pointer group">
           <Image
             src="/nolens_icon.png"
             alt="Nolens Logo"
-            width={48}
-            height={48}
-            className="cursor-pointer transition-transform hover:scale-110"
+            width={32}
+            height={32}
+            className="transition-transform group-hover:scale-110"
           />
+          <span className="font-semibold text-lg text-gray-800 group-hover:text-black transition-colors">nolens</span>
         </Link>
       </div>
 
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6">Nolens Documentation</h1>
+          <h1 className="text-5xl font-bold mb-6">Whitepaper</h1>
           <p className="text-lg text-gray-600">
-            Welcome to the early docs for Nolens. We’re building shared, tokenized access tools for the next era of onchain coordination.
+            Learn how Nolens is redefining shared access and ownership in the onchain world. This whitepaper outlines our core vision, technical design, and path forward.
           </p>
         </div>
 
