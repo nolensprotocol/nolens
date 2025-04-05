@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import Link from 'next/link'
+import Navbar from '../components/Navbar'
 
 export default function Contribute() {
   const [email, setEmail] = useState('');
@@ -49,16 +49,9 @@ export default function Contribute() {
         <meta name="description" content="Join Nolens and help build the future of access-first economies." />
       </Head>
 
-      <main className="relative min-h-screen bg-white text-gray-900 pt-28 pb-24 px-6 overflow-hidden">
-        <div className="absolute top-6 left-6 z-50">
-          <Link href="/">
-            <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80">
-              <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
-              <span className="text-gray-900 text-lg font-medium lowercase tracking-widest">nolens</span>
-            </div>
-          </Link>
-        </div>
+      <Navbar />
 
+      <main className="relative min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6 overflow-hidden">
         <div className="max-w-5xl mx-auto text-center mb-20">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-normal opacity-0 animate-fade-in-up">
             <span className="inline-block bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
@@ -68,7 +61,7 @@ export default function Contribute() {
           <p className="text-lg text-gray-600 opacity-0 animate-fade-in-up delay-200">
             Nolens is for those building beyond ownership.
             <br />
-            A protocol for shared, tokenized access. If you're rethinking how we live, create, and coordinate—you're early.
+            A protocol for shared, tokenized access. If you're rethinking how we live, create, and coordinate — you're early.
           </p>
         </div>
 
