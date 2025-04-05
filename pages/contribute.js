@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function Contribute() {
   const [email, setEmail] = useState('');
@@ -44,6 +45,15 @@ export default function Contribute() {
       </Head>
 
       <main className="relative min-h-screen bg-white text-gray-900 pt-28 pb-24 px-6 overflow-hidden">
+        <div className="absolute top-6 left-6 z-50">
+          <Link href="/">
+            <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80">
+              <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
+              <span className="text-gray-900 text-lg font-medium lowercase tracking-widest">nolens</span>
+            </div>
+          </Link>
+        </div>
+
         <div className="max-w-5xl mx-auto text-center mb-20">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-normal opacity-0 animate-fade-in-up">
             <span className="inline-block bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
