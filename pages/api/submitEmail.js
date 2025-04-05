@@ -26,11 +26,7 @@ export default async function handler(req, res) {
         throw new Error('Failed to save to Google Sheets');
       }
 
-      // ✅ Log before Resend
-      console.log('🔐 Resend key:', process.env.RESEND_API_KEY ? 'Loaded ✅' : 'Missing ❌');
-      console.log('📧 Sending welcome email to:', email);
-
-      // ✅ Send welcome email via Resend with your verified sender
+      // ✅ Send welcome email via Resend
       await resend.emails.send({
         from: 'team@nolens.xyz',
         to: email,
