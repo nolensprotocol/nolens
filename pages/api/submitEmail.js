@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   try {
     // 1. Store in Google Sheets
-    const sheetResponse = await fetch('https://script.google.com/macros/s/YOUR_SCRIPT_URL_HERE/exec', {
+    const sheetResponse = await fetch('https://script.google.com/macros/s/AKfycbx3YrM2Sf1vOV4BRq94vJQUoILdeN3-sy58JsrahT12NPAR2UkFssx8dqFrJi1HpTCW/exec', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
