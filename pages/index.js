@@ -13,7 +13,7 @@ export default function Home() {
           <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
           <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase">nolens</span>
         </div>
-        <nav className="hidden md:flex items-center space-x-6 text-sm text-gray-800 font-medium">
+        <nav className="flex flex-wrap items-center space-x-4 text-sm text-gray-800 font-medium">
           <a href="/" className="hover:text-black">Home</a>
           <a href="/docs" className="hover:text-black">Docs</a>
           <a href="https://t.me/nolensprotocol" target="_blank" className="hover:text-black">Telegram</a>
@@ -54,9 +54,9 @@ export default function Home() {
         <section className="pt-36 pb-28 bg-gradient-to-b from-white to-gray-50 text-gray-900">
           <div className="max-w-6xl mx-auto px-6 text-center">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-20">Milestones</h2>
-            <div className="flex items-start justify-between">
+            <div className="flex flex-wrap justify-center gap-8">
               {[1, 2, 3, 4].map((phase) => (
-                <div key={phase} className="relative text-center w-1/4 group z-10 transform transition-transform duration-300 hover:scale-105">
+                <div key={phase} className="relative text-center w-full sm:w-1/2 md:w-1/4 group z-10 transform transition-transform duration-300 hover:scale-105">
                   <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-52 mb-6 bg-white rounded-full shadow-md transition-transform duration-300 group-hover:scale-110" />
                   <div className="text-lg font-semibold">{`Phase ${phase}`}</div>
                   <div className="text-base text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
