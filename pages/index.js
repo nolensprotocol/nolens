@@ -1,9 +1,7 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
+import { motion } from 'framer-motion'
 
-// Dynamically import motion to avoid SSR errors
-const motion = dynamic(() => import('framer-motion').then(mod => mod.motion), { ssr: false })
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
