@@ -11,11 +11,12 @@ export default function Docs() {
       </Head>
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 flex items-center justify-between w-full">
-        <div className="flex items-center space-x-1.5">
+        <Link href="/" className="flex items-center space-x-1.5 hover:opacity-90 transition">
           <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
           <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase">nolens</span>
-        </div>
+        </Link>
       </header>
+
 
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
