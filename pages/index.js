@@ -2,7 +2,6 @@ import Head from 'next/head'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
-
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -31,7 +30,7 @@ export default function Home() {
             <a href="/contribute" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Contribute</a>
           </div>
 
-          {/* Mobile Right */}
+          {/* Mobile Nav Right Side */}
           <div className="md:hidden flex items-center space-x-2">
             <a
               href="/contribute"
@@ -92,7 +91,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Milestones Section with Scroll Pins */}
+        {/* Milestones with hover glow */}
         <section className="pt-36 pb-28 bg-gradient-to-b from-white to-gray-50 text-gray-900">
           <div className="max-w-2xl mx-auto px-6 text-center">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-16">Milestones</h2>
@@ -104,22 +103,27 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true, amount: 0.5 }}
-                className="mb-20"
+                className="mb-28 relative group"
               >
-                <img
-                  src={`/milestone_icon${phase}.png`}
-                  alt={`Phase ${phase}`}
-                  className="mx-auto h-36 mb-6 bg-white rounded-full"
-                />
-                <div className="text-xl font-semibold mb-2">{`Phase ${phase}`}</div>
-                <div className="text-base text-gray-600 max-w-sm mx-auto">
-                  {phase === 1
-                    ? 'Branding, token identity, website, and community setup.'
-                    : phase === 2
-                    ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
-                    : phase === 3
-                    ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
-                    : 'Protocol integrations, DAO contributions, and scaling adoption.'}
+                {/* Glow */}
+                <div className="absolute inset-0 scale-95 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition duration-500 rounded-2xl z-0 blur-xl bg-gradient-to-br from-blue-800/40 to-indigo-900/40 pointer-events-none"></div>
+
+                <div className="relative z-10 bg-white/70 backdrop-blur-md border border-gray-200 rounded-2xl px-6 py-10 shadow-xl transition duration-300 group-hover:scale-[1.02]">
+                  <img
+                    src={`/milestone_icon${phase}.png`}
+                    alt={`Phase ${phase}`}
+                    className="mx-auto h-48 mb-8 bg-white rounded-full"
+                  />
+                  <div className="text-2xl font-bold mb-3">{`Phase ${phase}`}</div>
+                  <div className="text-lg text-gray-700 max-w-xl mx-auto">
+                    {phase === 1
+                      ? 'Branding, token identity, website, and community setup.'
+                      : phase === 2
+                      ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
+                      : phase === 3
+                      ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
+                      : 'Protocol integrations, DAO contributions, and scaling adoption.'}
+                  </div>
                 </div>
               </motion.div>
             ))}
