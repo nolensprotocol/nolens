@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     }
 
     // ✅ This is where you can save to a database or send to an email provider
-    console.log('New contributor email:', email);
+    console.log('API HIT ✅', req.body);
 
     return res.status(200).json({ message: 'Email received' });
   } else {
