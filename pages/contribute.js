@@ -11,8 +11,6 @@ export default function Contribute() {
     e.preventDefault();
     setError(null);
 
-    console.log('🚀 Submitting email:', email);
-
     try {
       const res = await fetch('/api/submitEmail', {
         method: 'POST',
@@ -24,7 +22,14 @@ export default function Contribute() {
 
       console.log('📬 Response status:', res.status);
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+
       console.log('✅ Response data:', data);
 
       if (!res.ok) throw new Error(data.message || 'Something went wrong');
