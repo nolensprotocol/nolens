@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         console.error('❌ Google Sheets response not OK:', sheetRes.status);
         throw new Error('Failed to save to Google Sheets');
       }
-
+      /*
       // ✅ Send welcome email via Resend
       const emailRes = await resend.emails.send({
         from: 'onboarding@resend.dev',
@@ -40,6 +40,7 @@ export default async function handler(req, res) {
           </div>
         `
       });
+      */
 
       console.log('✅ Email stored in sheet & welcome email sent:', email);
       return res.status(200).json({ message: 'Email received and welcome sent' });
