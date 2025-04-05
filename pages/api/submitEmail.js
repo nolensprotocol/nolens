@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
       // Send welcome email via Resend
       await resend.emails.send({
-        from: 'Nolens <team@nolens.xyz>',
+        from: 'onboarding@resend.dev',
         to: email,
         subject: 'Welcome to Nolens 🌌',
         html: `
