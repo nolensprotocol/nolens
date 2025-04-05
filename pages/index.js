@@ -1,5 +1,9 @@
 import Head from 'next/head'
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import motion to avoid SSR errors
+const motion = dynamic(() => import('framer-motion').then(mod => mod.motion), { ssr: false })
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false)
@@ -60,7 +64,7 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero + Rest of Page */}
+      {/* Hero */}
       <main>
         <section className="relative min-h-[90vh] pt-40 pb-20 px-6 overflow-hidden bg-black text-white">
           <video
@@ -90,26 +94,37 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Milestones Section with Scroll Pins */}
         <section className="pt-36 pb-28 bg-gradient-to-b from-white to-gray-50 text-gray-900">
-          <div className="max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-20">Milestones</h2>
-            <div className="flex items-start justify-between">
-              {[1, 2, 3, 4].map((phase) => (
-                <div key={phase} className="relative text-center w-1/4 group z-10">
-                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-40 mb-6 bg-white rounded-full" />
-                  <div className="text-lg font-semibold">{`Phase ${phase}`}</div>
-                  <div className="text-base text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
-                    {phase === 1
-                      ? 'Branding, token identity, website, and community setup.'
-                      : phase === 2
-                      ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
-                      : phase === 3
-                      ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
-                      : 'Protocol integrations, DAO contributions, and scaling adoption.'}
-                  </div>
+          <div className="max-w-2xl mx-auto px-6 text-center">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-16">Milestones</h2>
+
+            {[1, 2, 3, 4].map((phase, index) => (
+              <motion.div
+                key={phase}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true, amount: 0.5 }}
+                className="mb-20"
+              >
+                <img
+                  src={`/milestone_icon${phase}.png`}
+                  alt={`Phase ${phase}`}
+                  className="mx-auto h-36 mb-6 bg-white rounded-full"
+                />
+                <div className="text-xl font-semibold mb-2">{`Phase ${phase}`}</div>
+                <div className="text-base text-gray-600 max-w-sm mx-auto">
+                  {phase === 1
+                    ? 'Branding, token identity, website, and community setup.'
+                    : phase === 2
+                    ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
+                    : phase === 3
+                    ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
+                    : 'Protocol integrations, DAO contributions, and scaling adoption.'}
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </div>
         </section>
       </main>
