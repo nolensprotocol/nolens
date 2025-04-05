@@ -98,4 +98,24 @@ export default function Home() {
                       ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
                       : phase === 3
                       ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
-                      : 'Protocol integrations, DAO contributions, and scaling
+                      : 'Protocol integrations, DAO contributions, and scaling adoption.'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <style jsx>{`
+        @keyframes spin-slow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 60s linear infinite;
+        }
+      `}</style>
+    </>
+  )
+}
