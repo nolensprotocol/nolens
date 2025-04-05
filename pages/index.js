@@ -56,8 +56,8 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-extrabold mb-20">Milestones</h2>
             <div className="flex items-start justify-between">
               {[1, 2, 3, 4].map((phase) => (
-                <div key={phase} className="relative text-center w-1/4 group z-10">
-                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-40 mb-6 bg-white rounded-full" />
+                <div key={phase} className="relative text-center w-1/4 group z-10 transform transition-transform duration-300 hover:scale-105">
+                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-52 mb-6 bg-white rounded-full shadow-md transition-transform duration-300 group-hover:scale-110" />
                   <div className="text-lg font-semibold">{`Phase ${phase}`}</div>
                   <div className="text-base text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
                     {phase === 1
