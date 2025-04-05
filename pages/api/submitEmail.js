@@ -30,9 +30,9 @@ export default async function handler(req, res) {
       console.log('🔐 Resend key:', process.env.RESEND_API_KEY ? 'Loaded ✅' : 'Missing ❌');
       console.log('📧 Sending welcome email to:', email);
 
-      // ✅ Send welcome email via Resend
+      // ✅ Send welcome email via Resend with your verified sender
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'team@nolens.xyz',
         to: email,
         subject: 'Welcome to Nolens 🌌',
         html: `
