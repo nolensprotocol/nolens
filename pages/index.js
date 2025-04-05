@@ -1,6 +1,9 @@
 import Head from 'next/head'
+import { useState } from 'react'
 
 export default function Home() {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <>
       <Head>
@@ -8,22 +11,51 @@ export default function Home() {
         <meta name="description" content="Own less. Access more. Nolens is building the protocol for the access-first economy." />
       </Head>
 
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 flex items-center justify-between w-full">
-        <div className="flex items-center space-x-1.5">
-          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
-          <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase">nolens</span>
+      {/* Navbar */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm py-4 px-6 w-full">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center space-x-1.5">
+            <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
+            <span className="mt-[-2px] text-gray-900 text-lg font-sans tracking-widest lowercase">nolens</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center space-x-6 text-sm text-gray-800 font-medium">
+            <a href="/" className="hover:text-black">Home</a>
+            <a href="/docs" className="hover:text-black">Docs</a>
+            <a href="https://t.me/nolensprotocol" target="_blank" className="hover:text-black">Telegram</a>
+            <a href="https://x.com/nolensprotocol" target="_blank" className="hover:text-black">X</a>
+            <a href="/contribute" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Contribute</a>
+          </nav>
+
+          {/* Mobile Toggle */}
+          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
-        <nav className="flex flex-wrap items-center space-x-4 text-sm text-gray-800 font-medium">
-          <a href="/" className="hover:text-black">Home</a>
-          <a href="/docs" className="hover:text-black">Docs</a>
-          <a href="https://t.me/nolensprotocol" target="_blank" className="hover:text-black">Telegram</a>
-          <a href="https://x.com/nolensprotocol" target="_blank" className="hover:text-black">X</a>
-          <a href="/contribute" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Contribute</a>
-        </nav>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="md:hidden mt-4 flex flex-col space-y-2 text-sm font-medium text-gray-800">
+            <a href="/" className="hover:text-black">Home</a>
+            <a href="/docs" className="hover:text-black">Docs</a>
+            <a href="https://t.me/nolensprotocol" target="_blank" className="hover:text-black">Telegram</a>
+            <a href="https://x.com/nolensprotocol" target="_blank" className="hover:text-black">X</a>
+            <a href="/contribute" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition mt-2">Contribute</a>
+          </div>
+        )}
       </header>
 
+      {/* Hero + Rest of Page */}
       <main>
-        <section className="relative min-h-[100vh] pt-56 pb-32 px-6 overflow-hidden bg-black text-white">
+        <section className="relative min-h-[90vh] pt-40 pb-20 px-6 overflow-hidden bg-black text-white">
           <video
             autoPlay
             loop
@@ -35,7 +67,7 @@ export default function Home() {
             Your browser does not support the video tag.
           </video>
 
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-end gap-12 relative z-10 transform scale-105 md:scale-110 translate-y-10 transition-all duration-500 ease-out">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-12 relative z-10">
             <div>
               <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight mb-6">
                 Own less. <br /> Access more.
@@ -54,10 +86,10 @@ export default function Home() {
         <section className="pt-36 pb-28 bg-gradient-to-b from-white to-gray-50 text-gray-900">
           <div className="max-w-6xl mx-auto px-6 text-center">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-20">Milestones</h2>
-            <div className="flex flex-wrap justify-center gap-8">
+            <div className="flex items-start justify-between">
               {[1, 2, 3, 4].map((phase) => (
-                <div key={phase} className="relative text-center w-full sm:w-1/2 md:w-1/4 group z-10 transform transition-transform duration-300 hover:scale-105">
-                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-52 mb-6 bg-white rounded-full shadow-md transition-transform duration-300 group-hover:scale-110" />
+                <div key={phase} className="relative text-center w-1/4 group z-10">
+                  <img src={`/milestone_icon${phase}.png`} alt={`Phase ${phase}`} className="mx-auto -mt-12 h-40 mb-6 bg-white rounded-full" />
                   <div className="text-lg font-semibold">{`Phase ${phase}`}</div>
                   <div className="text-base text-gray-600 opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-500 mt-2">
                     {phase === 1
@@ -66,24 +98,4 @@ export default function Home() {
                       ? 'Infrastructure: smart contracts, staking logic, and contribute portal.'
                       : phase === 3
                       ? 'Pilot modules, shared utility demos, and ecosystem collaborations.'
-                      : 'Protocol integrations, DAO contributions, and scaling adoption.'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <style jsx>{`
-        @keyframes spin-slow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 60s linear infinite;
-        }
-      `}</style>
-    </>
-  );
-}
+                      : 'Protocol integrations, DAO contributions, and scaling
