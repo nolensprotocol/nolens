@@ -12,20 +12,20 @@ export default function Docs() {
 
       {/* Matching Interactive Logo */}
       <div className="absolute top-6 left-6 z-50">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2 group">
           <Image
             src="/nolens_icon.png"
             alt="Nolens Logo"
-            width={40}
-            height={40}
-            className="transition-transform hover:scale-105"
+            width={32}
+            height={32}
+            className="transition-transform group-hover:scale-105"
           />
-          <span className="text-xl font-semibold text-gray-900 hover:text-black transition-colors">
+          <span className="text-lg font-medium text-gray-800 group-hover:text-black tracking-tight">
             nolens
           </span>
         </Link>
       </div>
-
+              
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Whitepaper</h1>
