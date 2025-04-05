@@ -4,13 +4,37 @@ import { useState } from 'react'
 export default function Contribute() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder logic for submitting email (e.g. to backend or third-party service)
-    console.log('Email submitted:', email);
-    setSubmitted(true);
-  }
+    setError(null);
+
+    console.log('🚀 Submitting email:', email);
+
+    try {
+      const res = await fetch('/api/submitEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      console.log('📬 Response status:', res.status);
+
+      const data = await res.json();
+      console.log('✅ Response data:', data);
+
+      if (!res.ok) throw new Error(data.message || 'Something went wrong');
+
+      setSubmitted(true);
+      setEmail('');
+    } catch (err) {
+      console.error('❌ Error submitting email:', err);
+      setError(err.message);
+    }
+  };
 
   return (
     <>
@@ -68,6 +92,7 @@ export default function Contribute() {
                 placeholder="your@email.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
+              {error && <div className="text-red-600 text-sm">{error}</div>}
               <button
                 type="submit"
                 className="w-full bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-800 transition"
