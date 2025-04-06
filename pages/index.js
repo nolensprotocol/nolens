@@ -1,6 +1,11 @@
 import Head from 'next/head'
-import Lottie from 'lottie-react'
-import nolensLottie from '../public/lottie/nolens-connectivity.json' // ✅ use correct path
+import dynamic from 'next/dynamic'
+
+// ✅ Dynamically import Lottie to disable SSR
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
+
+// ✅ Import your animation JSON
+import nolensLottie from '../public/lottie/nolens-connectivity.json'
 
 export default function Home() {
   return (
@@ -11,7 +16,7 @@ export default function Home() {
       </Head>
 
       <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* ✅ Lottie background animation */}
+        {/* ✅ Lottie animation background */}
         <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
           <Lottie
             animationData={nolensLottie}
@@ -21,7 +26,7 @@ export default function Home() {
           />
         </div>
 
-        {/* 🔤 Hero content */}
+        {/* 🧤 Hero content */}
         <div className="z-10 max-w-3xl text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             Own less. <br className="hidden md:block" /> Access more.
@@ -35,7 +40,7 @@ export default function Home() {
             <a href="/contribute" className="px-6 py-3 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition">
               Contribute
             </a>
-            <a href="/earn" className="px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition">
+            <a href="/tasks" className="px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition">
               Earn
             </a>
             <a href="/docs" className="px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition">
