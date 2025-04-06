@@ -3,13 +3,13 @@ import Head from 'next/head';
 import { useState } from 'react';
 
 const initialTasks = [
-  { id: 1, name: '✅ Follow @nolensprotocol on X', action: 'follow', points: 10, completed: false },
-  { id: 2, name: '💬 Quote retweet our pinned tweet', action: 'retweet', points: 20, completed: false },
-  { id: 3, name: '✉️ Join our email waitlist', action: 'email', points: 10, completed: false },
-  { id: 4, name: '🌐 Refer a friend with your link', action: 'refer', points: 30, completed: false },
-  { id: 5, name: '🗳️ Vote on a feature idea', action: 'vote', points: 10, completed: false },
-  { id: 6, name: '🧠 Complete the Nolens quiz', action: 'quiz', points: 10, completed: false },
-  { id: 7, name: '📲 Join our Telegram group', action: 'telegram', points: 10, completed: false },
+  { id: 1, name: 'Follow @nolensprotocol on X', action: 'follow', points: 10, completed: false },
+  { id: 2, name: 'Quote retweet our pinned tweet', action: 'retweet', points: 20, completed: false },
+  { id: 3, name: 'Join our email waitlist', action: 'email', points: 10, completed: false },
+  { id: 4, name: 'Refer a friend with your link', action: 'refer', points: 30, completed: false },
+  { id: 5, name: 'Vote on a feature idea', action: 'vote', points: 10, completed: false },
+  { id: 6, name: 'Complete the Nolens quiz', action: 'quiz', points: 10, completed: false },
+  { id: 7, name: 'Join our Telegram group', action: 'telegram', points: 10, completed: false },
 ];
 
 export default function Tasks() {
@@ -36,7 +36,7 @@ export default function Tasks() {
 
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">🎯 Tasks</h1>
+          <h1 className="text-4xl font-bold mb-4">Tasks</h1>
           <p className="text-gray-600">Earn mock points by completing simple actions that support the Nolens ecosystem.</p>
           <div className="mt-4 font-semibold">Your points: <span className="text-indigo-600">{points}</span> / 100</div>
         </div>
