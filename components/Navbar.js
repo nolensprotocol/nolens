@@ -1,52 +1,52 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect screen size once at mount
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   return (
-    <header className="bg-[#f7f8fa] fixed top-0 w-full z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
+    <header className="bg-white fixed top-0 w-full z-50 border-b">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-gray-900">
-          nolens
-        </Link>
+        <Link href="/" className="text-xl font-bold text-gray-900">nolens</Link>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex space-x-10 text-sm font-medium text-gray-700">
-          <Link href="/">Home</Link>
-          <Link href="/tasks">Earn</Link>
-          <Link href="/contribute">Contribute</Link>
-          <Link href="/docs">About</Link>
-        </nav>
+        {/* Desktop Nav */}
+        {!isMobile && (
+          <nav className="flex space-x-8 text-sm font-medium text-gray-700">
+            <Link href="/">Home</Link>
+            <Link href="/tasks">Earn</Link>
+            <Link href="/contribute">Contribute</Link>
+            <Link href="/docs">About</Link>
+          </nav>
+        )}
 
-        {/* Mobile Hamburger */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-700 focus:outline-none"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Hamburger Button (Mobile Only) */}
+        {isMobile && (
+          <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700">
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        )}
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-[#f7f8fa] px-6 pb-6">
-          <ul className="space-y-4 text-sm font-medium text-gray-800 pt-4">
-            <li>
-              <Link href="/" onClick={() => setIsOpen(false)}>Home</Link>
-            </li>
-            <li>
-              <Link href="/tasks" onClick={() => setIsOpen(false)}>Earn</Link>
-            </li>
-            <li>
-              <Link href="/contribute" onClick={() => setIsOpen(false)}>Contribute</Link>
-            </li>
-            <li>
-              <Link href="/docs" onClick={() => setIsOpen(false)}>About</Link>
-            </li>
-          </ul>
+      {/* Mobile Dropdown */}
+      {isMobile && isOpen && (
+        <div className="bg-white px-6 pb-6">
+          <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
+            <Link href="/" onClick={() => setIsOpen(false)}>Home</Link>
+            <Link href="/tasks" onClick={() => setIsOpen(false)}>Earn</Link>
+            <Link href="/contribute" onClick={() => setIsOpen(false)}>Contribute</Link>
+            <Link href="/docs" onClick={() => setIsOpen(false)}>About</Link>
+          </nav>
         </div>
       )}
     </header>
