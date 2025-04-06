@@ -4,6 +4,7 @@ import { polygonMumbai } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
+import Navbar from '../components/Navbar'
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
