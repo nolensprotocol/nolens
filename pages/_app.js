@@ -1,10 +1,11 @@
+// pages/_app.js
 import '../styles/globals.css';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { polygonMumbai } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
-import Navbar from '../components/Navbar'
+import Navbar from '../components/Navbar';
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -23,20 +24,11 @@ export default function App({ Component, pageProps }) {
     <ThemeProvider attribute="class">
       <QueryClientProvider client={queryClient}>
         <WagmiConfig config={config}>
+          {/* Navbar added globally */}
+          <Navbar />
           <Component {...pageProps} />
         </WagmiConfig>
       </QueryClientProvider>
     </ThemeProvider>
   );
 }
-
-function MyApp({ Component, pageProps }) {
-  return (
-    <>
-      <Navbar />
-      <Component {...pageProps} />
-    </>
-  )
-}
-
-export default MyApp
