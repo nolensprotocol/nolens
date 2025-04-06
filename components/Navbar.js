@@ -1,27 +1,50 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
+import { supabase } from '../lib/supabaseClient'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
 
-  // Wagmi MetaMask
+  // MetaMask (EVM)
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // Phantom
+  // ✅ Supabase insert when MetaMask connects
+  useEffect(() => {
+    if (isConnected && address) {
+      supabase
+        .from('wallet_connections')
+        .insert([{ address, type: 'evm' }])
+        .then(({ error }) => {
+          if (error) console.error('Supabase insert error:', error)
+          else console.log('✅ MetaMask wallet logged to Supabase')
+        })
+    }
+  }, [isConnected, address])
+
+  // Phantom (Solana)
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
         const resp = await window.solana.connect()
         setPhantomConnected(true)
         setPhantomAddress(resp.publicKey.toString())
+
+        // ✅ Supabase insert when Phantom connects
+        supabase
+          .from('wallet_connections')
+          .insert([{ address: resp.publicKey.toString(), type: 'solana' }])
+          .then(({ error }) => {
+            if (error) console.error('Supabase insert error:', error)
+            else console.log('✅ Phantom wallet logged to Supabase')
+          })
       } catch (err) {
         console.error('Phantom connection error', err)
       }
@@ -38,7 +61,6 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
-        {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold tracking-wide text-gray-900">
           nolens
         </Link>
@@ -50,7 +72,7 @@ export default function Navbar() {
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {/* Wallet Buttons */}
+          {/* Wallet Connection */}
           {isConnected ? (
             <button
               onClick={disconnect}
