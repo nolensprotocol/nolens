@@ -10,7 +10,7 @@ export default function Home() {
 
   // ✅ Load Lottie JSON from public folder on client-side
   useEffect(() => {
-    fetch('/lottie/nolens-connectivity.json')
+    fetch('nolens-connectivity.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
   }, [])
