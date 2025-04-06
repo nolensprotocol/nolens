@@ -6,41 +6,42 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  // Detect screen size once at mount
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
-    <header className="bg-white fixed top-0 w-full z-50 border-b">
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+    <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-gray-900">nolens</Link>
+        <div className="text-xl font-bold text-gray-900">
+          <Link href="/">nolens</Link>
+        </div>
 
-        {/* Desktop Nav */}
-        {!isMobile && (
-          <nav className="flex space-x-8 text-sm font-medium text-gray-700">
-            <Link href="/">Home</Link>
-            <Link href="/tasks">Earn</Link>
-            <Link href="/contribute">Contribute</Link>
-            <Link href="/docs">About</Link>
-          </nav>
-        )}
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-10 text-sm font-medium text-gray-700">
+          <Link href="/">Home</Link>
+          <Link href="/tasks">Earn</Link>
+          <Link href="/contribute">Contribute</Link>
+          <Link href="/docs">About</Link>
+        </div>
 
-        {/* Hamburger Button (Mobile Only) */}
-        {isMobile && (
+        {/* Mobile Hamburger */}
+        <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-        )}
+        </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Menu Dropdown */}
       {isMobile && isOpen && (
-        <div className="bg-white px-6 pb-6">
+        <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
             <Link href="/" onClick={() => setIsOpen(false)}>Home</Link>
             <Link href="/tasks" onClick={() => setIsOpen(false)}>Earn</Link>
