@@ -1,6 +1,6 @@
+// pages/tasks.js
 import Head from 'next/head';
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
 
 const initialTasks = [
   { id: 1, name: '✅ Follow @nolensprotocol on X', action: 'follow', points: 10, completed: false },
@@ -33,8 +33,6 @@ export default function Tasks() {
         <title>Tasks - Earn $NOL</title>
         <meta name="description" content="Complete tasks and earn mock points in Nolens MVP." />
       </Head>
-
-      <Navbar />
 
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
