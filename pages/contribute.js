@@ -1,3 +1,4 @@
+// pages/contribute.js
 import Head from 'next/head'
 import { useState } from 'react'
 
@@ -42,8 +43,6 @@ export default function Contribute() {
         <title>Contribute to Nolens</title>
         <meta name="description" content="Join Nolens and help build the future of access-first economies." />
       </Head>
-
-      <Navbar />
 
       <main className="relative min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6 overflow-hidden">
         <div className="max-w-5xl mx-auto text-center mb-20">
