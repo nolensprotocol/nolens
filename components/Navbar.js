@@ -19,12 +19,22 @@ export default function Navbar() {
   // ✅ Supabase insert when MetaMask connects
   useEffect(() => {
     if (isConnected && address) {
+      const payload = {
+        address,
+        type: 'evm',
+      }
+
+      console.log('📦 Sending payload to Supabase:', payload)
+
       supabase
         .from('wallet_connections')
-        .insert([{ address: address || '', type: 'evm' }])
+        .insert([payload])
         .then(({ error }) => {
-          if (error) console.error('❌ Supabase insert error:', error)
-          else console.log('✅ MetaMask wallet logged to Supabase')
+          if (error) {
+            console.error('❌ Supabase insert error:', error.message)
+          } else {
+            console.log('✅ MetaMask wallet logged to Supabase')
+          }
         })
     }
   }, [isConnected, address])
@@ -34,16 +44,27 @@ export default function Navbar() {
     if (window.solana?.isPhantom) {
       try {
         const resp = await window.solana.connect()
-        setPhantomConnected(true)
-        setPhantomAddress(resp.publicKey.toString())
+        const phantomAddr = resp.publicKey.toString()
 
-        // ✅ Supabase insert when Phantom connects
+        setPhantomConnected(true)
+        setPhantomAddress(phantomAddr)
+
+        const payload = {
+          address: phantomAddr,
+          type: 'solana',
+        }
+
+        console.log('📦 Sending payload to Supabase:', payload)
+
         supabase
           .from('wallet_connections')
-          .insert([{ address: resp.publicKey.toString(), type: 'solana' }])
+          .insert([payload])
           .then(({ error }) => {
-            if (error) console.error('❌ Supabase insert error:', error)
-            else console.log('✅ Phantom wallet logged to Supabase')
+            if (error) {
+              console.error('❌ Supabase insert error:', error.message)
+            } else {
+              console.log('✅ Phantom wallet logged to Supabase')
+            }
           })
       } catch (err) {
         console.error('Phantom connection error', err)
