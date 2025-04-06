@@ -10,10 +10,14 @@ export default function Home() {
 
   // ✅ Load Lottie JSON from public folder on client-side
   useEffect(() => {
-    fetch('nolens-connectivity.json')
-      .then(res => res.json())
-      .then(data => setAnimationData(data))
-  }, [])
+  fetch('/lottie/nolens-connectivity.json')
+    .then(res => res.json())
+    .then(data => {
+      console.log('Loaded Lottie:', data)
+      setAnimationData(data)
+    })
+    .catch(err => console.error('Failed to load Lottie:', err))
+}, [])
 
   return (
     <>
