@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 const initialTasks = [
   { id: 1, name: 'Follow @nolensprotocol on X', action: 'follow', points: 10, link: 'https://x.com/nolensprotocol' },
-  { id: 2, name: 'Quote retweet our pinned tweet', action: 'retweet', points: 20, link: 'https://x.com/nolensprotocol/status/your_pinned_tweet' },
+  { id: 2, name: 'Quote retweet our pinned tweet', action: 'retweet', points: 20, link: 'https://x.com/nolensprotocol' },
   { id: 3, name: 'Join our email waitlist', action: 'email', points: 10, link: '/contribute' },
   { id: 4, name: 'Refer a friend with your link', action: 'refer', points: 40 },
   { id: 5, name: 'Vote on a feature idea', action: 'vote', points: 10, link: '/vote' },
@@ -11,10 +11,13 @@ const initialTasks = [
 ]
 
 export default function Earn() {
-  const [tasks] = useState(initialTasks)
+  const [tasks, setTasks] = useState(initialTasks)
   const [points, setPoints] = useState(0)
+  const [claimed, setClaimed] = useState([])
 
   const handleClaim = (task) => {
+    if (claimed.includes(task.id) && task.action !== 'refer') return
+
     if (task.action === 'refer') {
       const shareUrl = `${window.location.origin}/?ref=YOURWALLETADDRESS`
       if (navigator.share) {
@@ -28,6 +31,10 @@ export default function Earn() {
       }
     } else if (task.link) {
       window.open(task.link, '_blank')
+    }
+
+    if (task.action !== 'refer') {
+      setClaimed([...claimed, task.id])
     }
     setPoints(prev => prev + task.points)
   }
@@ -47,28 +54,38 @@ export default function Earn() {
         </div>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              onClick={() => handleClaim(task)}
-              className="border rounded-2xl p-6 flex flex-col justify-between shadow-md transition-all duration-200 cursor-pointer hover:shadow-xl hover:ring-2 hover:ring-indigo-200 hover:scale-[1.01] bg-white relative group"
-            >
-              <div className="flex flex-col h-full justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold mb-1">{task.name}</h3>
-                  <p className="text-sm text-gray-500 mb-4">+{task.points} points</p>
+          {tasks.map((task) => {
+            const isClaimed = claimed.includes(task.id)
+            const isReferral = task.action === 'refer'
+            return (
+              <div
+                key={task.id}
+                onClick={() => handleClaim(task)}
+                className={`border rounded-2xl p-6 flex flex-col justify-between shadow-md transition-all duration-200 bg-white relative group ${
+                  isClaimed && !isReferral ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-xl hover:ring-2 hover:ring-indigo-200 hover:scale-[1.01]'
+                }`}
+              >
+                <div className="flex flex-col h-full justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">{task.name}</h3>
+                    <p className="text-sm text-gray-500 mb-4">+{task.points} points</p>
+                  </div>
+                  <button
+                    disabled={isClaimed && !isReferral}
+                    className={`mt-auto px-4 py-2 text-sm rounded-md font-medium transition ${
+                      isClaimed && !isReferral
+                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        : 'bg-black text-white hover:bg-gray-800'
+                    }`}
+                  >
+                    {isClaimed && !isReferral ? 'Claimed' : 'Claim'}
+                  </button>
                 </div>
-                <button
-                  className="mt-auto px-4 py-2 text-sm rounded-md font-medium bg-black text-white hover:bg-gray-800 transition"
-                >
-                  Claim
-                </button>
-              </div>
 
-              {/* Soft glare effect */}
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 bg-gradient-to-r from-purple-500 via-white to-purple-500 pointer-events-none transition duration-300" />
-            </div>
-          ))}
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 bg-gradient-to-r from-purple-500 via-white to-purple-500 pointer-events-none transition duration-300" />
+              </div>
+            )
+          })}
         </div>
       </main>
     </>
