@@ -50,13 +50,13 @@ export default function Home() {
           </p>
 
           <div className="pt-6 flex flex-col md:flex-row justify-center items-center gap-4">
-            <a href="/contribute" className="px-6 py-3 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition">
+            <a href="/contribute" className="w-48 px-6 py-3 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition text-center">
               Contribute
             </a>
-            <a href="/earn" className="px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition">
+            <a href="/earn" className="w-48 px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition text-center">
               Earn
             </a>
-            <a href="/docs" className="px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition">
+            <a href="/docs" className="w-48 px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition text-center">
               About
             </a>
           </div>
