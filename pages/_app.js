@@ -3,6 +3,7 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { polygonMumbai } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'next-themes';
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
@@ -18,10 +19,12 @@ const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={config}>
-        <Component {...pageProps} />
-      </WagmiConfig>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class">
+      <QueryClientProvider client={queryClient}>
+        <WagmiConfig config={config}>
+          <Component {...pageProps} />
+        </WagmiConfig>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
