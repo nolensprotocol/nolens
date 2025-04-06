@@ -21,9 +21,9 @@ export default function Navbar() {
     if (isConnected && address) {
       supabase
         .from('wallet_connections')
-        .insert([{ address, type: 'evm' }])
+        .insert([{ address: address || '', type: 'evm' }])
         .then(({ error }) => {
-          if (error) console.error('Supabase insert error:', error)
+          if (error) console.error('❌ Supabase insert error:', error)
           else console.log('✅ MetaMask wallet logged to Supabase')
         })
     }
@@ -42,7 +42,7 @@ export default function Navbar() {
           .from('wallet_connections')
           .insert([{ address: resp.publicKey.toString(), type: 'solana' }])
           .then(({ error }) => {
-            if (error) console.error('Supabase insert error:', error)
+            if (error) console.error('❌ Supabase insert error:', error)
             else console.log('✅ Phantom wallet logged to Supabase')
           })
       } catch (err) {
