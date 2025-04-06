@@ -10,12 +10,12 @@ export default function Navbar() {
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
 
-  // Wagmi for MetaMask
+  // Wagmi MetaMask
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // Phantom Logic
+  // Phantom
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -38,6 +38,7 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+        {/* Logo */}
         <Link href="/" className="text-2xl font-extrabold tracking-wide text-gray-900">
           nolens
         </Link>
@@ -68,15 +69,15 @@ export default function Navbar() {
             <div className="ml-4 flex space-x-2">
               <button
                 onClick={() => connect()}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
               >
-                Connect MetaMask
+                🦊 MetaMask
               </button>
               <button
                 onClick={connectPhantom}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
               >
-                Connect Phantom
+                👻 Phantom
               </button>
             </div>
           )}
@@ -99,7 +100,7 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {/* Mobile wallet buttons */}
+            {/* Mobile Wallet Buttons */}
             {isConnected ? (
               <button
                 onClick={disconnect}
@@ -118,15 +119,15 @@ export default function Navbar() {
               <div className="mt-4 flex flex-col space-y-2">
                 <button
                   onClick={() => connect()}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                 >
-                  Connect MetaMask
+                  🦊 MetaMask
                 </button>
                 <button
                   onClick={connectPhantom}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
                 >
-                  Connect Phantom
+                  👻 Phantom
                 </button>
               </div>
             )}
