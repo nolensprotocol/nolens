@@ -13,11 +13,6 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <img
-            src="/nolens_icon.png"
-            alt="Nolens Logo"
-            className="w-5 h-5 object-contain"
-          />
           <span className="text-xl font-bold text-gray-900">nolens</span>
         </Link>
 
