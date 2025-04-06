@@ -1,92 +1,138 @@
+'use client'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useConnect, useAccount, useDisconnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [flashBg, setFlashBg] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [phantomConnected, setPhantomConnected] = useState(false)
+  const [phantomAddress, setPhantomAddress] = useState(null)
 
-  const handleMenuClick = () => {
-    setIsOpen(false)
-    setFlashBg(true)
-    setTimeout(() => setFlashBg(false), 300)
+  // Wagmi for MetaMask
+  const { connect } = useConnect({ connector: new InjectedConnector() })
+  const { address, isConnected } = useAccount()
+  const { disconnect } = useDisconnect()
+
+  // Phantom Logic
+  const connectPhantom = async () => {
+    if (window.solana?.isPhantom) {
+      try {
+        const resp = await window.solana.connect()
+        setPhantomConnected(true)
+        setPhantomAddress(resp.publicKey.toString())
+      } catch (err) {
+        console.error('Phantom connection error', err)
+      }
+    } else {
+      alert('Phantom Wallet not found. Install from phantom.app')
+    }
+  }
+
+  const disconnectPhantom = () => {
+    setPhantomConnected(false)
+    setPhantomAddress(null)
   }
 
   return (
-    <>
-      <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="text-2xl tracking-wide font-extrabold text-gray-900"
-          >
-            nolens
-          </Link>
+    <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+        <Link href="/" className="text-2xl font-extrabold tracking-wide text-gray-900">
+          nolens
+        </Link>
 
-          {/* Desktop Nav + Wallet */}
-          <div className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
-            <Link href="/">Home</Link>
-            <Link href="/tasks">Earn</Link>
-            <Link href="/contribute">Contribute</Link>
-            <Link href="/docs">About</Link>
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
+          <Link href="/">Home</Link>
+          <Link href="/earn">Earn</Link>
+          <Link href="/contribute">Contribute</Link>
+          <Link href="/docs">About</Link>
 
-            {/* Desktop Connect Wallet */}
-            <button className="ml-6 px-4 py-2 rounded-md bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition">
-              Connect Wallet
-            </button>
-          </div>
-
-          {/* Mobile Hamburger */}
-          <div className="md:hidden">
+          {/* Wallet Buttons */}
+          {isConnected ? (
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700"
+              onClick={disconnect}
+              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {address.slice(0, 6)}...{address.slice(-4)}
             </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu Dropdown */}
-        {isOpen && (
-          <div className="md:hidden bg-white px-6 pb-6 pt-2">
-            <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
-              <Link href="/" onClick={handleMenuClick}>Home</Link>
-              <Link href="/tasks" onClick={handleMenuClick}>Earn</Link>
-              <Link href="/contribute" onClick={handleMenuClick}>Contribute</Link>
-              <Link href="/docs" onClick={handleMenuClick}>About</Link>
-
-              {/* Mobile Connect Wallet */}
+          ) : phantomConnected ? (
+            <button
+              onClick={disconnectPhantom}
+              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+            >
+              {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+            </button>
+          ) : (
+            <div className="ml-4 flex space-x-2">
               <button
-                onClick={() => setIsOpen(false)}
-                className="mt-6 px-4 py-2 rounded-md bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition"
+                onClick={() => connect()}
+                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
               >
-                Connect Wallet
+                Connect MetaMask
               </button>
-            </nav>
-          </div>
-        )}
-      </header>
+              <button
+                onClick={connectPhantom}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+              >
+                Connect Phantom
+              </button>
+            </div>
+          )}
+        </nav>
 
-      {/* Flash overlay */}
-      {flashBg && (
-        <div className="fixed inset-0 bg-black opacity-40 z-40 animate-fade-out pointer-events-none" />
+        {/* Mobile Toggle */}
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-white px-6 pb-6 pt-2">
+          <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
+            <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link href="/earn" onClick={() => setMenuOpen(false)}>Earn</Link>
+            <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
+            <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
+
+            {/* Mobile wallet buttons */}
+            {isConnected ? (
+              <button
+                onClick={disconnect}
+                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                {address.slice(0, 6)}...{address.slice(-4)}
+              </button>
+            ) : phantomConnected ? (
+              <button
+                onClick={disconnectPhantom}
+                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+              </button>
+            ) : (
+              <div className="mt-4 flex flex-col space-y-2">
+                <button
+                  onClick={() => connect()}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md"
+                >
+                  Connect MetaMask
+                </button>
+                <button
+                  onClick={connectPhantom}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+                >
+                  Connect Phantom
+                </button>
+              </div>
+            )}
+          </nav>
+        </div>
       )}
-
-      <style jsx>{`
-        @keyframes fadeOut {
-          from {
-            opacity: 0.4;
-          }
-          to {
-            opacity: 0;
-          }
-        }
-        .animate-fade-out {
-          animation: fadeOut 0.3s ease-out forwards;
-        }
-      `}</style>
-    </>
+    </header>
   )
 }
