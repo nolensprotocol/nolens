@@ -29,3 +29,14 @@ export default function App({ Component, pageProps }) {
     </ThemeProvider>
   );
 }
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <>
+      <Navbar />
+      <Component {...pageProps} />
+    </>
+  )
+}
+
+export default MyApp
