@@ -6,12 +6,18 @@ import { Menu, X } from 'lucide-react'
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const closeMenu = () => setMobileMenuOpen(false)
+
   return (
     <header className="bg-[#f7f8fa] py-5 px-4 shadow-sm">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
+          <img
+            src="/nolens_icon.png"
+            alt="Nolens Logo"
+            className="w-5 h-5 object-contain"
+          />
           <span className="text-xl font-bold text-gray-900">nolens</span>
         </Link>
 
@@ -35,10 +41,10 @@ export default function Navbar() {
       {/* Mobile Menu Panel */}
       {mobileMenuOpen && (
         <div className="md:hidden mt-4 px-4 space-y-4 text-gray-700 font-medium text-base">
-          <Link href="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-          <Link href="/tasks" onClick={() => setMobileMenuOpen(false)}>Earn</Link>
-          <Link href="/contribute" onClick={() => setMobileMenuOpen(false)}>Contribute</Link>
-          <Link href="/docs" onClick={() => setMobileMenuOpen(false)}>About</Link>
+          <Link href="/" onClick={closeMenu}>Home</Link>
+          <Link href="/tasks" onClick={closeMenu}>Earn</Link>
+          <Link href="/contribute" onClick={closeMenu}>Contribute</Link>
+          <Link href="/docs" onClick={closeMenu}>About</Link>
         </div>
       )}
     </header>
