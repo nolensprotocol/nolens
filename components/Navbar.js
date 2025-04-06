@@ -1,66 +1,75 @@
-// components/Navbar.js
-import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  const logoSrc = theme === "dark" ? "/nolens.png" : "/nolens_original.png";
+  const menuItems = (
+    <>
+      <Link href="/" className="hover:underline">
+        Home
+      </Link>
+      <Link href="/docs" className="hover:underline">
+        Docs
+      </Link>
+      <a href="https://t.me/nolensprotocol" target="_blank" className="hover:underline">
+        Telegram
+      </a>
+      <a href="https://x.com/nolensprotocol" target="_blank" className="hover:underline">
+        X
+      </a>
+      <Link
+        href="/contribute"
+        className="bg-black text-white px-3 py-1 rounded hover:bg-gray-800 transition"
+      >
+        Contribute
+      </Link>
+    </>
+  );
 
   return (
-    <header className="w-full bg-white dark:bg-black px-6 py-4 shadow-sm">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <Image src={logoSrc} alt="Nolens logo" width={120} height={32} priority />
-        </Link>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700 dark:text-gray-200">
-          <Link href="/">Home</Link>
-          <Link href="/docs">Docs</Link>
-          <a href="https://t.me/nolensprotocol" target="_blank" rel="noopener noreferrer">Telegram</a>
-          <a href="https://x.com/nolensprotocol" target="_blank" rel="noopener noreferrer">X</a>
-          <Link
-            href="/contribute"
-            className="bg-black text-white dark:bg-white dark:text-black px-4 py-1.5 rounded-full hover:opacity-80 transition"
-          >
-            Contribute
-          </Link>
+    <nav className="w-full px-6 py-4 flex items-center justify-between shadow-sm">
+      {/* Logo */}
+      <Link href="/">
+        <div className="flex items-center space-x-2">
+          <Image
+            src="/nolens.png"
+            alt="Nolens logo"
+            width={40}
+            height={40}
+            className="dark:hidden"
+          />
+          <Image
+            src="/nolens_original.png"
+            alt="Nolens logo"
+            width={40}
+            height={40}
+            className="hidden dark:block"
+          />
+          <span className="text-xl font-semibold ml-2">nolens</span>
         </div>
+      </Link>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-700 dark:text-gray-200"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-6">{menuItems}</div>
+
+      {/* Mobile Menu Toggle */}
+      <div className="md:hidden">
+        <button onClick={toggleMenu}>
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-      </nav>
+      </div>
 
-      {/* Mobile Dropdown Menu */}
-      {isOpen && (
-        <div className="md:hidden mt-4 space-y-4 text-sm font-medium text-gray-700 dark:text-gray-200 px-2">
-          <Link href="/" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link href="/docs" onClick={() => setIsOpen(false)}>Docs</Link>
-          <a href="https://t.me/nolensprotocol" target="_blank" rel="noopener noreferrer">Telegram</a>
-          <a href="https://x.com/nolensprotocol" target="_blank" rel="noopener noreferrer">X</a>
-          <Link
-            href="/contribute"
-            onClick={() => setIsOpen(false)}
-            className="block bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-full hover:opacity-80 transition"
-          >
-            Contribute
-          </Link>
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="absolute top-16 left-0 w-full bg-white shadow-md py-6 px-6 flex flex-col space-y-6 md:hidden z-50">
+          {menuItems}
         </div>
       )}
-    </header>
+    </nav>
   );
 }
