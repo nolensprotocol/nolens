@@ -80,7 +80,7 @@ export default function Earn() {
     return (
       <main className="min-h-screen flex items-center justify-center text-center pt-40 px-4">
         <div>
-          <h1 className="text-2xl font-semibold mb-2">Connect your wallet</h1>
+          <h1 className="text-2xl font-semibold mb-2">Please Connect Your Wallet</h1>
           <p className="text-gray-600">You must connect a wallet to participate in the campaign and earn $NOL.</p>
         </div>
       </main>
