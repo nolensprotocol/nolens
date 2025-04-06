@@ -14,7 +14,6 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-5 h-5 object-contain" />
           <span className="text-xl font-bold text-gray-900">nolens</span>
         </Link>
 
