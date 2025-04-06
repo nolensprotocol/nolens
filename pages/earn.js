@@ -1,7 +1,9 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { supabase } from '../lib/supabaseClient'
 
-const initialTasks = [
+const TASKS = [
   { id: 1, name: 'Follow @nolensprotocol on X', action: 'follow', points: 10, link: 'https://x.com/nolensprotocol' },
   { id: 2, name: 'Quote retweet our pinned tweet', action: 'retweet', points: 20, link: 'https://x.com/nolensprotocol' },
   { id: 3, name: 'Join our email waitlist', action: 'email', points: 10, link: '/contribute' },
@@ -11,15 +13,42 @@ const initialTasks = [
 ]
 
 export default function Earn() {
-  const [tasks, setTasks] = useState(initialTasks)
+  const { isConnected, address } = useAccount()
+  const [claimedIds, setClaimedIds] = useState([])
   const [points, setPoints] = useState(0)
-  const [claimed, setClaimed] = useState([])
 
-  const handleClaim = (task) => {
-    if (claimed.includes(task.id) && task.action !== 'refer') return
+  // Fetch claimed task IDs for this wallet
+  useEffect(() => {
+    if (!isConnected || !address) return
 
-    if (task.action === 'refer') {
-      const shareUrl = `${window.location.origin}/?ref=YOURWALLETADDRESS`
+    const fetchClaims = async () => {
+      const { data, error } = await supabase
+        .from('task_claims')
+        .select('task_id, points')
+        .eq('wallet', address)
+
+      if (error) {
+        console.error('Error fetching claimed tasks:', error.message)
+      } else {
+        setClaimedIds(data.map(d => d.task_id))
+        const total = data.reduce((sum, d) => sum + d.points, 0)
+        setPoints(total)
+      }
+    }
+
+    fetchClaims()
+  }, [isConnected, address])
+
+  const handleClaim = async (task) => {
+    if (!address) return
+
+    const alreadyClaimed = claimedIds.includes(task.id)
+    const isReferral = task.action === 'refer'
+
+    if (alreadyClaimed && !isReferral) return
+
+    if (isReferral) {
+      const shareUrl = `${window.location.origin}/?ref=${address}`
       if (navigator.share) {
         navigator.share({
           title: 'Nolens',
@@ -33,10 +62,29 @@ export default function Earn() {
       window.open(task.link, '_blank')
     }
 
-    if (task.action !== 'refer') {
-      setClaimed([...claimed, task.id])
+    if (!alreadyClaimed && task.action !== 'refer') {
+      const { error } = await supabase
+        .from('task_claims')
+        .insert([{ wallet: address, task_id: task.id, points: task.points }])
+
+      if (error) {
+        console.error('Supabase insert error:', error.message)
+      } else {
+        setClaimedIds(prev => [...prev, task.id])
+        setPoints(prev => prev + task.points)
+      }
     }
-    setPoints(prev => prev + task.points)
+  }
+
+  if (!isConnected) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-center pt-40 px-4">
+        <div>
+          <h1 className="text-2xl font-semibold mb-2">Connect your wallet</h1>
+          <p className="text-gray-600">You must connect a wallet to participate in the campaign and earn $NOL.</p>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -50,12 +98,12 @@ export default function Earn() {
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
           <p className="text-gray-600">Complete tasks that support the Nolens ecosystem and earn mock $NOL points.</p>
-          <div className="mt-4 font-semibold">Your points: <span className="text-indigo-600">{points}</span> / 100</div>
+          <div className="mt-4 font-semibold">Your points: <span className="text-indigo-600">{points}</span></div>
         </div>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
-          {tasks.map((task) => {
-            const isClaimed = claimed.includes(task.id)
+          {TASKS.map(task => {
+            const isClaimed = claimedIds.includes(task.id)
             const isReferral = task.action === 'refer'
             return (
               <div
@@ -81,7 +129,6 @@ export default function Earn() {
                     {isClaimed && !isReferral ? 'Claimed' : 'Claim'}
                   </button>
                 </div>
-
                 <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 bg-gradient-to-r from-purple-500 via-white to-purple-500 pointer-events-none transition duration-300" />
               </div>
             )
