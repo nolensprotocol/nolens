@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Contribute() {
   const [email, setEmail] = useState('');
