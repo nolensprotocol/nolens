@@ -132,7 +132,12 @@ export default function Earn() {
               ? getReferralButtonState()
               : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
 
-            const referralSubtext = task.id === 'refer' ? `${referralCount} / 25 referrals` : `+${task.points} points`
+            const referralSubtext = task.id === 'refer'
+  ? [
+      `${referralCount} / 25 referrals`,
+      'Up to 1300 points'
+    ]
+  : [`+${task.points} points`]
 
             return (
               <div
@@ -142,9 +147,11 @@ export default function Earn() {
                 <div>
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
                   <p className="text-gray-500 text-sm mb-4 flex items-center justify-center">
-                    <span className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
-                      {referralSubtext}
-                    </span>
+                    {referralSubtext.map((text, i) => (
+  <span key={i} className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full mx-1">
+    {text}
+  </span>
+))}
                   </p>
                 </div>
                 <button
