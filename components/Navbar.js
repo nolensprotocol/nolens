@@ -56,16 +56,21 @@ export default function Navbar() {
   }, [status, address, walletType])
 
   const connectWallet = async () => {
+    console.log('🧠 connectWallet called')
+
     await new Promise((resolve) => setTimeout(resolve, 200))
 
     if (typeof window.ethereum !== 'undefined') {
+      console.log('✅ MetaMask detected')
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
       connect()
     } else {
+      console.warn('❌ MetaMask NOT detected — redirecting')
       window.open('/install-metamask', '_self', 'noopener,noreferrer')
     }
   }
+
 
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
