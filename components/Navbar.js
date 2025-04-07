@@ -64,12 +64,19 @@ export default function Navbar() {
       console.log('✅ MetaMask detected')
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
-      connect()
+
+      try {
+        const res = await connect()
+        console.log('🎉 Wallet connected:', res)
+      } catch (err) {
+        console.error('❌ connect() error:', err)
+      }
     } else {
       console.warn('❌ MetaMask NOT detected — redirecting')
       window.open('/install-metamask', '_self', 'noopener,noreferrer')
     }
   }
+
 
 
   const disconnectWallet = () => {
