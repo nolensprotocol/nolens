@@ -43,7 +43,7 @@ export default function Partners() {
               Fill out our short interest form and we’ll reach out personally:
             </p>
             <a
-              href="https://forms.gle/your-form-link" // TODO: Replace with actual form URL
+              href="https://forms.gle/1qpzP2Foi6dGM99B8" // TODO: Replace with actual form URL
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-4 px-6 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition"
