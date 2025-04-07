@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabaseClient'
 const initialTasks = [
   { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10, action: null },
   { id: 'retweet', label: 'Quote Retweet our pinned tweet', points: 20, action: 'https://x.com/nolensprotocol' },
-  { id: 'email', label: 'Join our email waitlist', points: 10, action: '/contribute' },
+  { id: 'email', label: 'Join our email waitlist', points: 10, action: null },
   { id: 'refer', label: 'Refer a friend with your link', points: 40, action: 'referral' },
   { id: 'vote', label: 'Vote on a feature idea', points: 10, action: null },
   { id: 'quiz', label: 'Complete the Nolens quiz', points: 10, action: null }
@@ -23,6 +23,9 @@ export default function Earn() {
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
   const [totalPoints, setTotalPoints] = useState(0)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailInput, setEmailInput] = useState('')
+  const [emailError, setEmailError] = useState(null)
 
   useEffect(() => {
     if (!isConnected || !address) return
@@ -127,8 +130,9 @@ export default function Earn() {
         alert('✅ Submitted. Points will be credited after verification.')
       }
     } else if (task.id === 'email') {
-      window.open(task.action, '_blank')
-      alert('✅ Submitted. Points will be credited after verification.')
+      setShowEmailModal(true)
+      setSubmitting(false)
+      return
     } else if (task.id === 'refer') {
       if (!address) {
         alert('Connect your wallet to get your referral link.')
@@ -142,6 +146,27 @@ export default function Earn() {
     }
 
     setSubmitting(false)
+  }
+
+  const handleEmailSubmit = async () => {
+    setEmailError(null)
+    if (!emailInput) return setEmailError('Please enter your email.')
+
+    const { error: emailError } = await supabase.from('email_signups_earn').insert([
+      { email: emailInput, wallet: address }
+    ])
+
+    if (!emailError) {
+      await supabase.from('verified_rewards').insert([
+        { wallet: address, task_id: 'email', points: 10 }
+      ])
+      setClaimed(prev => [...prev, 'email'])
+      setShowEmailModal(false)
+      setEmailInput('')
+      alert('✅ Email submitted!')
+    } else {
+      setEmailError(emailError.message)
+    }
   }
 
   return (
@@ -167,10 +192,10 @@ export default function Earn() {
               <div>
                 <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
                 <p className="text-gray-500 text-sm mb-4 flex items-center justify-center gap-1">
-  <span className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
-    {task.id === 'refer' ? 'Up to 1300 points' : `+${task.points} points`}
-  </span>
-</p>
+                  <span className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
+                    {task.id === 'refer' ? 'Up to 1300 points' : `+${task.points} points`}
+                  </span>
+                </p>
               </div>
 
               {task.id === 'vote' || task.id === 'quiz' ? (
@@ -196,6 +221,36 @@ export default function Earn() {
             </div>
           ))}
         </div>
+
+        {showEmailModal && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm text-center">
+              <h3 className="text-xl font-semibold mb-4">Enter your email</h3>
+              <input
+                type="email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md mb-3"
+                placeholder="you@example.com"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+              />
+              {emailError && <p className="text-sm text-red-600 mb-2">{emailError}</p>}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleEmailSubmit}
+                  className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={() => setShowEmailModal(false)}
+                  className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </>
   )
