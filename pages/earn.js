@@ -22,7 +22,7 @@ export default function Earn() {
 
     const fetchClaims = async () => {
       const { data, error } = await supabase
-        .from('task_claims')
+        .from('verified_rewards')
         .select('task_id')
         .eq('wallet', address)
 
@@ -71,16 +71,12 @@ export default function Earn() {
       }
     } else if (task.id === 'email') {
       window.open(task.action, '_blank')
+      alert('✅ Submitted. Points will be credited after verification.')
     } else if (task.action === 'referral') {
       alert('Share this page with your referral link!')
     } else if (task.action) {
       window.open(task.action, '_blank')
-      const { error: claimError } = await supabase.from('task_claims').insert([
-        { wallet: address, task_id: task.id, points: task.points }
-      ])
-      if (!claimError) {
-        setClaimed(prev => [...prev, task.id])
-      }
+      alert('✅ Submitted. Points will be credited after verification.')
     }
 
     setSubmitting(false)
