@@ -56,7 +56,7 @@ export default function Earn() {
       }
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote retweet:')
-      if (!tweetUrl || !tweetUrl.includes('twitter.com')) {
+      if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
         alert('❌ Invalid URL. Please try again.')
         setSubmitting(false)
         return
