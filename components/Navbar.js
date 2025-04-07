@@ -58,12 +58,17 @@ export default function Navbar() {
   const connectWallet = async () => {
     await new Promise((resolve) => setTimeout(resolve, 200))
 
-    if (window.ethereum) {
+    if (typeof window.ethereum !== 'undefined') {
       connect()
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
     } else {
-      alert('MetaMask not found. Please install it to continue.')
+      const shouldInstall = confirm(
+        'MetaMask not found. Would you like to install it now?'
+      )
+      if (shouldInstall) {
+        window.open('https://metamask.io/download', '_blank')
+      }
     }
   }
 
