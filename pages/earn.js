@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
 
 const initialTasks = [
-  { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10, action: 'https://x.com/nolensprotocol' },
+  { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10, action: null },
   { id: 'retweet', label: 'Quote Retweet our pinned tweet', points: 20, action: 'https://x.com/nolensprotocol' },
   { id: 'email', label: 'Join our email waitlist', points: 10, action: '/contribute' },
   { id: 'refer', label: 'Refer a friend with your link', points: 40, action: 'referral' },
@@ -48,18 +48,29 @@ export default function Earn() {
       }
 
       const { error: twitterError } = await supabase.from('twitter_claims').insert([
-        { address, x_handle: userHandle }
+        { address, x_handle: userHandle, verified: false }
       ])
 
       if (!twitterError) {
-        const { error: claimError } = await supabase.from('task_claims').insert([
-          { wallet: address, task_id: task.id, points: task.points }
-        ])
-
-        if (!claimError) {
-          setClaimed(prev => [...prev, task.id])
-        }
+        alert('✅ Submitted. Points will be credited after verification.')
       }
+    } else if (task.id === 'retweet') {
+      const tweetUrl = prompt('Paste the URL of your quote retweet:')
+      if (!tweetUrl || !tweetUrl.includes('twitter.com')) {
+        alert('❌ Invalid URL. Please try again.')
+        setSubmitting(false)
+        return
+      }
+
+      const { error: insertError } = await supabase.from('quote_retweet_claims').insert([
+        { wallet: address, tweet_url: tweetUrl, verified: false }
+      ])
+
+      if (!insertError) {
+        alert('✅ Submitted. Points will be credited after verification.')
+      }
+    } else if (task.id === 'email') {
+      window.open(task.action, '_blank')
     } else if (task.action === 'referral') {
       alert('Share this page with your referral link!')
     } else if (task.action) {
