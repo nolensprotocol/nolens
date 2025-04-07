@@ -5,31 +5,26 @@ import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
-import { useBalance } from 'wagmi'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
   const [submitted, setSubmitted] = useState(false)
+  const [hydrated, setHydrated] = useState(false) // fix hydration issue
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
-  const { address, isConnected, status } = useAccount()
+  const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
-  const { data: balance } = useBalance({
-    address,
-    enabled: !!address,
-    watch: true,
-  })
 
-// Debug hydration status
-useEffect(() => {
-  console.log('🔍 Wallet status:', status, isConnected, address)
-}, [status, isConnected, address])
-
-  // Log MetaMask to Supabase once
+  // ✅ Wait for client hydration
   useEffect(() => {
-    if (isConnected && address && !submitted) {
+    setHydrated(true)
+  }, [])
+
+  // ✅ Log MetaMask to Supabase once
+  useEffect(() => {
+    if (hydrated && isConnected && address && !submitted) {
       const payload = {
         address,
         type: 'evm',
@@ -47,7 +42,7 @@ useEffect(() => {
           }
         })
     }
-  }, [isConnected, address, submitted])
+  }, [hydrated, isConnected, address, submitted])
 
   // Phantom (Solana)
   const connectPhantom = async () => {
@@ -94,22 +89,20 @@ useEffect(() => {
           nolens
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/earn">Earn</Link>
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {/* Wallet Buttons */}
-          {isConnected ? (
+          {hydrated && isConnected ? (
             <button
               onClick={disconnect}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
-              {balance?.formatted?.slice(0, 6)} {balance?.symbol} • {address.slice(0, 4)}...{address.slice(-4)}
+              {address.slice(0, 6)}...{address.slice(-4)}
             </button>
-          ) : phantomConnected ? (
+          ) : hydrated && phantomConnected ? (
             <button
               onClick={disconnectPhantom}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
@@ -122,7 +115,7 @@ useEffect(() => {
                 onClick={() => connect()}
                 className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
               >
-                🦊 MetaMask
+                🥉 MetaMask
               </button>
               <button
                 onClick={connectPhantom}
@@ -134,7 +127,6 @@ useEffect(() => {
           )}
         </nav>
 
-        {/* Mobile Hamburger */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -142,7 +134,6 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
@@ -151,15 +142,14 @@ useEffect(() => {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {/* Mobile Wallet */}
-            {isConnected ? (
+            {hydrated && isConnected ? (
               <button
                 onClick={disconnect}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
-                {balance?.formatted?.slice(0, 6)} {balance?.symbol} • {address.slice(0, 4)}...{address.slice(-4)}
+                {address.slice(0, 6)}...{address.slice(-4)}
               </button>
-            ) : phantomConnected ? (
+            ) : hydrated && phantomConnected ? (
               <button
                 onClick={disconnectPhantom}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
@@ -172,7 +162,7 @@ useEffect(() => {
                   onClick={() => connect()}
                   className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                 >
-                  🦊 MetaMask
+                  🥉 MetaMask
                 </button>
                 <button
                   onClick={connectPhantom}
