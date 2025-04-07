@@ -1,4 +1,5 @@
 'use client'
+
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useConnect, useAccount, useDisconnect } from 'wagmi'
@@ -10,32 +11,19 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
-  const [mounted, setMounted] = useState(false)
-  const [walletLogged, setWalletLogged] = useState(false)
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!window?.solana?.isConnected) {
-      setPhantomConnected(false)
-      setPhantomAddress(null)
-    }
-  }, [])
-
+  // ✅ MetaMask Logging (EVM)
   useEffect(() => {
     const logWalletIfNeeded = async () => {
-      if (!isConnected || !address || walletLogged) {
-        console.log('🔁 Skipping Supabase insert — already logged or not connected')
-        return
-      }
+      if (!isConnected || !address) return
 
-      console.log('🔍 Checking Supabase for existing wallet:', address)
+      const localKey = `walletLogged:${address}`
+      const alreadyLogged = localStorage.getItem(localKey)
+      if (alreadyLogged) return
 
       const { data, error } = await supabase
         .from('wallet_connections')
@@ -44,40 +32,33 @@ export default function Navbar() {
         .eq('type', 'evm')
         .maybeSingle()
 
-      if (error) {
-        console.error('🛑 Supabase SELECT error:', error.message)
-        return
-      }
-
-      if (!data) {
-        console.log('🟢 Wallet not found — inserting now...')
+      if (!data && !error) {
         const { error: insertErr } = await supabase
           .from('wallet_connections')
           .insert([{ address, type: 'evm' }])
-        if (insertErr) {
-          console.error('❌ Supabase INSERT error:', insertErr.message)
-        } else {
-          console.log('✅ Wallet inserted into Supabase:', address)
-          setWalletLogged(true)
+        if (!insertErr) {
+          localStorage.setItem(localKey, 'true')
         }
       } else {
-        console.log('🟡 Wallet already exists in Supabase:', address)
-        setWalletLogged(true)
+        localStorage.setItem(localKey, 'true')
       }
     }
 
     logWalletIfNeeded()
-  }, [isConnected, address, walletLogged])
+  }, [isConnected, address])
 
-
+  // ✅ Phantom Logging (Solana)
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
         const resp = await window.solana.connect()
         const phantomAddr = resp.publicKey.toString()
-
         setPhantomConnected(true)
         setPhantomAddress(phantomAddr)
+
+        const localKey = `walletLogged:${phantomAddr}`
+        const alreadyLogged = localStorage.getItem(localKey)
+        if (alreadyLogged) return
 
         const { data, error } = await supabase
           .from('wallet_connections')
@@ -86,8 +67,15 @@ export default function Navbar() {
           .eq('type', 'solana')
           .maybeSingle()
 
-        if (!error && !data) {
-          await supabase.from('wallet_connections').insert([{ address: phantomAddr, type: 'solana' }])
+        if (!data && !error) {
+          const { error: insertErr } = await supabase
+            .from('wallet_connections')
+            .insert([{ address: phantomAddr, type: 'solana' }])
+          if (!insertErr) {
+            localStorage.setItem(localKey, 'true')
+          }
+        } else {
+          localStorage.setItem(localKey, 'true')
         }
       } catch (err) {
         console.error('Phantom connection error', err)
@@ -102,8 +90,6 @@ export default function Navbar() {
     setPhantomAddress(null)
   }
 
-  if (!mounted) return null
-
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
@@ -111,12 +97,14 @@ export default function Navbar() {
           nolens
         </Link>
 
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/earn">Earn</Link>
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
+          {/* Wallet Buttons */}
           {isConnected ? (
             <button
               onClick={disconnect}
@@ -149,6 +137,7 @@ export default function Navbar() {
           )}
         </nav>
 
+        {/* Mobile Hamburger */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -156,6 +145,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
@@ -164,6 +154,7 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
+            {/* Mobile Wallet */}
             {isConnected ? (
               <button
                 onClick={disconnect}
