@@ -59,14 +59,13 @@ export default function Navbar() {
     await new Promise((resolve) => setTimeout(resolve, 200))
 
     if (typeof window.ethereum !== 'undefined') {
-      connect()
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
+      connect()
     } else {
-      window.location.href = '/install-metamask'
+      window.open('/install-metamask', '_self', 'noopener,noreferrer')
     }
   }
-
 
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
