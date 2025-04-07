@@ -26,9 +26,9 @@ export default function Earn() {
         .select('task_id')
         .eq('wallet', address)
 
-      if (!error && data) {
-        const claimedTasks = data.map(row => row.task_id)
-        setClaimed(claimedTasks)
+      if (data) {
+        const claimedTaskIds = data.map((row) => row.task_id)
+        setClaimed(claimedTaskIds)
       }
     }
 
@@ -40,44 +40,36 @@ export default function Earn() {
 
     setSubmitting(true)
 
-    try {
-      if (task.id === 'follow') {
-        const xHandle = prompt('Enter your X (Twitter) handle:')
-        if (!xHandle) {
-          setSubmitting(false)
-          return
-        }
+    if (task.id === 'follow') {
+      const userHandle = prompt('Enter your X (Twitter) handle:')
+      if (!userHandle) {
+        setSubmitting(false)
+        return
+      }
 
-        const { error: twitterError } = await supabase
-          .from('twitter_claims')
-          .insert([{ address, x_handle: xHandle }])
+      const { error: twitterError } = await supabase.from('twitter_claims').insert([
+        { address, x_handle: userHandle }
+      ])
 
-        if (twitterError) throw twitterError
+      if (!twitterError) {
+        const { error: claimError } = await supabase.from('task_claims').insert([
+          { wallet: address, task_id: task.id, points: task.points }
+        ])
 
-        const { error: taskError } = await supabase
-          .from('task_claims')
-          .insert([{ wallet: address, task_id: 'follow' }])
-
-        if (taskError) throw taskError
-
-        setClaimed(prev => [...prev, task.id])
-      } else if (task.id === 'email') {
-        window.location.href = '/contribute'
-      } else if (task.action === 'referral') {
-        alert('Share this page with your referral link!')
-        setClaimed(prev => [...prev, task.id])
-      } else if (task.action) {
-        window.open(task.action, '_blank')
-        const { error: taskError } = await supabase
-          .from('task_claims')
-          .insert([{ wallet: address, task_id: task.id }])
-
-        if (!taskError) {
+        if (!claimError) {
           setClaimed(prev => [...prev, task.id])
         }
       }
-    } catch (err) {
-      console.error(`❌ Failed to claim task '${task.id}':`, err.message)
+    } else if (task.action === 'referral') {
+      alert('Share this page with your referral link!')
+    } else if (task.action) {
+      window.open(task.action, '_blank')
+      const { error: claimError } = await supabase.from('task_claims').insert([
+        { wallet: address, task_id: task.id, points: task.points }
+      ])
+      if (!claimError) {
+        setClaimed(prev => [...prev, task.id])
+      }
     }
 
     setSubmitting(false)
