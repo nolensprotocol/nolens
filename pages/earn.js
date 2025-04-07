@@ -71,7 +71,7 @@ export default function Earn() {
 
       if (rtPending.data?.length > 0) pendingTasks.push('retweet')
 
-      setPending(pendingTasks))
+      setPending(pendingTasks)
         .eq('referrer', address)
 
       if (refCountRes.count !== null) setReferralCount(refCountRes.count)
