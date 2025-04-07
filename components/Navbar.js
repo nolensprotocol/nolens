@@ -63,14 +63,10 @@ export default function Navbar() {
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
     } else {
-      const shouldInstall = confirm(
-        'MetaMask not found. Would you like to install it now?'
-      )
-      if (shouldInstall) {
-        window.open('https://metamask.io/download', '_blank')
-      }
+      window.location.href = '/install-metamask'
     }
   }
+
 
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
