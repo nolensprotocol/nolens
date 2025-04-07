@@ -10,49 +10,53 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
-  const [ready, setReady] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
+  // ✅ Hydration check for Wagmi
   useEffect(() => {
-    setReady(true)
+    setHydrated(true)
   }, [])
 
+  // ✅ Check before inserting EVM wallet
   useEffect(() => {
-    const checkAndInsertWallet = async (address, type) => {
+    const logWalletIfNotExists = async (addr, type) => {
       const { data, error } = await supabase
         .from('wallet_connections')
         .select('id')
-        .eq('address', address)
+        .eq('address', addr)
         .eq('type', type)
+        .maybeSingle()
 
       if (error) {
-        console.error('❌ Supabase fetch error:', error.message)
+        console.error('❌ Supabase check error:', error.message)
         return
       }
 
-      if (data.length === 0) {
-        const { error: insertError } = await supabase
+      if (!data) {
+        const { error: insertErr } = await supabase
           .from('wallet_connections')
-          .insert([{ address, type }])
+          .insert([{ address: addr, type }])
 
-        if (insertError) {
-          console.error('❌ Supabase insert error:', insertError.message)
+        if (insertErr) {
+          console.error('❌ Supabase insert error:', insertErr.message)
         } else {
-          console.log('✅ Wallet logged to Supabase')
+          console.log(`✅ ${type} wallet logged: ${addr}`)
         }
       } else {
-        console.log('⚠️ Wallet already logged. Skipping insert.')
+        console.log(`⚠️ ${type} wallet already exists: ${addr}`)
       }
     }
 
-    if (ready && isConnected && address) {
-      checkAndInsertWallet(address, 'evm')
+    if (hydrated && isConnected && address) {
+      logWalletIfNotExists(address, 'evm')
     }
-  }, [ready, isConnected, address])
+  }, [hydrated, isConnected, address])
 
+  // ✅ Phantom Wallet connect
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -67,8 +71,9 @@ export default function Navbar() {
           .select('id')
           .eq('address', phantomAddr)
           .eq('type', 'solana')
+          .maybeSingle()
 
-        if (!error && data.length === 0) {
+        if (!error && !data) {
           await supabase
             .from('wallet_connections')
             .insert([{ address: phantomAddr, type: 'solana' }])
@@ -86,7 +91,7 @@ export default function Navbar() {
     setPhantomAddress(null)
   }
 
-  if (!ready) return null
+  if (!hydrated) return null
 
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
@@ -95,6 +100,7 @@ export default function Navbar() {
           nolens
         </Link>
 
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/earn">Earn</Link>
@@ -121,7 +127,7 @@ export default function Navbar() {
                 onClick={() => connect()}
                 className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
               >
-                🥉 MetaMask
+                🦊 MetaMask
               </button>
               <button
                 onClick={connectPhantom}
@@ -133,6 +139,7 @@ export default function Navbar() {
           )}
         </nav>
 
+        {/* Mobile Toggle */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -140,6 +147,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
@@ -168,7 +176,7 @@ export default function Navbar() {
                   onClick={() => connect()}
                   className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                 >
-                  🥉 MetaMask
+                  🦊 MetaMask
                 </button>
                 <button
                   onClick={connectPhantom}
