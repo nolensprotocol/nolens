@@ -1,42 +1,186 @@
-import Head from 'next/head'
+'use client'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { useConnect, useAccount, useDisconnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { Menu, X } from 'lucide-react'
+import { supabase } from '../lib/supabaseClient'
 
-export default function Home() {
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [phantomConnected, setPhantomConnected] = useState(false)
+  const [phantomAddress, setPhantomAddress] = useState(null)
+  const [ready, setReady] = useState(false)
+
+  const { connect } = useConnect({ connector: new InjectedConnector() })
+  const { address, isConnected } = useAccount()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    setReady(true)
+  }, [])
+
+  useEffect(() => {
+    const checkAndInsertWallet = async (address, type) => {
+      const { data, error } = await supabase
+        .from('wallet_connections')
+        .select('id')
+        .eq('address', address)
+        .eq('type', type)
+
+      if (error) {
+        console.error('❌ Supabase fetch error:', error.message)
+        return
+      }
+
+      if (data.length === 0) {
+        const { error: insertError } = await supabase
+          .from('wallet_connections')
+          .insert([{ address, type }])
+
+        if (insertError) {
+          console.error('❌ Supabase insert error:', insertError.message)
+        } else {
+          console.log('✅ Wallet logged to Supabase')
+        }
+      } else {
+        console.log('⚠️ Wallet already logged. Skipping insert.')
+      }
+    }
+
+    if (ready && isConnected && address) {
+      checkAndInsertWallet(address, 'evm')
+    }
+  }, [ready, isConnected, address])
+
+  const connectPhantom = async () => {
+    if (window.solana?.isPhantom) {
+      try {
+        const resp = await window.solana.connect()
+        const phantomAddr = resp.publicKey.toString()
+
+        setPhantomConnected(true)
+        setPhantomAddress(phantomAddr)
+
+        const { data, error } = await supabase
+          .from('wallet_connections')
+          .select('id')
+          .eq('address', phantomAddr)
+          .eq('type', 'solana')
+
+        if (!error && data.length === 0) {
+          await supabase
+            .from('wallet_connections')
+            .insert([{ address: phantomAddr, type: 'solana' }])
+        }
+      } catch (err) {
+        console.error('Phantom connection error', err)
+      }
+    } else {
+      alert('Phantom Wallet not found. Install it from phantom.app')
+    }
+  }
+
+  const disconnectPhantom = () => {
+    setPhantomConnected(false)
+    setPhantomAddress(null)
+  }
+
+  if (!ready) return null
+
   return (
-    <>
-      <Head>
-        <title>Nolens – Own Less. Access More.</title>
-        <meta name="description" content="Designed for the next era of shared living." />
-      </Head>
+    <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+        <Link href="/" className="text-2xl font-extrabold tracking-wide text-gray-900">
+          nolens
+        </Link>
 
-      <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* 🔥 Background placeholder */}
-        {/* Replace below with <video> or remove for static background */}
-        {/* <video ...> or <div className="bg-gradient-to-b ..."> */}
-        {/* You can also leave this empty if no background is needed */}
+        <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
+          <Link href="/">Home</Link>
+          <Link href="/earn">Earn</Link>
+          <Link href="/contribute">Contribute</Link>
+          <Link href="/docs">About</Link>
 
-        {/* Hero content */}
-        <div className="z-10 max-w-3xl text-center space-y-6">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
-            Own less. <br className="hidden md:block" /> Access more.
-          </h1>
-          <p className="text-lg md:text-xl text-gray-300">
-            Designed for the next era of shared living. <br />
-            A protocol for contribution-first access and tokenized coordination.
-          </p>
+          {isConnected ? (
+            <button
+              onClick={disconnect}
+              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+            >
+              {address.slice(0, 6)}...{address.slice(-4)}
+            </button>
+          ) : phantomConnected ? (
+            <button
+              onClick={disconnectPhantom}
+              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+            >
+              {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+            </button>
+          ) : (
+            <div className="ml-4 flex space-x-2">
+              <button
+                onClick={() => connect()}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
+              >
+                🥉 MetaMask
+              </button>
+              <button
+                onClick={connectPhantom}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
+              >
+                👻 Phantom
+              </button>
+            </div>
+          )}
+        </nav>
 
-          <div className="pt-6 flex flex-col md:flex-row justify-center items-center gap-4">
-            <a href="/contribute" className="w-48 px-6 py-3 bg-white text-black font-semibold rounded-md hover:bg-gray-200 transition text-center">
-              Contribute
-            </a>
-            <a href="/earn" className="w-48 px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition text-center">
-              Earn
-            </a>
-            <a href="/docs" className="w-48 px-6 py-3 border border-white rounded-md font-semibold hover:bg-white hover:text-black transition text-center">
-              About
-            </a>
-          </div>
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-      </main>
-    </>
+      </div>
+
+      {menuOpen && (
+        <div className="md:hidden bg-white px-6 pb-6 pt-2">
+          <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
+            <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link href="/earn" onClick={() => setMenuOpen(false)}>Earn</Link>
+            <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
+            <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
+
+            {isConnected ? (
+              <button
+                onClick={disconnect}
+                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                {address.slice(0, 6)}...{address.slice(-4)}
+              </button>
+            ) : phantomConnected ? (
+              <button
+                onClick={disconnectPhantom}
+                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+              </button>
+            ) : (
+              <div className="mt-4 flex flex-col space-y-2">
+                <button
+                  onClick={() => connect()}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                >
+                  🥉 MetaMask
+                </button>
+                <button
+                  onClick={connectPhantom}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                >
+                  👻 Phantom
+                </button>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
+    </header>
   )
 }
