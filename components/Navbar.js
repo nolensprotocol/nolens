@@ -19,13 +19,11 @@ export default function Navbar() {
   const { address, isConnected, status } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // On mount, retrieve last connected wallet type
   useEffect(() => {
     const savedType = localStorage.getItem('walletType')
     if (savedType) setWalletType(savedType)
   }, [])
 
-  // MetaMask Logging (EVM)
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (status !== 'connected' || !address || walletType !== 'evm') return
@@ -34,8 +32,6 @@ export default function Navbar() {
     const alreadyLogged = localStorage.getItem(localKey)
     if (alreadyLogged) return
 
-    console.log('🔁 Logging wallet from auto-connect or manual:', address)
-
     supabase
       .from('wallet_connections')
       .select('id')
@@ -43,18 +39,13 @@ export default function Navbar() {
       .eq('type', 'evm')
       .maybeSingle()
       .then(({ data, error }) => {
-        if (error) {
-          console.error('🛑 Supabase SELECT error:', error.message)
-        } else if (!data) {
+        if (!data && !error) {
           supabase
             .from('wallet_connections')
             .insert([{ address, type: 'evm' }])
             .then(({ error }) => {
               if (!error) {
                 localStorage.setItem(localKey, 'true')
-                console.log('✅ Wallet logged to Supabase')
-              } else {
-                console.error('❌ INSERT error:', error.message)
               }
             })
         } else {
@@ -63,16 +54,20 @@ export default function Navbar() {
       })
   }, [status, address, walletType])
 
-  // Phantom Connect + Logging
-  const connectPhantom = async () => {
-    if (window.solana?.isPhantom) {
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      // Try MetaMask
+      connect()
+      localStorage.setItem('walletType', 'evm')
+      setWalletType('evm')
+    } else if (window.solana?.isPhantom) {
       try {
         const resp = await window.solana.connect()
         const phantomAddr = resp.publicKey.toString()
         setPhantomConnected(true)
         setPhantomAddress(phantomAddr)
-        setWalletType('solana')
         localStorage.setItem('walletType', 'solana')
+        setWalletType('solana')
 
         const localKey = `walletLogged:${phantomAddr}`
         const alreadyLogged = localStorage.getItem(localKey)
@@ -91,30 +86,26 @@ export default function Navbar() {
             .insert([{ address: phantomAddr, type: 'solana' }])
           if (!insertErr) {
             localStorage.setItem(localKey, 'true')
-            console.log('✅ Phantom wallet logged')
           }
         } else {
           localStorage.setItem(localKey, 'true')
         }
       } catch (err) {
-        console.error('Phantom connection error', err)
+        console.error('Phantom connect error:', err)
       }
     } else {
-      alert('Phantom Wallet not found. Install it from phantom.app')
+      alert('No compatible wallet found. Please install MetaMask or Phantom.')
     }
   }
 
-  const disconnectPhantom = () => {
-    setPhantomConnected(false)
-    setPhantomAddress(null)
+  const disconnectWallet = () => {
     localStorage.removeItem('walletType')
     setWalletType(null)
-  }
-
-  const disconnectEVM = () => {
-    disconnect()
-    localStorage.removeItem('walletType')
-    setWalletType(null)
+    if (walletType === 'evm') disconnect()
+    if (walletType === 'solana') {
+      setPhantomConnected(false)
+      setPhantomAddress(null)
+    }
   }
 
   return (
@@ -130,39 +121,22 @@ export default function Navbar() {
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {mounted && walletType === 'evm' && isConnected ? (
+          {mounted && ((walletType === 'evm' && isConnected) || (walletType === 'solana' && phantomConnected)) ? (
             <button
-              onClick={disconnectEVM}
+              onClick={disconnectWallet}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </button>
-          ) : mounted && walletType === 'solana' && phantomConnected ? (
-            <button
-              onClick={disconnectPhantom}
-              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
-            >
-              {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+              {walletType === 'evm'
+                ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                : `${phantomAddress.slice(0, 6)}...${phantomAddress.slice(-4)}`}
             </button>
           ) : mounted ? (
-            <div className="ml-4 flex space-x-2">
-              <button
-                onClick={() => {
-                  connect()
-                  setWalletType('evm')
-                  localStorage.setItem('walletType', 'evm')
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
-              >
-                🦊 MetaMask
-              </button>
-              <button
-                onClick={connectPhantom}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
-              >
-                👻 Phantom
-              </button>
-            </div>
+            <button
+              onClick={connectWallet}
+              className="ml-4 px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 text-sm"
+            >
+              Connect Wallet
+            </button>
           ) : null}
         </nav>
 
@@ -181,39 +155,22 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {mounted && walletType === 'evm' && isConnected ? (
+            {mounted && ((walletType === 'evm' && isConnected) || (walletType === 'solana' && phantomConnected)) ? (
               <button
-                onClick={disconnectEVM}
+                onClick={disconnectWallet}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
-                {address.slice(0, 6)}...{address.slice(-4)}
-              </button>
-            ) : mounted && walletType === 'solana' && phantomConnected ? (
-              <button
-                onClick={disconnectPhantom}
-                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
-              >
-                {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+                {walletType === 'evm'
+                  ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                  : `${phantomAddress.slice(0, 6)}...${phantomAddress.slice(-4)}`}
               </button>
             ) : mounted ? (
-              <div className="mt-4 flex flex-col space-y-2">
-                <button
-                  onClick={() => {
-                    connect()
-                    setWalletType('evm')
-                    localStorage.setItem('walletType', 'evm')
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
-                >
-                  🦊 MetaMask
-                </button>
-                <button
-                  onClick={connectPhantom}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                >
-                  👻 Phantom
-                </button>
-              </div>
+              <button
+                onClick={connectWallet}
+                className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+              >
+                Connect Wallet
+              </button>
             ) : null}
           </nav>
         </div>
