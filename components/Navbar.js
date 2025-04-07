@@ -12,9 +12,21 @@ export default function Navbar() {
   const [phantomAddress, setPhantomAddress] = useState(null)
   const [submitted, setSubmitted] = useState(false)
 
+  import { useBalance } from 'wagmi'
+
   const { connect } = useConnect({ connector: new InjectedConnector() })
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, status } = useAccount()
   const { disconnect } = useDisconnect()
+  const { data: balance } = useBalance({
+    address,
+    enabled: !!address,
+    watch: true,
+  })
+
+// Debug hydration status
+useEffect(() => {
+  console.log('🔍 Wallet status:', status, isConnected, address)
+}, [status, isConnected, address])
 
   // Log MetaMask to Supabase once
   useEffect(() => {
@@ -96,7 +108,7 @@ export default function Navbar() {
               onClick={disconnect}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
-              {address.slice(0, 6)}...{address.slice(-4)}
+              {balance?.formatted?.slice(0, 6)} {balance?.symbol} • {address.slice(0, 4)}...{address.slice(-4)}
             </button>
           ) : phantomConnected ? (
             <button
@@ -146,7 +158,7 @@ export default function Navbar() {
                 onClick={disconnect}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
-                {address.slice(0, 6)}...{address.slice(-4)}
+                {balance?.formatted?.slice(0, 6)} {balance?.symbol} • {address.slice(0, 4)}...{address.slice(-4)}
               </button>
             ) : phantomConnected ? (
               <button
