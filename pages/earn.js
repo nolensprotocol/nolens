@@ -35,19 +35,43 @@ export default function Earn() {
     if (!isConnected || !address) return
 
     const fetchData = async () => {
+      const pendingTasks = [];
       const rewardsRes = await supabase
         .from('verified_rewards')
         .select('task_id, points')
         .eq('wallet', address)
 
       if (rewardsRes.data) {
-        setClaimed(rewardsRes.data.map(r => r.task_id))
-        setTotalPoints(rewardsRes.data.reduce((acc, r) => acc + (r.points || 0), 0))
+        const claimedTaskIds = rewardsRes.data.map((row) => row.task_id);
+        setClaimed(claimedTaskIds);
+        const sum = rewardsRes.data.reduce((acc, row) => acc + (row.points || 0), 0);
+        setTotalPoints(sum);
       }
 
       const refCountRes = await supabase
         .from('referrals')
         .select('id', { count: 'exact' })
+        .eq('referrer', address)
+
+      if (refCountRes.count !== null) setReferralCount(refCountRes.count)
+
+      const followPending = await supabase
+        .from('twitter_claims')
+        .select('*')
+        .eq('address', address)
+        .eq('verified', false)
+
+      if (followPending.data?.length > 0) pendingTasks.push('follow')
+
+      const rtPending = await supabase
+        .from('quote_retweet_claims')
+        .select('*')
+        .eq('wallet', address)
+        .eq('verified', false)
+
+      if (rtPending.data?.length > 0) pendingTasks.push('retweet')
+
+      setPending(pendingTasks))
         .eq('referrer', address)
 
       if (refCountRes.count !== null) setReferralCount(refCountRes.count)
