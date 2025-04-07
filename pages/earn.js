@@ -20,106 +20,59 @@ export default function Earn() {
   useEffect(() => {
     if (!isConnected || !address) return
 
-    // Fetch claimed tasks from task_claims table
+    // Twitter task check
+    supabase
+      .from('twitter_claims')
+      .select('id')
+      .eq('address', address)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setClaimed(prev => [...prev, 'follow'])
+        }
+      })
+
+    // Other task checks
     supabase
       .from('task_claims')
       .select('task_id')
       .eq('wallet', address)
       .then(({ data }) => {
-        if (data && data.length > 0) {
-          const already = data.map(row => row.task_id)
-          setClaimed(already)
+        if (data) {
+          const ids = data.map(row => row.task_id)
+          setClaimed(prev => [...new Set([...prev, ...ids])])
         }
       })
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
-    if (!isConnected || !address) return
-
+    if (claimed.includes(task.id)) return
     setSubmitting(true)
 
     if (task.id === 'follow') {
-      const userHandle = prompt('Enter your X (Twitter) handle:')
-      if (!userHandle) {
-        setSubmitting(false)
-        return
-      }
+      const handle = prompt('Enter your X (Twitter) handle:')
+      if (!handle) return setSubmitting(false)
 
-      // Check existing twitter_claims
-      const { data: twitterData } = await supabase
-        .from('twitter_claims')
-        .select('id')
-        .eq('address', address)
-        .maybeSingle()
-
-      if (twitterData) {
-        alert('You already submitted your X handle.')
-        setClaimed(prev => [...prev, task.id])
-        setSubmitting(false)
-        return
-      }
-
-      // Also check task_claims
-      const { data: taskData } = await supabase
-        .from('task_claims')
-        .select('id')
-        .eq('wallet', address)
-        .eq('task_id', task.id)
-        .maybeSingle()
-
-      if (taskData) {
-        alert('You already claimed this task.')
-        setClaimed(prev => [...prev, task.id])
-        setSubmitting(false)
-        return
-      }
-
-      // Insert into both tables
-      const { error: twitterErr } = await supabase.from('twitter_claims').insert([
-        { address, x_handle: userHandle }
+      const { error: twitterError } = await supabase.from('twitter_claims').insert([
+        { address, x_handle: handle }
       ])
-
-      const { error: taskErr } = await supabase.from('task_claims').insert([
-        { wallet: address, task_id: task.id }
-      ])
-
-      if (!twitterErr && !taskErr) {
+      if (!twitterError) {
         setClaimed(prev => [...prev, task.id])
+        await supabase.from('task_claims').insert([
+          { wallet: address, task_id: task.id, points: task.points }
+        ])
       }
-
     } else if (task.action === 'referral') {
       alert('Share this page with your referral link!')
-      // Optional: log this claim
-      const { data: taskData } = await supabase
-        .from('task_claims')
-        .select('id')
-        .eq('wallet', address)
-        .eq('task_id', task.id)
-        .maybeSingle()
-
-      if (!taskData) {
-        await supabase.from('task_claims').insert([
-          { wallet: address, task_id: task.id }
-        ])
-        setClaimed(prev => [...prev, task.id])
-      }
-
+      setClaimed(prev => [...prev, task.id])
+      await supabase.from('task_claims').insert([
+        { wallet: address, task_id: task.id, points: task.points }
+      ])
     } else if (task.action) {
       window.open(task.action, '_blank')
-
-      const { data: taskData } = await supabase
-        .from('task_claims')
-        .select('id')
-        .eq('wallet', address)
-        .eq('task_id', task.id)
-        .maybeSingle()
-
-      if (!taskData) {
-        await supabase.from('task_claims').insert([
-          { wallet: address, task_id: task.id }
-        ])
-        setClaimed(prev => [...prev, task.id])
-      }
+      setClaimed(prev => [...prev, task.id])
+      await supabase.from('task_claims').insert([
+        { wallet: address, task_id: task.id, points: task.points }
+      ])
     }
 
     setSubmitting(false)
