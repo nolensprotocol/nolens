@@ -1,7 +1,10 @@
+// pages/earn.js
+'use client'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
+import { useRouter } from 'next/router'
 
 const initialTasks = [
   { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10, action: 'https://x.com/nolensprotocol' },
@@ -16,68 +19,48 @@ export default function Earn() {
   const { address, isConnected } = useAccount()
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
+  const router = useRouter()
 
-  // ✅ Load previously claimed tasks from Supabase
   useEffect(() => {
     if (!isConnected || !address) return
 
-    // 1. Load all task_claims
-    supabase
-      .from('task_claims')
-      .select('task_id')
-      .eq('wallet', address)
-      .then(({ data }) => {
-        if (data) {
-          const ids = data.map(row => row.task_id.toString())
-          setClaimed([...new Set(ids)])
-        }
-      })
+    const fetchClaims = async () => {
+      const { data, error } = await supabase
+        .from('task_claims')
+        .select('task_id')
+        .eq('wallet', address)
 
-    // 2. Check if Twitter follow task was submitted (extra safety)
-    supabase
-      .from('twitter_claims')
-      .select('id')
-      .eq('address', address)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setClaimed(prev => [...new Set([...prev, 'follow'])])
-        }
-      })
+      if (!error && data) {
+        setClaimed(data.map(entry => entry.task_id))
+      }
+    }
+
+    fetchClaims()
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
+    if (!isConnected || !address) return
     if (claimed.includes(task.id)) return
+
     setSubmitting(true)
 
-    try {
-      if (task.id === 'follow') {
-        const handle = prompt('Enter your X (Twitter) handle:')
-        if (!handle) return setSubmitting(false)
+    if (task.id === 'follow') {
+      const userHandle = prompt('Enter your X (Twitter) handle:')
+      if (!userHandle) return setSubmitting(false)
 
-        const { error: twitterError } = await supabase.from('twitter_claims').insert([
-          { address, x_handle: handle }
-        ])
-        if (!twitterError) {
-          setClaimed(prev => [...prev, task.id])
-          await supabase.from('task_claims').insert([
-            { wallet: address, task_id: task.id, points: task.points }
-          ])
-        }
-      } else if (task.action === 'referral') {
-        alert('Share this page with your referral link!')
-        setClaimed(prev => [...prev, task.id])
-        await supabase.from('task_claims').insert([
-          { wallet: address, task_id: task.id, points: task.points }
-        ])
-      } else if (task.action) {
-        window.open(task.action, '_blank')
-        setClaimed(prev => [...prev, task.id])
-        await supabase.from('task_claims').insert([
-          { wallet: address, task_id: task.id, points: task.points }
-        ])
-      }
-    } catch (err) {
-      console.error('Claim error:', err)
+      await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle }])
+      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'follow' }])
+      setClaimed(prev => [...prev, 'follow'])
+    } else if (task.id === 'retweet') {
+      window.open(task.action, '_blank')
+      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'retweet' }])
+      setClaimed(prev => [...prev, 'retweet'])
+    } else if (task.id === 'email') {
+      router.push('/contribute')
+    } else if (task.id === 'refer') {
+      alert('Share your referral link: https://nolens.xyz/earn?ref=' + address)
+      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'refer' }])
+      setClaimed(prev => [...prev, 'refer'])
     }
 
     setSubmitting(false)
