@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useConnect, useAccount, useDisconnect } from 'wagmi'
+import { useConnect, useAccount, useDisconnect, useBalance } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
@@ -10,36 +10,36 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
+  const [submitted, setSubmitted] = useState(false)
 
-  // MetaMask (EVM)
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  const { data: balance } = useBalance({ address })
 
-  // ✅ Supabase insert when MetaMask connects
+  // MetaMask: Supabase logging
   useEffect(() => {
-    if (isConnected && address) {
+    if (isConnected && address && !submitted) {
       const payload = {
         address,
         type: 'evm',
       }
 
-      console.log('📦 Sending payload to Supabase:', payload)
-
       supabase
         .from('wallet_connections')
         .insert([payload])
         .then(({ error }) => {
-          if (error) {
+          if (error && !error.message.includes('duplicate')) {
             console.error('❌ Supabase insert error:', error.message)
           } else {
             console.log('✅ MetaMask wallet logged to Supabase')
+            setSubmitted(true)
           }
         })
     }
-  }, [isConnected, address])
+  }, [isConnected, address, submitted])
 
-  // Phantom (Solana)
+  // Phantom wallet connect
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -54,8 +54,6 @@ export default function Navbar() {
           type: 'solana',
         }
 
-        console.log('📦 Sending payload to Supabase:', payload)
-
         supabase
           .from('wallet_connections')
           .insert([payload])
@@ -66,6 +64,8 @@ export default function Navbar() {
               console.log('✅ Phantom wallet logged to Supabase')
             }
           })
+
+        window.location.reload()
       } catch (err) {
         console.error('Phantom connection error', err)
       }
@@ -77,6 +77,58 @@ export default function Navbar() {
   const disconnectPhantom = () => {
     setPhantomConnected(false)
     setPhantomAddress(null)
+    window.location.reload()
+  }
+
+  const handleConnect = async () => {
+    await connect()
+    window.location.reload()
+  }
+
+  const handleDisconnect = () => {
+    disconnect()
+    window.location.reload()
+  }
+
+  const renderWalletDisplay = () => {
+    if (isConnected) {
+      return (
+        <button
+          onClick={handleDisconnect}
+          className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+        >
+          {balance?.formatted.slice(0, 6)} {balance?.symbol} • {address.slice(0, 4)}...{address.slice(-4)}
+        </button>
+      )
+    }
+
+    if (phantomConnected) {
+      return (
+        <button
+          onClick={disconnectPhantom}
+          className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+        >
+          {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
+        </button>
+      )
+    }
+
+    return (
+      <div className="ml-4 flex space-x-2">
+        <button
+          onClick={handleConnect}
+          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
+        >
+          🦊 MetaMask
+        </button>
+        <button
+          onClick={connectPhantom}
+          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
+        >
+          👻 Phantom
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -86,47 +138,16 @@ export default function Navbar() {
           nolens
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/earn">Earn</Link>
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
-
-          {/* Wallet Connection */}
-          {isConnected ? (
-            <button
-              onClick={disconnect}
-              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
-            >
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </button>
-          ) : phantomConnected ? (
-            <button
-              onClick={disconnectPhantom}
-              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
-            >
-              {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
-            </button>
-          ) : (
-            <div className="ml-4 flex space-x-2">
-              <button
-                onClick={() => connect()}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
-              >
-                🦊 MetaMask
-              </button>
-              <button
-                onClick={connectPhantom}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
-              >
-                👻 Phantom
-              </button>
-            </div>
-          )}
+          {renderWalletDisplay()}
         </nav>
 
-        {/* Mobile Toggle */}
+        {/* Mobile */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -143,37 +164,7 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {/* Mobile Wallet Buttons */}
-            {isConnected ? (
-              <button
-                onClick={disconnect}
-                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
-              >
-                {address.slice(0, 6)}...{address.slice(-4)}
-              </button>
-            ) : phantomConnected ? (
-              <button
-                onClick={disconnectPhantom}
-                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
-              >
-                {phantomAddress.slice(0, 6)}...{phantomAddress.slice(-4)}
-              </button>
-            ) : (
-              <div className="mt-4 flex flex-col space-y-2">
-                <button
-                  onClick={() => connect()}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
-                >
-                  🦊 MetaMask
-                </button>
-                <button
-                  onClick={connectPhantom}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                >
-                  👻 Phantom
-                </button>
-              </div>
-            )}
+            <div className="mt-4">{renderWalletDisplay()}</div>
           </nav>
         </div>
       )}
