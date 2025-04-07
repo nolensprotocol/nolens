@@ -22,6 +22,7 @@ export default function Earn() {
   const { address, isConnected } = useAccount()
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
+  const [totalPoints, setTotalPoints] = useState(0)
 
   useEffect(() => {
     if (!isConnected || !address) return
@@ -29,12 +30,14 @@ export default function Earn() {
     const fetchClaims = async () => {
       const { data } = await supabase
         .from('verified_rewards')
-        .select('task_id')
+        .select('task_id, points')
         .eq('wallet', address)
 
       if (data) {
         const claimedTaskIds = data.map((row) => row.task_id)
         setClaimed(claimedTaskIds)
+        const sum = data.reduce((acc, row) => acc + (row.points || 0), 0)
+        setTotalPoints(sum)
       }
     }
 
@@ -131,7 +134,7 @@ export default function Earn() {
         alert('Connect your wallet to get your referral link.')
       } else {
         navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
-        alert('🔗 Referral link copied to clipboard!')
+        alert('🔗 Referral link copied to clipboard!\nInvite more, access more.')
       }
     } else if (task.action) {
       window.open(task.action, '_blank')
@@ -147,19 +150,28 @@ export default function Earn() {
         <title>Earn $NOL – Nolens</title>
       </Head>
       <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6">
-        <div className="max-w-4xl mx-auto text-center mb-12">
+        <div className="max-w-4xl mx-auto text-center mb-10">
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
           <p className="text-gray-600">Complete simple tasks to support Nolens and earn points toward future rewards.</p>
+          <div className="mt-4 text-indigo-600 font-semibold text-lg">
+            You have earned: <span className="font-bold">{totalPoints}</span> points
+          </div>
         </div>
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {initialTasks.map(task => (
             <div
               key={task.id}
-              className="border rounded-xl p-6 text-center shadow-sm hover:shadow-md transition relative group"
+              className="border rounded-xl p-6 text-center shadow-md hover:shadow-xl transform hover:scale-[1.02] transition duration-300 ease-out flex flex-col justify-between min-h-[220px]"
             >
-              <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
-              <p className="text-gray-500 text-sm mb-4">+{task.points} points</p>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
+                <p className="text-gray-500 text-sm mb-4 flex items-center justify-center gap-1">
+  <span className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
+    {task.id === 'refer' ? 'Up to 1300 points' : `+${task.points} points`}
+  </span>
+</p>
+              </div>
 
               {task.id === 'vote' || task.id === 'quiz' ? (
                 <button
