@@ -20,27 +20,32 @@ export default function Contribute() {
     }
 
     try {
-      // ✅ Insert email into email_signups
+      // ✅ Insert email into Supabase
       const { error: emailError } = await supabase
         .from('email_signups')
         .insert([{ email, wallet: address }])
-
       if (emailError) throw new Error(emailError.message)
 
-      // ✅ Insert task_claim only if not already exists
+      // ✅ Insert into task_claims (only if not already exists)
       const { data, error: fetchError } = await supabase
         .from('task_claims')
         .select('id')
         .eq('wallet', address)
         .eq('task_id', 'email')
         .maybeSingle()
-
       if (!data && !fetchError) {
         const { error: insertError } = await supabase
           .from('task_claims')
           .insert([{ wallet: address, task_id: 'email', points: 10 }])
         if (insertError) throw new Error(insertError.message)
       }
+
+      // ✅ Send confirmation email using Resend
+      await fetch('/api/submitEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
 
       setSubmitted(true)
       setEmail('')
