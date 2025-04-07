@@ -1,10 +1,8 @@
-// pages/earn.js
 'use client'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
-import { useRouter } from 'next/router'
 
 const initialTasks = [
   { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10, action: 'https://x.com/nolensprotocol' },
@@ -19,7 +17,6 @@ export default function Earn() {
   const { address, isConnected } = useAccount()
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     if (!isConnected || !address) return
@@ -31,7 +28,8 @@ export default function Earn() {
         .eq('wallet', address)
 
       if (!error && data) {
-        setClaimed(data.map(entry => entry.task_id))
+        const claimedTaskIds = data.map(entry => entry.task_id)
+        setClaimed(claimedTaskIds)
       }
     }
 
@@ -40,39 +38,22 @@ export default function Earn() {
 
   const handleClaim = async (task) => {
     if (!isConnected || !address) return
-    if (claimed.includes(task.id)) return
-
     setSubmitting(true)
 
-    if (task.id === 'follow') {
-      const userHandle = prompt('Enter your X (Twitter) handle:')
-      if (!userHandle) return setSubmitting(false)
-
-      await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle }])
-      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'follow' }])
-      setClaimed(prev => [...prev, 'follow'])
-    } else if (task.id === 'retweet') {
+    if (task.id === 'follow' || task.id === 'retweet') {
       window.open(task.action, '_blank')
-      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'retweet' }])
-      setClaimed(prev => [...prev, 'retweet'])
-    } else if (task.id === 'email') {
-      const { data, error } = await supabase
+
+      const { error } = await supabase
         .from('task_claims')
-        .select('task_id')
-        .eq('wallet', address)
-        .eq('task_id', 'email')
-        .maybeSingle()
+        .insert([{ wallet: address, task_id: task.id }])
 
-      if (!data && !error) {
-        await supabase.from('task_claims').insert([{ wallet: address, task_id: 'email' }])
-        setClaimed(prev => [...prev, 'email'])
+      if (!error) {
+        setClaimed(prev => [...prev, task.id])
       }
-
-      router.push('/contribute')
-    } else if (task.id === 'refer') {
-      alert('Share your referral link: https://nolens.xyz/earn?ref=' + address)
-      await supabase.from('task_claims').insert([{ wallet: address, task_id: 'refer' }])
-      setClaimed(prev => [...prev, 'refer'])
+    } else if (task.id === 'email') {
+      window.location.href = '/contribute'
+    } else if (task.action === 'referral') {
+      alert('Share your referral link on socials!')
     }
 
     setSubmitting(false)
