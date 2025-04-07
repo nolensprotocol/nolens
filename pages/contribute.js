@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabaseClient'
 
 export default function Contribute() {
   const [email, setEmail] = useState('')
+  const [role, setRole] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState(null)
   const { address, isConnected } = useAccount()
@@ -19,28 +20,17 @@ export default function Contribute() {
       return
     }
 
+    if (!role) {
+      setError('Please select a contributor role.')
+      return
+    }
+
     try {
-      // ✅ Insert email into Supabase
       const { error: emailError } = await supabase
         .from('email_signups')
-        .insert([{ email, wallet: address }])
+        .insert([{ email, wallet: address, type: 'contribute', role }])
       if (emailError) throw new Error(emailError.message)
 
-      // ✅ Insert into task_claims (only if not already exists)
-      const { data, error: fetchError } = await supabase
-        .from('task_claims')
-        .select('id')
-        .eq('wallet', address)
-        .eq('task_id', 'email')
-        .maybeSingle()
-      if (!data && !fetchError) {
-        const { error: insertError } = await supabase
-          .from('task_claims')
-          .insert([{ wallet: address, task_id: 'email', points: 10 }])
-        if (insertError) throw new Error(insertError.message)
-      }
-
-      // ✅ Send confirmation email using Resend
       await fetch('/api/submitEmail', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,6 +39,7 @@ export default function Contribute() {
 
       setSubmitted(true)
       setEmail('')
+      setRole('')
     } catch (err) {
       setError(err.message)
     }
@@ -75,29 +66,10 @@ export default function Contribute() {
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 z-10 relative mb-24">
-          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
-            <h3 className="text-xl font-semibold mb-2">🛠️ Development</h3>
-            <p className="text-sm text-gray-600 mb-4">Smart contracts, DApp UI, integrations, GitHub PRs — builders welcome.</p>
-            <a href="https://github.com/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Explore GitHub</a>
-          </div>
-
-          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
-            <h3 className="text-xl font-semibold mb-2">🎨 Design</h3>
-            <p className="text-sm text-gray-600 mb-4">Help define the identity of Nolens — UI/UX, visual systems, and storytelling.</p>
-            <a href="https://t.me/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Join Telegram</a>
-          </div>
-
-          <div className="border rounded-xl p-6 shadow-md hover:shadow-xl transition-all text-center">
-            <h3 className="text-xl font-semibold mb-2">📣 Community</h3>
-            <p className="text-sm text-gray-600 mb-4">Curate conversations, translate key ideas, and help grow the Nolens network.</p>
-            <a href="https://x.com/nolensprotocol" target="_blank" className="text-indigo-600 hover:underline font-medium text-sm">Follow us on X</a>
-          </div>
-        </div>
-
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">Become an Early Contributor</h2>
-          <p className="text-sm text-gray-600 mb-6">Leave your email below and let us know what role you're interested in — we'll reach out as we grow the Nolens contributor circle.</p>
+          <p className="text-sm text-gray-600 mb-6">Leave your email and let us know how you'd like to help. We'll reach out as we grow the Nolens contributor circle.</p>
+
           {submitted ? (
             <div className="text-green-600 font-medium">Thanks for your interest — we'll be in touch soon.</div>
           ) : (
@@ -110,6 +82,21 @@ export default function Contribute() {
                 placeholder="your@email.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
+
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Select your role</option>
+                <option value="developer">Developer</option>
+                <option value="designer">Designer</option>
+                <option value="promoter">Promoter / Marketer</option>
+                <option value="translator">Translator / Community</option>
+                <option value="other">Other</option>
+              </select>
+
               {error && <div className="text-red-600 text-sm">{error}</div>}
               <button
                 type="submit"
