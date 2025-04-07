@@ -1,4 +1,4 @@
-// earn_250407.js — fully updated with UI polish and proper state logic
+// earn_250407.js – referral system now with live milestone-based labels and subtext
 
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
@@ -29,74 +29,40 @@ export default function Earn() {
   const [emailInput, setEmailInput] = useState('')
   const [emailError, setEmailError] = useState(null)
   const [pending, setPending] = useState([])
+  const [referralCount, setReferralCount] = useState(0)
 
   useEffect(() => {
     if (!isConnected || !address) return
 
-    const fetchClaims = async () => {
-      const { data } = await supabase
+    const fetchData = async () => {
+      const rewardsRes = await supabase
         .from('verified_rewards')
         .select('task_id, points')
         .eq('wallet', address)
 
-      if (data) {
-        const claimedTaskIds = data.map((row) => row.task_id)
-        setClaimed(claimedTaskIds)
-        const sum = data.reduce((acc, row) => acc + (row.points || 0), 0)
-        setTotalPoints(sum)
+      if (rewardsRes.data) {
+        setClaimed(rewardsRes.data.map(r => r.task_id))
+        setTotalPoints(rewardsRes.data.reduce((acc, r) => acc + (r.points || 0), 0))
       }
-    }
 
-    const handleReferral = async () => {
-      const url = new URL(window.location.href)
-      const ref = url.searchParams.get('ref')
-      if (!ref || ref.toLowerCase() === address.toLowerCase()) return
-
-      const { data: existing } = await supabase
+      const refCountRes = await supabase
         .from('referrals')
-        .select('id')
-        .eq('referred', address)
-        .maybeSingle()
+        .select('id', { count: 'exact' })
+        .eq('referrer', address)
 
-      if (existing) return
-
-      const { error: insertError } = await supabase.from('referrals').insert([
-        { referrer: ref, referred: address }
-      ])
-
-      if (!insertError) {
-        const { data: totalReferrals } = await supabase
-          .from('referrals')
-          .select('id')
-          .eq('referrer', ref)
-
-        const total = totalReferrals.length
-
-        for (const milestone of MILESTONES) {
-          if (total >= milestone.count) {
-            const { data: alreadyRewarded } = await supabase
-              .from('referral_milestones')
-              .select('id')
-              .eq('wallet', ref)
-              .eq('milestone', milestone.count)
-              .maybeSingle()
-
-            if (!alreadyRewarded) {
-              await supabase.from('referral_milestones').insert([
-                { wallet: ref, milestone: milestone.count }
-              ])
-              await supabase.from('verified_rewards').insert([
-                { wallet: ref, task_id: 'refer', points: milestone.points }
-              ])
-            }
-          }
-        }
-      }
+      if (refCountRes.count !== null) setReferralCount(refCountRes.count)
     }
 
-    fetchClaims()
-    handleReferral()
+    fetchData()
   }, [isConnected, address])
+
+  const getReferralButtonState = () => {
+    if (referralCount >= 25) return 'Maxed Out ✅'
+    if (referralCount >= 10) return 'Keep Going'
+    if (referralCount >= 5) return 'Tier 1 Complete 🎉'
+    if (referralCount >= 1) return 'Keep Sharing'
+    return 'Get Link'
+  }
 
   const handleClaim = async (task) => {
     if (!isConnected || !address || (task.id !== 'refer' && claimed.includes(task.id))) return
@@ -108,7 +74,6 @@ export default function Earn() {
       if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
       setPending(prev => [...prev, task.id])
-
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
       if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
@@ -117,14 +82,11 @@ export default function Earn() {
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
       setPending(prev => [...prev, task.id])
-
     } else if (task.id === 'email') {
       setShowEmailModal(true)
-
     } else if (task.id === 'refer') {
       navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
       alert('🔗 Referral link copied!')
-
     } else if (task.action) {
       window.open(task.action, '_blank')
     }
@@ -166,6 +128,12 @@ export default function Earn() {
             const pendingState = isPending(task.id)
             const comingSoon = isComingSoon(task.id)
 
+            const buttonLabel = task.id === 'refer'
+              ? getReferralButtonState()
+              : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
+
+            const referralSubtext = task.id === 'refer' ? `${referralCount} / 25 referrals` : `+${task.points} points`
+
             return (
               <div
                 key={task.id}
@@ -175,13 +143,13 @@ export default function Earn() {
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
                   <p className="text-gray-500 text-sm mb-4 flex items-center justify-center">
                     <span className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
-                      {task.id === 'refer' ? 'Up to 1300 points' : `+${task.points} points`}
+                      {referralSubtext}
                     </span>
                   </p>
                 </div>
                 <button
                   onClick={() => handleClaim(task)}
-                  disabled={comingSoon || isClaimed || pendingState || submitting}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
                   className={`w-full px-4 py-2 rounded-md font-semibold transition text-white ${
                     comingSoon ? 'bg-gray-200 text-gray-600 cursor-not-allowed' :
                     isClaimed ? 'bg-gray-400 cursor-not-allowed' :
@@ -189,7 +157,7 @@ export default function Earn() {
                     'bg-black hover:bg-gray-800'
                   }`}
                 >
-                  {comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : task.id === 'refer' ? 'Get Link' : 'Claim'}
+                  {buttonLabel}
                 </button>
               </div>
             )
