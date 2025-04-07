@@ -1,41 +1,50 @@
 // pages/contribute.js
+'use client'
 import Head from 'next/head'
 import { useState } from 'react'
+import { useAccount } from 'wagmi'
+import { supabase } from '../lib/supabaseClient'
 
 export default function Contribute() {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(null);
+  const [email, setEmail] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState(null)
+  const { address, isConnected } = useAccount()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
+
+    if (!isConnected || !address) {
+      setError('Please connect your wallet first.')
+      return
+    }
 
     try {
-      const res = await fetch('/api/submitEmail', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+      // Insert into email_signups
+      const { error: emailError } = await supabase
+        .from('email_signups')
+        .insert([{ email, wallet: address }])
 
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = { message: text };
+      if (emailError) {
+        throw new Error(emailError.message)
       }
 
-      if (!res.ok) throw new Error(data.message || 'Something went wrong');
+      // Insert into task_claims
+      const { error: taskError } = await supabase
+        .from('task_claims')
+        .insert([{ wallet: address, task_id: 'email' }])
 
-      setSubmitted(true);
-      setEmail('');
+      if (taskError) {
+        throw new Error(taskError.message)
+      }
+
+      setSubmitted(true)
+      setEmail('')
     } catch (err) {
-      setError(err.message);
+      setError(err.message)
     }
-  };
+  }
 
   return (
     <>
@@ -128,5 +137,5 @@ export default function Contribute() {
         }
       `}</style>
     </>
-  );
+  )
 }
