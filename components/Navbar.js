@@ -12,16 +12,23 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
+  const [walletType, setWalletType] = useState(null)
 
   const mounted = useIsMounted()
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected, status } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // ✅ MetaMask Logging (EVM) with hydration + dedup
+  // On mount, retrieve last connected wallet type
+  useEffect(() => {
+    const savedType = localStorage.getItem('walletType')
+    if (savedType) setWalletType(savedType)
+  }, [])
+
+  // MetaMask Logging (EVM)
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (status !== 'connected' || !address) return
+    if (status !== 'connected' || !address || walletType !== 'evm') return
 
     const localKey = `walletLogged:${address}`
     const alreadyLogged = localStorage.getItem(localKey)
@@ -54,9 +61,9 @@ export default function Navbar() {
           localStorage.setItem(localKey, 'true')
         }
       })
-  }, [status, address])
+  }, [status, address, walletType])
 
-  // ✅ Phantom Logging (Solana)
+  // Phantom Connect + Logging
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -64,6 +71,8 @@ export default function Navbar() {
         const phantomAddr = resp.publicKey.toString()
         setPhantomConnected(true)
         setPhantomAddress(phantomAddr)
+        setWalletType('solana')
+        localStorage.setItem('walletType', 'solana')
 
         const localKey = `walletLogged:${phantomAddr}`
         const alreadyLogged = localStorage.getItem(localKey)
@@ -98,6 +107,14 @@ export default function Navbar() {
   const disconnectPhantom = () => {
     setPhantomConnected(false)
     setPhantomAddress(null)
+    localStorage.removeItem('walletType')
+    setWalletType(null)
+  }
+
+  const disconnectEVM = () => {
+    disconnect()
+    localStorage.removeItem('walletType')
+    setWalletType(null)
   }
 
   return (
@@ -113,14 +130,14 @@ export default function Navbar() {
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {mounted && isConnected ? (
+          {mounted && walletType === 'evm' && isConnected ? (
             <button
-              onClick={disconnect}
+              onClick={disconnectEVM}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
               {address.slice(0, 6)}...{address.slice(-4)}
             </button>
-          ) : mounted && phantomConnected ? (
+          ) : mounted && walletType === 'solana' && phantomConnected ? (
             <button
               onClick={disconnectPhantom}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
@@ -130,7 +147,11 @@ export default function Navbar() {
           ) : mounted ? (
             <div className="ml-4 flex space-x-2">
               <button
-                onClick={() => connect()}
+                onClick={() => {
+                  connect()
+                  setWalletType('evm')
+                  localStorage.setItem('walletType', 'evm')
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
               >
                 🦊 MetaMask
@@ -160,14 +181,14 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {mounted && isConnected ? (
+            {mounted && walletType === 'evm' && isConnected ? (
               <button
-                onClick={disconnect}
+                onClick={disconnectEVM}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
                 {address.slice(0, 6)}...{address.slice(-4)}
               </button>
-            ) : mounted && phantomConnected ? (
+            ) : mounted && walletType === 'solana' && phantomConnected ? (
               <button
                 onClick={disconnectPhantom}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
@@ -177,7 +198,11 @@ export default function Navbar() {
             ) : mounted ? (
               <div className="mt-4 flex flex-col space-y-2">
                 <button
-                  onClick={() => connect()}
+                  onClick={() => {
+                    connect()
+                    setWalletType('evm')
+                    localStorage.setItem('walletType', 'evm')
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                 >
                   🦊 MetaMask
