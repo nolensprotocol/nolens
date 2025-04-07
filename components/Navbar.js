@@ -63,6 +63,8 @@ export default function Navbar() {
   }, [status, address, walletType])
 
   const connectWallet = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
     if (window.ethereum) {
       connect()
       localStorage.setItem('walletType', 'evm')
