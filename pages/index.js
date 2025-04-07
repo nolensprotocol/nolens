@@ -2,20 +2,20 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 
-// 🛡️ Import CSP-safe lottie-light directly
+// ✅ Dynamically import Lottie to prevent SSR issues
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
-import lottieLight from 'lottie-web/build/player/lottie_light'
 
 export default function Home() {
   const [animationData, setAnimationData] = useState(null)
 
   useEffect(() => {
     fetch('/lottie/nolens-connectivity.json')
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Loaded Lottie:', data)
         setAnimationData(data)
       })
-      .catch(err => console.error('Failed to load Lottie:', err))
+      .catch((err) => console.error('Failed to load Lottie:', err))
   }, [])
 
   return (
@@ -26,26 +26,19 @@ export default function Home() {
       </Head>
 
       <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* ✅ Lottie background animation */}
+        {/* ✅ Lottie background */}
         {animationData && (
           <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
             <Lottie
               animationData={animationData}
               loop
               autoplay
-              lottieRef={(instance) => {
-                if (instance && instance.setSpeed) {
-                  instance.setSpeed(1)
-                  instance.setRenderer('svg') // ✅ ensure SVG safe renderer
-                  instance.setLottie(lottieLight) // 🛡️ patch to safe renderer
-                }
-              }}
               className="w-full h-full object-cover"
             />
           </div>
         )}
 
-        {/* Hero */}
+        {/* Hero content */}
         <div className="z-10 max-w-3xl text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             Own less. <br className="hidden md:block" /> Access more.
