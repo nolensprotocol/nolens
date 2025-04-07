@@ -1,4 +1,6 @@
+// pages/earn.js
 'use client'
+
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -21,28 +23,47 @@ export default function Earn() {
   useEffect(() => {
     if (!isConnected || !address) return
 
-    const fetchClaims = async () => {
+    // Load claimed task_ids from Supabase for current wallet
+    const loadClaims = async () => {
       const { data, error } = await supabase
         .from('task_claims')
         .select('task_id')
         .eq('wallet', address)
 
-      if (!error && data) {
-        const claimedTaskIds = data.map(entry => entry.task_id)
-        setClaimed(claimedTaskIds)
+      if (data && !error) {
+        const claimedIds = data.map(row => row.task_id)
+        setClaimed(claimedIds)
       }
     }
-
-    fetchClaims()
+    loadClaims()
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
     if (!isConnected || !address) return
+    if (claimed.includes(task.id)) return
     setSubmitting(true)
 
-    if (task.id === 'follow' || task.id === 'retweet') {
-      window.open(task.action, '_blank')
+    if (task.id === 'follow') {
+      const userHandle = prompt('Enter your X (Twitter) handle:')
+      if (!userHandle) return setSubmitting(false)
 
+      // Insert into twitter_claims
+      const { error: twitterError } = await supabase
+        .from('twitter_claims')
+        .insert([{ address, x_handle: userHandle }])
+
+      // Also insert into task_claims
+      const { error: taskError } = await supabase
+        .from('task_claims')
+        .insert([{ wallet: address, task_id: 'follow' }])
+
+      if (!twitterError && !taskError) {
+        setClaimed(prev => [...prev, task.id])
+      }
+    } else if (task.id === 'refer') {
+      alert('Share this page with your referral link!')
+    } else if (task.action) {
+      window.open(task.action, '_blank')
       const { error } = await supabase
         .from('task_claims')
         .insert([{ wallet: address, task_id: task.id }])
@@ -50,12 +71,7 @@ export default function Earn() {
       if (!error) {
         setClaimed(prev => [...prev, task.id])
       }
-    } else if (task.id === 'email') {
-      window.location.href = '/contribute'
-    } else if (task.action === 'referral') {
-      alert('Share your referral link on socials!')
     }
-
     setSubmitting(false)
   }
 
