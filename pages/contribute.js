@@ -1,4 +1,3 @@
-// pages/contribute.js
 'use client'
 import Head from 'next/head'
 import { useState } from 'react'
@@ -21,22 +20,26 @@ export default function Contribute() {
     }
 
     try {
-      // Insert into email_signups
+      // ✅ Insert email into email_signups
       const { error: emailError } = await supabase
         .from('email_signups')
         .insert([{ email, wallet: address }])
 
-      if (emailError) {
-        throw new Error(emailError.message)
-      }
+      if (emailError) throw new Error(emailError.message)
 
-      // Insert into task_claims
-      const { error: taskError } = await supabase
+      // ✅ Insert task_claim only if not already exists
+      const { data, error: fetchError } = await supabase
         .from('task_claims')
-        .insert([{ wallet: address, task_id: 'email' }])
+        .select('id')
+        .eq('wallet', address)
+        .eq('task_id', 'email')
+        .maybeSingle()
 
-      if (taskError) {
-        throw new Error(taskError.message)
+      if (!data && !fetchError) {
+        const { error: insertError } = await supabase
+          .from('task_claims')
+          .insert([{ wallet: address, task_id: 'email', points: 10 }])
+        if (insertError) throw new Error(insertError.message)
       }
 
       setSubmitted(true)
