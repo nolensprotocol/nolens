@@ -1,23 +1,6 @@
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
-
-// ✅ Dynamically import Lottie to prevent SSR issues
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
 export default function Home() {
-  const [animationData, setAnimationData] = useState(null)
-
-  useEffect(() => {
-    fetch('/lottie/nolens-connectivity.json')
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Loaded Lottie:', data)
-        setAnimationData(data)
-      })
-      .catch((err) => console.error('Failed to load Lottie:', err))
-  }, [])
-
   return (
     <>
       <Head>
@@ -26,17 +9,10 @@ export default function Home() {
       </Head>
 
       <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* ✅ Lottie background */}
-        {animationData && (
-          <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
-            <Lottie
-              animationData={animationData}
-              loop
-              autoplay
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
+        {/* 🔥 Background placeholder */}
+        {/* Replace below with <video> or remove for static background */}
+        {/* <video ...> or <div className="bg-gradient-to-b ..."> */}
+        {/* You can also leave this empty if no background is needed */}
 
         {/* Hero content */}
         <div className="z-10 max-w-3xl text-center space-y-6">
