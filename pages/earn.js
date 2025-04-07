@@ -12,6 +12,12 @@ const initialTasks = [
   { id: 'quiz', label: 'Complete the Nolens quiz', points: 10, action: null }
 ]
 
+const MILESTONES = [
+  { count: 5, points: 200 },
+  { count: 10, points: 300 },
+  { count: 25, points: 800 }
+]
+
 export default function Earn() {
   const { address, isConnected } = useAccount()
   const [claimed, setClaimed] = useState([])
@@ -21,7 +27,7 @@ export default function Earn() {
     if (!isConnected || !address) return
 
     const fetchClaims = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('verified_rewards')
         .select('task_id')
         .eq('wallet', address)
@@ -32,11 +38,59 @@ export default function Earn() {
       }
     }
 
+    const handleReferral = async () => {
+      const url = new URL(window.location.href)
+      const ref = url.searchParams.get('ref')
+      if (!ref || ref.toLowerCase() === address.toLowerCase()) return
+
+      const { data: existing } = await supabase
+        .from('referrals')
+        .select('id')
+        .eq('referred', address)
+        .maybeSingle()
+
+      if (existing) return
+
+      const { error: insertError } = await supabase.from('referrals').insert([
+        { referrer: ref, referred: address }
+      ])
+
+      if (!insertError) {
+        const { data: totalReferrals } = await supabase
+          .from('referrals')
+          .select('id')
+          .eq('referrer', ref)
+
+        const total = totalReferrals.length
+
+        for (const milestone of MILESTONES) {
+          if (total >= milestone.count) {
+            const { data: alreadyRewarded } = await supabase
+              .from('referral_milestones')
+              .select('id')
+              .eq('wallet', ref)
+              .eq('milestone', milestone.count)
+              .maybeSingle()
+
+            if (!alreadyRewarded) {
+              await supabase.from('referral_milestones').insert([
+                { wallet: ref, milestone: milestone.count }
+              ])
+              await supabase.from('verified_rewards').insert([
+                { wallet: ref, task_id: 'refer', points: milestone.points }
+              ])
+            }
+          }
+        }
+      }
+    }
+
     fetchClaims()
+    handleReferral()
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
-    if (!isConnected || !address || claimed.includes(task.id)) return
+    if (!isConnected || !address || (task.id !== 'refer' && claimed.includes(task.id))) return
 
     setSubmitting(true)
 
@@ -72,8 +126,13 @@ export default function Earn() {
     } else if (task.id === 'email') {
       window.open(task.action, '_blank')
       alert('✅ Submitted. Points will be credited after verification.')
-    } else if (task.action === 'referral') {
-      alert('Share this page with your referral link!')
+    } else if (task.id === 'refer') {
+      if (!address) {
+        alert('Connect your wallet to get your referral link.')
+      } else {
+        navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
+        alert('🔗 Referral link copied to clipboard!')
+      }
     } else if (task.action) {
       window.open(task.action, '_blank')
       alert('✅ Submitted. Points will be credited after verification.')
@@ -112,14 +171,14 @@ export default function Earn() {
               ) : (
                 <button
                   onClick={() => handleClaim(task)}
-                  disabled={claimed.includes(task.id) || submitting}
+                  disabled={task.id !== 'refer' && (claimed.includes(task.id) || submitting)}
                   className={`w-full px-4 py-2 rounded-md font-semibold transition ${
-                    claimed.includes(task.id)
+                    task.id !== 'refer' && claimed.includes(task.id)
                       ? 'bg-gray-400 text-white cursor-not-allowed'
                       : 'bg-black text-white hover:bg-gray-800'
                   }`}
                 >
-                  {claimed.includes(task.id) ? 'Claimed' : 'Claim'}
+                  {task.id === 'refer' ? 'Get Link' : claimed.includes(task.id) ? 'Claimed' : 'Claim'}
                 </button>
               )}
             </div>
