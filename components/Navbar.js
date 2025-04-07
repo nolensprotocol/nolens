@@ -5,14 +5,13 @@ import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
+import { useBalance } from 'wagmi'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
   const [submitted, setSubmitted] = useState(false)
-
-  import { useBalance } from 'wagmi'
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected, status } = useAccount()
