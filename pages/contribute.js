@@ -37,6 +37,8 @@ export default function Contribute() {
         body: JSON.stringify({ email }),
       })
 
+      if (typeof window !== 'undefined' && window.trackEmailContribute) window.trackEmailContribute()
+
       setSubmitted(true)
       setEmail('')
       setRole('')
