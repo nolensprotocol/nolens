@@ -10,41 +10,49 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
-  const [submitted, setSubmitted] = useState(false)
-  const [hydrated, setHydrated] = useState(false) // fix hydration issue
+  const [ready, setReady] = useState(false)
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // ✅ Wait for client hydration
   useEffect(() => {
-    setHydrated(true)
+    setReady(true)
   }, [])
 
-  // ✅ Log MetaMask to Supabase once
   useEffect(() => {
-    if (hydrated && isConnected && address && !submitted) {
-      const payload = {
-        address,
-        type: 'evm',
+    const checkAndInsertWallet = async (address, type) => {
+      const { data, error } = await supabase
+        .from('wallet_connections')
+        .select('id')
+        .eq('address', address)
+        .eq('type', type)
+
+      if (error) {
+        console.error('❌ Supabase fetch error:', error.message)
+        return
       }
 
-      supabase
-        .from('wallet_connections')
-        .insert([payload])
-        .then(({ error }) => {
-          if (error && !error.message.includes('duplicate')) {
-            console.error('❌ Supabase insert error:', error.message)
-          } else {
-            console.log('✅ MetaMask wallet logged to Supabase')
-            setSubmitted(true)
-          }
-        })
-    }
-  }, [hydrated, isConnected, address, submitted])
+      if (data.length === 0) {
+        const { error: insertError } = await supabase
+          .from('wallet_connections')
+          .insert([{ address, type }])
 
-  // Phantom (Solana)
+        if (insertError) {
+          console.error('❌ Supabase insert error:', insertError.message)
+        } else {
+          console.log('✅ Wallet logged to Supabase')
+        }
+      } else {
+        console.log('⚠️ Wallet already logged. Skipping insert.')
+      }
+    }
+
+    if (ready && isConnected && address) {
+      checkAndInsertWallet(address, 'evm')
+    }
+  }, [ready, isConnected, address])
+
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -54,21 +62,17 @@ export default function Navbar() {
         setPhantomConnected(true)
         setPhantomAddress(phantomAddr)
 
-        const payload = {
-          address: phantomAddr,
-          type: 'solana',
-        }
-
-        supabase
+        const { data, error } = await supabase
           .from('wallet_connections')
-          .insert([payload])
-          .then(({ error }) => {
-            if (error) {
-              console.error('❌ Supabase insert error:', error.message)
-            } else {
-              console.log('✅ Phantom wallet logged to Supabase')
-            }
-          })
+          .select('id')
+          .eq('address', phantomAddr)
+          .eq('type', 'solana')
+
+        if (!error && data.length === 0) {
+          await supabase
+            .from('wallet_connections')
+            .insert([{ address: phantomAddr, type: 'solana' }])
+        }
       } catch (err) {
         console.error('Phantom connection error', err)
       }
@@ -81,6 +85,8 @@ export default function Navbar() {
     setPhantomConnected(false)
     setPhantomAddress(null)
   }
+
+  if (!ready) return null
 
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
@@ -95,14 +101,14 @@ export default function Navbar() {
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {hydrated && isConnected ? (
+          {isConnected ? (
             <button
               onClick={disconnect}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
               {address.slice(0, 6)}...{address.slice(-4)}
             </button>
-          ) : hydrated && phantomConnected ? (
+          ) : phantomConnected ? (
             <button
               onClick={disconnectPhantom}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
@@ -142,14 +148,14 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {hydrated && isConnected ? (
+            {isConnected ? (
               <button
                 onClick={disconnect}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
                 {address.slice(0, 6)}...{address.slice(-4)}
               </button>
-            ) : hydrated && phantomConnected ? (
+            ) : phantomConnected ? (
               <button
                 onClick={disconnectPhantom}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
