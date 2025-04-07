@@ -21,8 +21,16 @@ export default function Navbar() {
 
   useEffect(() => {
     const savedType = localStorage.getItem('walletType')
-    if (savedType) setWalletType(savedType)
-  }, [])
+
+    if (!walletType && savedType) {
+      if (
+        (savedType === 'evm' && isConnected && address) ||
+        (savedType === 'solana' && phantomConnected && phantomAddress)
+      ) {
+        setWalletType(savedType)
+      }
+    }
+  }, [isConnected, address, phantomConnected, phantomAddress, walletType])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -56,7 +64,6 @@ export default function Navbar() {
 
   const connectWallet = async () => {
     if (window.ethereum) {
-      // Try MetaMask
       connect()
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
