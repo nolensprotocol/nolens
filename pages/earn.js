@@ -56,6 +56,18 @@ export default function Earn() {
       await supabase.from('task_claims').insert([{ wallet: address, task_id: 'retweet' }])
       setClaimed(prev => [...prev, 'retweet'])
     } else if (task.id === 'email') {
+      const { data, error } = await supabase
+        .from('task_claims')
+        .select('task_id')
+        .eq('wallet', address)
+        .eq('task_id', 'email')
+        .maybeSingle()
+
+      if (!data && !error) {
+        await supabase.from('task_claims').insert([{ wallet: address, task_id: 'email' }])
+        setClaimed(prev => [...prev, 'email'])
+      }
+
       router.push('/contribute')
     } else if (task.id === 'refer') {
       alert('Share your referral link: https://nolens.xyz/earn?ref=' + address)
