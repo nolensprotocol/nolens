@@ -15,40 +15,114 @@ const initialTasks = [
 export default function Earn() {
   const { address, isConnected } = useAccount()
   const [claimed, setClaimed] = useState([])
-  const [xHandle, setXHandle] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (!isConnected || !address) return
 
+    // Fetch claimed tasks from task_claims table
     supabase
-      .from('twitter_claims')
-      .select('id, address')
-      .eq('address', address)
+      .from('task_claims')
+      .select('task_id')
+      .eq('wallet', address)
       .then(({ data }) => {
         if (data && data.length > 0) {
-          setClaimed(prev => [...prev, 'follow'])
+          const already = data.map(row => row.task_id)
+          setClaimed(already)
         }
       })
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
+    if (!isConnected || !address) return
+
+    setSubmitting(true)
+
     if (task.id === 'follow') {
       const userHandle = prompt('Enter your X (Twitter) handle:')
-      if (!userHandle) return
-      setSubmitting(true)
+      if (!userHandle) {
+        setSubmitting(false)
+        return
+      }
 
-      const { error } = await supabase.from('twitter_claims').insert([
+      // Check existing twitter_claims
+      const { data: twitterData } = await supabase
+        .from('twitter_claims')
+        .select('id')
+        .eq('address', address)
+        .maybeSingle()
+
+      if (twitterData) {
+        alert('You already submitted your X handle.')
+        setClaimed(prev => [...prev, task.id])
+        setSubmitting(false)
+        return
+      }
+
+      // Also check task_claims
+      const { data: taskData } = await supabase
+        .from('task_claims')
+        .select('id')
+        .eq('wallet', address)
+        .eq('task_id', task.id)
+        .maybeSingle()
+
+      if (taskData) {
+        alert('You already claimed this task.')
+        setClaimed(prev => [...prev, task.id])
+        setSubmitting(false)
+        return
+      }
+
+      // Insert into both tables
+      const { error: twitterErr } = await supabase.from('twitter_claims').insert([
         { address, x_handle: userHandle }
       ])
-      if (!error) setClaimed(prev => [...prev, task.id])
-      setSubmitting(false)
+
+      const { error: taskErr } = await supabase.from('task_claims').insert([
+        { wallet: address, task_id: task.id }
+      ])
+
+      if (!twitterErr && !taskErr) {
+        setClaimed(prev => [...prev, task.id])
+      }
+
     } else if (task.action === 'referral') {
       alert('Share this page with your referral link!')
+      // Optional: log this claim
+      const { data: taskData } = await supabase
+        .from('task_claims')
+        .select('id')
+        .eq('wallet', address)
+        .eq('task_id', task.id)
+        .maybeSingle()
+
+      if (!taskData) {
+        await supabase.from('task_claims').insert([
+          { wallet: address, task_id: task.id }
+        ])
+        setClaimed(prev => [...prev, task.id])
+      }
+
     } else if (task.action) {
       window.open(task.action, '_blank')
-      setClaimed(prev => [...prev, task.id])
+
+      const { data: taskData } = await supabase
+        .from('task_claims')
+        .select('id')
+        .eq('wallet', address)
+        .eq('task_id', task.id)
+        .maybeSingle()
+
+      if (!taskData) {
+        await supabase.from('task_claims').insert([
+          { wallet: address, task_id: task.id }
+        ])
+        setClaimed(prev => [...prev, task.id])
+      }
     }
+
+    setSubmitting(false)
   }
 
   return (
