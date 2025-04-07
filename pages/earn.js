@@ -97,6 +97,7 @@ export default function Earn() {
       const userHandle = prompt('Enter your X (Twitter) handle:')
       if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
+      if (typeof window !== 'undefined' && window.trackFollowX) window.trackFollowX()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
@@ -105,6 +106,7 @@ export default function Earn() {
         return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
+      if (typeof window !== 'undefined' && window.trackQuoteTweet) window.trackQuoteTweet()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'email') {
       setShowEmailModal(true)
@@ -123,6 +125,7 @@ export default function Earn() {
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10 }])
+      if (typeof window !== 'undefined' && window.trackEmailEarn) window.trackEmailEarn()
       setClaimed(prev => [...prev, 'email'])
       setShowEmailModal(false)
       setEmailInput('')
