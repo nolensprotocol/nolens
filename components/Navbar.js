@@ -77,8 +77,6 @@ export default function Navbar() {
     }
   }
 
-
-
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
     setWalletType(null)
@@ -97,6 +95,7 @@ export default function Navbar() {
           <Link href="/earn">Earn</Link>
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
+          <Link href="/partners">Partners</Link>
 
           {mounted && walletType === 'evm' && isConnected ? (
             <button
@@ -129,6 +128,7 @@ export default function Navbar() {
             <Link href="/earn" onClick={() => setMenuOpen(false)}>Earn</Link>
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
+            <Link href="/partners" onClick={() => setMenuOpen(false)}>Partners</Link>
 
             {mounted && walletType === 'evm' && isConnected ? (
               <button
