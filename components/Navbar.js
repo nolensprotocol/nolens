@@ -10,53 +10,48 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [phantomConnected, setPhantomConnected] = useState(false)
   const [phantomAddress, setPhantomAddress] = useState(null)
-  const [hydrated, setHydrated] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [walletLogged, setWalletLogged] = useState(false)
 
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
 
-  // ✅ Hydration check for Wagmi
   useEffect(() => {
-    setHydrated(true)
+    setMounted(true)
   }, [])
 
-  // ✅ Check before inserting EVM wallet
   useEffect(() => {
-    const logWalletIfNotExists = async (addr, type) => {
+    if (!window?.solana?.isConnected) {
+      setPhantomConnected(false)
+      setPhantomAddress(null)
+    }
+  }, [])
+
+  useEffect(() => {
+    const logWalletIfNeeded = async () => {
+      if (!isConnected || !address || walletLogged) return
+
       const { data, error } = await supabase
         .from('wallet_connections')
         .select('id')
-        .eq('address', addr)
-        .eq('type', type)
+        .eq('address', address)
+        .eq('type', 'evm')
         .maybeSingle()
 
-      if (error) {
-        console.error('❌ Supabase check error:', error.message)
-        return
-      }
-
-      if (!data) {
+      if (!data && !error) {
         const { error: insertErr } = await supabase
           .from('wallet_connections')
-          .insert([{ address: addr, type }])
-
-        if (insertErr) {
-          console.error('❌ Supabase insert error:', insertErr.message)
-        } else {
-          console.log(`✅ ${type} wallet logged: ${addr}`)
-        }
+          .insert([{ address, type: 'evm' }])
+        if (!insertErr) setWalletLogged(true)
       } else {
-        console.log(`⚠️ ${type} wallet already exists: ${addr}`)
+        setWalletLogged(true)
       }
     }
 
-    if (hydrated && isConnected && address) {
-      logWalletIfNotExists(address, 'evm')
-    }
-  }, [hydrated, isConnected, address])
+    logWalletIfNeeded()
+  }, [isConnected, address, walletLogged])
 
-  // ✅ Phantom Wallet connect
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
       try {
@@ -74,9 +69,7 @@ export default function Navbar() {
           .maybeSingle()
 
         if (!error && !data) {
-          await supabase
-            .from('wallet_connections')
-            .insert([{ address: phantomAddr, type: 'solana' }])
+          await supabase.from('wallet_connections').insert([{ address: phantomAddr, type: 'solana' }])
         }
       } catch (err) {
         console.error('Phantom connection error', err)
@@ -91,7 +84,7 @@ export default function Navbar() {
     setPhantomAddress(null)
   }
 
-  if (!hydrated) return null
+  if (!mounted) return null
 
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
@@ -100,7 +93,6 @@ export default function Navbar() {
           nolens
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
           <Link href="/">Home</Link>
           <Link href="/earn">Earn</Link>
@@ -139,7 +131,6 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Mobile Toggle */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -147,7 +138,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
