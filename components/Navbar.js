@@ -30,7 +30,12 @@ export default function Navbar() {
 
   useEffect(() => {
     const logWalletIfNeeded = async () => {
-      if (!isConnected || !address || walletLogged) return
+      if (!isConnected || !address || walletLogged) {
+        console.log('🔁 Skipping Supabase insert — already logged or not connected')
+        return
+      }
+
+      console.log('🔍 Checking Supabase for existing wallet:', address)
 
       const { data, error } = await supabase
         .from('wallet_connections')
@@ -39,18 +44,31 @@ export default function Navbar() {
         .eq('type', 'evm')
         .maybeSingle()
 
-      if (!data && !error) {
+      if (error) {
+        console.error('🛑 Supabase SELECT error:', error.message)
+        return
+      }
+
+      if (!data) {
+        console.log('🟢 Wallet not found — inserting now...')
         const { error: insertErr } = await supabase
           .from('wallet_connections')
           .insert([{ address, type: 'evm' }])
-        if (!insertErr) setWalletLogged(true)
+        if (insertErr) {
+          console.error('❌ Supabase INSERT error:', insertErr.message)
+        } else {
+          console.log('✅ Wallet inserted into Supabase:', address)
+          setWalletLogged(true)
+        }
       } else {
+        console.log('🟡 Wallet already exists in Supabase:', address)
         setWalletLogged(true)
       }
     }
 
     logWalletIfNeeded()
   }, [isConnected, address, walletLogged])
+
 
   const connectPhantom = async () => {
     if (window.solana?.isPhantom) {
