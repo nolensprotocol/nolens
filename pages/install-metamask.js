@@ -7,20 +7,29 @@ export default function InstallMetaMask() {
     <>
       <Head>
         <title>Install MetaMask - Nolens</title>
+        <meta name="description" content="Install MetaMask to use Nolens features." />
       </Head>
-      <main className="min-h-screen flex flex-col items-center justify-center bg-white text-black px-6 text-center">
-        <h1 className="text-3xl font-bold mb-4">MetaMask Not Detected</h1>
-        <p className="text-lg mb-6 max-w-md">
-          To connect your wallet and participate in Nolens, please install the MetaMask browser extension.
+
+      <main className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center px-6">
+        <h1 className="text-4xl font-bold mb-4">MetaMask Not Detected</h1>
+        <p className="text-lg text-gray-700 max-w-xl text-center mb-6">
+          To use Nolens and connect your wallet, you need the MetaMask browser extension.
+          Download it from the official site and then refresh this page.
         </p>
+
         <a
-          href="https://metamask.io/download"
+          href="https://metamask.io/download/"
           target="_blank"
-          className="px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition"
+          rel="noopener noreferrer"
+          className="px-6 py-3 bg-black text-white rounded-md font-medium hover:bg-gray-800 transition"
         >
-          Install MetaMask
+          Download MetaMask
         </a>
-        <Link href="/" className="mt-4 text-indigo-600 hover:underline block text-sm">
+
+        <Link
+          href="/"
+          className="mt-6 text-indigo-600 hover:underline text-sm"
+        >
           ← Go back home
         </Link>
       </main>
