@@ -17,29 +17,30 @@ export default function Earn() {
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
 
+  // ✅ Load previously claimed tasks from Supabase
   useEffect(() => {
     if (!isConnected || !address) return
 
-    // Twitter task check
-    supabase
-      .from('twitter_claims')
-      .select('id')
-      .eq('address', address)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setClaimed(prev => [...prev, 'follow'])
-        }
-      })
-
-    // Other task checks
+    // 1. Load all task_claims
     supabase
       .from('task_claims')
       .select('task_id')
       .eq('wallet', address)
       .then(({ data }) => {
         if (data) {
-          const ids = data.map(row => row.task_id)
-          setClaimed(prev => [...new Set([...prev, ...ids])])
+          const ids = data.map(row => row.task_id.toString())
+          setClaimed([...new Set(ids)])
+        }
+      })
+
+    // 2. Check if Twitter follow task was submitted (extra safety)
+    supabase
+      .from('twitter_claims')
+      .select('id')
+      .eq('address', address)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setClaimed(prev => [...new Set([...prev, 'follow'])])
         }
       })
   }, [isConnected, address])
@@ -48,31 +49,35 @@ export default function Earn() {
     if (claimed.includes(task.id)) return
     setSubmitting(true)
 
-    if (task.id === 'follow') {
-      const handle = prompt('Enter your X (Twitter) handle:')
-      if (!handle) return setSubmitting(false)
+    try {
+      if (task.id === 'follow') {
+        const handle = prompt('Enter your X (Twitter) handle:')
+        if (!handle) return setSubmitting(false)
 
-      const { error: twitterError } = await supabase.from('twitter_claims').insert([
-        { address, x_handle: handle }
-      ])
-      if (!twitterError) {
+        const { error: twitterError } = await supabase.from('twitter_claims').insert([
+          { address, x_handle: handle }
+        ])
+        if (!twitterError) {
+          setClaimed(prev => [...prev, task.id])
+          await supabase.from('task_claims').insert([
+            { wallet: address, task_id: task.id, points: task.points }
+          ])
+        }
+      } else if (task.action === 'referral') {
+        alert('Share this page with your referral link!')
+        setClaimed(prev => [...prev, task.id])
+        await supabase.from('task_claims').insert([
+          { wallet: address, task_id: task.id, points: task.points }
+        ])
+      } else if (task.action) {
+        window.open(task.action, '_blank')
         setClaimed(prev => [...prev, task.id])
         await supabase.from('task_claims').insert([
           { wallet: address, task_id: task.id, points: task.points }
         ])
       }
-    } else if (task.action === 'referral') {
-      alert('Share this page with your referral link!')
-      setClaimed(prev => [...prev, task.id])
-      await supabase.from('task_claims').insert([
-        { wallet: address, task_id: task.id, points: task.points }
-      ])
-    } else if (task.action) {
-      window.open(task.action, '_blank')
-      setClaimed(prev => [...prev, task.id])
-      await supabase.from('task_claims').insert([
-        { wallet: address, task_id: task.id, points: task.points }
-      ])
+    } catch (err) {
+      console.error('Claim error:', err)
     }
 
     setSubmitting(false)
