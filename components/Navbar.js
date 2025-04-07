@@ -10,8 +10,6 @@ import { useIsMounted } from '../lib/useIsMounted'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [phantomConnected, setPhantomConnected] = useState(false)
-  const [phantomAddress, setPhantomAddress] = useState(null)
   const [walletType, setWalletType] = useState(null)
 
   const mounted = useIsMounted()
@@ -22,15 +20,10 @@ export default function Navbar() {
   useEffect(() => {
     const savedType = localStorage.getItem('walletType')
 
-    if (!walletType && savedType) {
-      if (
-        (savedType === 'evm' && isConnected && address) ||
-        (savedType === 'solana' && phantomConnected && phantomAddress)
-      ) {
-        setWalletType(savedType)
-      }
+    if (!walletType && savedType === 'evm' && isConnected && address) {
+      setWalletType('evm')
     }
-  }, [isConnected, address, phantomConnected, phantomAddress, walletType])
+  }, [isConnected, address, walletType])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -69,52 +62,15 @@ export default function Navbar() {
       connect()
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
-    } else if (window.solana?.isPhantom) {
-      try {
-        const resp = await window.solana.connect()
-        const phantomAddr = resp.publicKey.toString()
-        setPhantomConnected(true)
-        setPhantomAddress(phantomAddr)
-        localStorage.setItem('walletType', 'solana')
-        setWalletType('solana')
-
-        const localKey = `walletLogged:${phantomAddr}`
-        const alreadyLogged = localStorage.getItem(localKey)
-        if (alreadyLogged) return
-
-        const { data, error } = await supabase
-          .from('wallet_connections')
-          .select('id')
-          .eq('address', phantomAddr)
-          .eq('type', 'solana')
-          .maybeSingle()
-
-        if (!data && !error) {
-          const { error: insertErr } = await supabase
-            .from('wallet_connections')
-            .insert([{ address: phantomAddr, type: 'solana' }])
-          if (!insertErr) {
-            localStorage.setItem(localKey, 'true')
-          }
-        } else {
-          localStorage.setItem(localKey, 'true')
-        }
-      } catch (err) {
-        console.error('Phantom connect error:', err)
-      }
     } else {
-      alert('No compatible wallet found. Please install MetaMask or Phantom.')
+      alert('MetaMask not found. Please install it to continue.')
     }
   }
 
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
     setWalletType(null)
-    if (walletType === 'evm') disconnect()
-    if (walletType === 'solana') {
-      setPhantomConnected(false)
-      setPhantomAddress(null)
-    }
+    disconnect()
   }
 
   return (
@@ -130,14 +86,12 @@ export default function Navbar() {
           <Link href="/contribute">Contribute</Link>
           <Link href="/docs">About</Link>
 
-          {mounted && ((walletType === 'evm' && isConnected) || (walletType === 'solana' && phantomConnected)) ? (
+          {mounted && walletType === 'evm' && isConnected ? (
             <button
               onClick={disconnectWallet}
               className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
             >
-              {walletType === 'evm'
-                ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                : `${phantomAddress.slice(0, 6)}...${phantomAddress.slice(-4)}`}
+              {address.slice(0, 6)}...{address.slice(-4)}
             </button>
           ) : mounted ? (
             <button
@@ -164,14 +118,12 @@ export default function Navbar() {
             <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
             <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
 
-            {mounted && ((walletType === 'evm' && isConnected) || (walletType === 'solana' && phantomConnected)) ? (
+            {mounted && walletType === 'evm' && isConnected ? (
               <button
                 onClick={disconnectWallet}
                 className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
               >
-                {walletType === 'evm'
-                  ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                  : `${phantomAddress.slice(0, 6)}...${phantomAddress.slice(-4)}`}
+                {address.slice(0, 6)}...{address.slice(-4)}
               </button>
             ) : mounted ? (
               <button
