@@ -8,7 +8,8 @@ export default function Home() {
         <meta name="description" content="Designed for the next era of shared living." />
       </Head>
 
-        {/* 🔤 Hero content */}
+      <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6">
+        {/* 🔤 Hero content only */}
         <div className="z-10 max-w-3xl text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             Own less. <br className="hidden md:block" /> Access more.
