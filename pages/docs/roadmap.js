@@ -10,17 +10,17 @@ export default function RoadmapDocs() {
         <meta name="description" content="Explore the Nolens roadmap — from early contribution tools to protocol-level utility and governance." />
       </Head>
 
-      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6">
+      <main className="min-h-screen bg-black text-white pt-32 pb-24 px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold mb-6">Roadmap</h1>
-          <p className="text-lg text-gray-600 mb-12">
+          <p className="text-lg text-white/60 mb-12">
             Nolens is unfolding in phases — each unlocking deeper utility, contribution loops, and protocol alignment.
           </p>
 
           <div className="space-y-10">
             <Card className="fade-in-up delay-100">
-              <h2 className="text-2xl font-bold mb-3">🛠️ Phase 1: Foundation</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <h2 className="text-2xl font-bold mb-3">Phase 1: Foundation</h2>
+              <ul className="list-disc list-inside text-white/70 space-y-2">
                 <li>Launch early contributor program</li>
                 <li>Establish the $NOL non-transferable logic</li>
                 <li>Build MVP of the Earn → Unlock flow</li>
@@ -30,8 +30,8 @@ export default function RoadmapDocs() {
             </Card>
 
             <Card className="fade-in-up delay-200">
-              <h2 className="text-2xl font-bold mb-3">🔓 Phase 2: Access Utility</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <h2 className="text-2xl font-bold mb-3">Phase 2: Access Utility</h2>
+              <ul className="list-disc list-inside text-white/70 space-y-2">
                 <li>Mint the first contributor SBTs (soulbound NFTs)</li>
                 <li>Launch utility NFTs minted via $NOL</li>
                 <li>Enable access gates for partner tools or perks</li>
@@ -41,8 +41,8 @@ export default function RoadmapDocs() {
             </Card>
 
             <Card className="fade-in-up delay-300">
-              <h2 className="text-2xl font-bold mb-3">🪙 Phase 3: Protocol Logic</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <h2 className="text-2xl font-bold mb-3">Phase 3: Protocol Logic</h2>
+              <ul className="list-disc list-inside text-white/70 space-y-2">
                 <li>Introduce SBT-based governance or feature voting</li>
                 <li>Public leaderboard of top contributors</li>
                 <li>Permissionless integrations for shared resources</li>
@@ -52,8 +52,8 @@ export default function RoadmapDocs() {
             </Card>
 
             <Card className="fade-in-up delay-400">
-              <h2 className="text-2xl font-bold mb-3">🧭 Phase 4: Decentralized Coordination</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <h2 className="text-2xl font-bold mb-3">Phase 4: Decentralized Coordination</h2>
+              <ul className="list-disc list-inside text-white/70 space-y-2">
                 <li>Community stewards & council-based proposals</li>
                 <li>Open applications for aligned ecosystems</li>
                 <li>Retroactive rewards for high-impact contributors</li>
@@ -63,7 +63,7 @@ export default function RoadmapDocs() {
             </Card>
           </div>
         </div>
-       <DocsBackLink />
+        <DocsBackLink />
       </main>
     </>
   )
