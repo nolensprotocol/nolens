@@ -1,9 +1,4 @@
 import Head from 'next/head'
-import dynamic from 'next/dynamic'
-
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
-import animationData from '../lib/lotties/nolens_wave_animation.json'
-
 
 export default function Home() {
   return (
@@ -14,6 +9,7 @@ export default function Home() {
       </Head>
 
       <main className="relative bg-gray-950 text-white min-h-screen flex items-center px-6 md:px-16 overflow-hidden">
+        {/* 👈 Hero Text */}
         <div className="z-10 max-w-3xl">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-left animate-slide-in">
             Own less. <br />Access more.
@@ -30,12 +26,19 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 🎨 Right-side Lottie animation */}
-          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[400px] h-[400px] z-10 opacity-50">
-            <Lottie animationData={animationData} loop autoplay style={{ width: '100%', height: '100%' }} />
-          </div>
-
-
+        {/* 👉 Animated Wave Bars */}
+        <div className="absolute right-12 bottom-12 flex gap-2 h-64 z-0 opacity-30">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="w-[4px] bg-gray-300 animate-wave"
+              style={{
+                animationDelay: `${i * 0.1}s`,
+                animationDuration: '1.8s'
+              }}
+            />
+          ))}
+        </div>
       </main>
 
       <style jsx>{`
@@ -59,14 +62,12 @@ export default function Home() {
           }
         }
 
-        @keyframes pulse-slow {
+        @keyframes wave {
           0%, 100% {
-            transform: scale(1);
-            opacity: 0.2;
+            transform: scaleY(1);
           }
           50% {
-            transform: scale(1.1);
-            opacity: 0.4;
+            transform: scaleY(2.2);
           }
         }
 
@@ -82,8 +83,10 @@ export default function Home() {
           animation-delay: 0.3s;
         }
 
-        .animate-pulse-slow {
-          animation: pulse-slow 6s ease-in-out infinite;
+        .animate-wave {
+          animation-name: wave;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
         }
       `}</style>
     </>
