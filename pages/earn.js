@@ -86,7 +86,7 @@ export default function Earn() {
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
       if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
-        alert('❌ Invalid URL')
+        alert('Invalid URL')
         return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
@@ -96,7 +96,7 @@ export default function Earn() {
       setShowEmailModal(true)
     } else if (task.id === 'refer') {
       navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
-      alert('🔗 Referral link copied!')
+      alert('Referral link copied!')
     } else if (task.action) {
       window.open(task.action, '_blank')
     }
@@ -123,9 +123,9 @@ export default function Earn() {
   const isPending = (id) => pending.includes(id)
 
   const getReferralButtonState = () => {
-    if (referralCount >= 25) return 'Maxed Out ✅'
+    if (referralCount >= 25) return 'Maxed Out'
     if (referralCount >= 10) return 'Keep Going'
-    if (referralCount >= 5) return 'Tier 1 Complete 🎉'
+    if (referralCount >= 5) return 'Tier 1 Complete'
     if (referralCount >= 1) return 'Keep Sharing'
     return 'Get Link'
   }
@@ -133,11 +133,11 @@ export default function Earn() {
   return (
     <>
       <Head><title>Earn $NOL – Nolens</title></Head>
-      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24">
+      <main className="min-h-screen bg-black text-white pt-32 pb-24">
         <PageSection className="text-center mb-10 fade-in-up">
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
-          <p className="text-gray-600">Complete simple tasks to support Nolens and earn points toward future rewards.</p>
-          <div className="mt-4 text-indigo-600 font-semibold text-lg">
+          <p className="text-white/60">Complete simple tasks to support Nolens and earn points toward future rewards.</p>
+          <div className="mt-4 text-white font-semibold text-lg">
             You have earned: <span className="font-bold">{totalPoints}</span> points
           </div>
         </PageSection>
@@ -160,9 +160,9 @@ export default function Earn() {
               <Card key={task.id} className={`flex flex-col justify-between min-h-[220px] ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
-                  <p className="text-gray-500 text-sm mb-4 flex flex-wrap items-center justify-center gap-2">
+                  <p className="text-white/50 text-sm mb-4 flex flex-wrap items-center justify-center gap-2">
                     {referralSubtext.map((text, i) => (
-                      <span key={i} className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
+                      <span key={i} className="inline-block bg-white/10 text-white text-xs font-bold px-2 py-1 rounded-full">
                         {text}
                       </span>
                     ))}
@@ -181,16 +181,16 @@ export default function Earn() {
 
         {showEmailModal && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm text-center">
+            <div className="bg-neutral-900 rounded-xl shadow-lg p-6 w-full max-w-sm text-center">
               <h3 className="text-xl font-semibold mb-4">Enter your email</h3>
               <input
                 type="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md mb-3 text-sm"
+                className="w-full px-4 py-2 border border-white/20 bg-black text-white rounded-md mb-3 text-sm"
                 placeholder="you@example.com"
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
               />
-              {emailError && <p className="text-sm text-red-600 mb-2">{emailError}</p>}
+              {emailError && <p className="text-sm text-red-400 mb-2">{emailError}</p>}
               <div className="flex gap-2">
                 <Button onClick={handleEmailSubmit}>Submit</Button>
                 <Button variant="secondary" onClick={() => setShowEmailModal(false)}>Cancel</Button>
