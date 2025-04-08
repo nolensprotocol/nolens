@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
 import Card from '../components/Card'
 import Button from '../components/Button'
+import PageSection from '../components/PageSection'
 
 const initialTasks = [
   { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10 },
@@ -132,16 +133,16 @@ export default function Earn() {
   return (
     <>
       <Head><title>Earn $NOL – Nolens</title></Head>
-      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6">
-        <div className="max-w-4xl mx-auto text-center mb-10">
+      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24">
+        <PageSection className="text-center mb-10 fade-in-up">
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
           <p className="text-gray-600">Complete simple tasks to support Nolens and earn points toward future rewards.</p>
           <div className="mt-4 text-indigo-600 font-semibold text-lg">
             You have earned: <span className="font-bold">{totalPoints}</span> points
           </div>
-        </div>
+        </PageSection>
 
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <PageSection className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-200">
           {initialTasks.map((task) => {
             const isClaimed = claimed.includes(task.id)
             const pendingState = isPending(task.id)
@@ -176,7 +177,7 @@ export default function Earn() {
               </Card>
             )
           })}
-        </div>
+        </PageSection>
 
         {showEmailModal && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
@@ -184,7 +185,7 @@ export default function Earn() {
               <h3 className="text-xl font-semibold mb-4">Enter your email</h3>
               <input
                 type="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md mb-3"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md mb-3 text-sm"
                 placeholder="you@example.com"
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
