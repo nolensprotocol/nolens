@@ -1,4 +1,3 @@
-// pages/index.js
 import Head from 'next/head'
 
 export default function Home() {
@@ -9,7 +8,7 @@ export default function Home() {
         <meta name="description" content="Designed for the next era of shared living." />
       </Head>
 
-      <main className="relative bg-black text-white min-h-screen flex items-center px-6 md:px-16 overflow-hidden">
+      <main className="relative bg-gray-950 text-white min-h-screen flex items-center px-6 md:px-16 overflow-hidden">
         <div className="z-10 max-w-3xl">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-left animate-slide-in">
             Own less. <br />Access more.
@@ -26,8 +25,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Optional subtle texture */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('/grain.png')] bg-cover"></div>
+        {/* 🎨 Right-side animated visual */}
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40vw] h-[40vw] pointer-events-none z-0">
+          <div className="w-full h-full bg-gradient-to-br from-indigo-500/20 to-purple-600/10 blur-3xl rounded-full animate-pulse-slow" />
+        </div>
       </main>
 
       <style jsx>{`
@@ -51,6 +52,17 @@ export default function Home() {
           }
         }
 
+        @keyframes pulse-slow {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.2;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.4;
+          }
+        }
+
         .animate-slide-in {
           animation: slide-in 1s ease-out forwards;
         }
@@ -61,6 +73,10 @@ export default function Home() {
 
         .delay-300 {
           animation-delay: 0.3s;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 6s ease-in-out infinite;
         }
       `}</style>
     </>
