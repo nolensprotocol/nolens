@@ -1,9 +1,9 @@
-// earn_250407.js – referral system now with live milestone-based labels and subtext
-
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
+import Card from '../components/Card'
+import Button from '../components/Button'
 
 const initialTasks = [
   { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10 },
@@ -12,12 +12,6 @@ const initialTasks = [
   { id: 'refer', label: 'Refer a friend with your link', points: 40 },
   { id: 'vote', label: 'Vote on a feature idea', points: 10 },
   { id: 'quiz', label: 'Complete the Nolens quiz', points: 10 }
-]
-
-const MILESTONES = [
-  { count: 5, points: 200 },
-  { count: 10, points: 300 },
-  { count: 25, points: 800 }
 ]
 
 export default function Earn() {
@@ -35,17 +29,18 @@ export default function Earn() {
     if (!isConnected || !address) return
 
     const fetchData = async () => {
-      const pendingTasks = [];
+      const pendingTasks = []
+
       const rewardsRes = await supabase
         .from('verified_rewards')
         .select('task_id, points')
         .eq('wallet', address)
 
       if (rewardsRes.data) {
-        const claimedTaskIds = rewardsRes.data.map((row) => row.task_id);
-        setClaimed(claimedTaskIds);
-        const sum = rewardsRes.data.reduce((acc, row) => acc + (row.points || 0), 0);
-        setTotalPoints(sum);
+        const claimedTaskIds = rewardsRes.data.map(row => row.task_id)
+        const sum = rewardsRes.data.reduce((acc, row) => acc + (row.points || 0), 0)
+        setClaimed(claimedTaskIds)
+        setTotalPoints(sum)
       }
 
       const refCountRes = await supabase
@@ -72,32 +67,20 @@ export default function Earn() {
       if (rtPending.data?.length > 0) pendingTasks.push('retweet')
 
       setPending(pendingTasks)
-        .eq('referrer', address)
-
-      if (refCountRes.count !== null) setReferralCount(refCountRes.count)
     }
 
     fetchData()
   }, [isConnected, address])
 
-  const getReferralButtonState = () => {
-    if (referralCount >= 25) return 'Maxed Out ✅'
-    if (referralCount >= 10) return 'Keep Going'
-    if (referralCount >= 5) return 'Tier 1 Complete 🎉'
-    if (referralCount >= 1) return 'Keep Sharing'
-    return 'Get Link'
-  }
-
   const handleClaim = async (task) => {
     if (!isConnected || !address || (task.id !== 'refer' && claimed.includes(task.id))) return
-
     setSubmitting(true)
 
     if (task.id === 'follow') {
       const userHandle = prompt('Enter your X (Twitter) handle:')
       if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
-      if (typeof window !== 'undefined' && window.trackFollowX) window.trackFollowX()
+      if (window.trackFollowX) window.trackFollowX()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
@@ -106,7 +89,7 @@ export default function Earn() {
         return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
-      if (typeof window !== 'undefined' && window.trackQuoteTweet) window.trackQuoteTweet()
+      if (window.trackQuoteTweet) window.trackQuoteTweet()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'email') {
       setShowEmailModal(true)
@@ -122,10 +105,11 @@ export default function Earn() {
 
   const handleEmailSubmit = async () => {
     if (!emailInput) return setEmailError('Email required')
+
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10 }])
-      if (typeof window !== 'undefined' && window.trackEmailEarn) window.trackEmailEarn()
+      if (window.trackEmailEarn) window.trackEmailEarn()
       setClaimed(prev => [...prev, 'email'])
       setShowEmailModal(false)
       setEmailInput('')
@@ -136,6 +120,14 @@ export default function Earn() {
 
   const isComingSoon = (id) => id === 'vote' || id === 'quiz'
   const isPending = (id) => pending.includes(id)
+
+  const getReferralButtonState = () => {
+    if (referralCount >= 25) return 'Maxed Out ✅'
+    if (referralCount >= 10) return 'Keep Going'
+    if (referralCount >= 5) return 'Tier 1 Complete 🎉'
+    if (referralCount >= 1) return 'Keep Sharing'
+    return 'Get Link'
+  }
 
   return (
     <>
@@ -150,7 +142,7 @@ export default function Earn() {
         </div>
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          {initialTasks.map(task => {
+          {initialTasks.map((task) => {
             const isClaimed = claimed.includes(task.id)
             const pendingState = isPending(task.id)
             const comingSoon = isComingSoon(task.id)
@@ -160,40 +152,28 @@ export default function Earn() {
               : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
 
             const referralSubtext = task.id === 'refer'
-  ? [
-      `${referralCount} / 25 referrals`,
-      'Up to 1300 points'
-    ]
-  : [`+${task.points} points`]
+              ? [`${referralCount} / 25 referrals`, 'Up to 1300 points']
+              : [`+${task.points} points`]
 
             return (
-              <div
-                key={task.id}
-                className={`border rounded-xl p-6 text-center shadow-md transform transition duration-300 ease-out flex flex-col justify-between min-h-[220px] ${comingSoon ? 'border-dashed opacity-60 grayscale' : 'hover:shadow-xl hover:scale-[1.02]'}`}
-              >
+              <Card key={task.id} className={`flex flex-col justify-between min-h-[220px] ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
-                  <p className="text-gray-500 text-sm mb-4 flex items-center justify-center">
+                  <p className="text-gray-500 text-sm mb-4 flex flex-wrap items-center justify-center gap-2">
                     {referralSubtext.map((text, i) => (
-  <span key={i} className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full mx-1">
-    {text}
-  </span>
-))}
+                      <span key={i} className="inline-block bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
+                        {text}
+                      </span>
+                    ))}
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={() => handleClaim(task)}
                   disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
-                  className={`w-full px-4 py-2 rounded-md font-semibold transition text-white ${
-                    comingSoon ? 'bg-gray-200 text-gray-600 cursor-not-allowed' :
-                    isClaimed ? 'bg-gray-400 cursor-not-allowed' :
-                    pendingState ? 'bg-gray-400 cursor-wait' :
-                    'bg-black hover:bg-gray-800'
-                  }`}
                 >
                   {buttonLabel}
-                </button>
-              </div>
+                </Button>
+              </Card>
             )
           })}
         </div>
@@ -211,14 +191,8 @@ export default function Earn() {
               />
               {emailError && <p className="text-sm text-red-600 mb-2">{emailError}</p>}
               <div className="flex gap-2">
-                <button
-                  onClick={handleEmailSubmit}
-                  className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
-                >Submit</button>
-                <button
-                  onClick={() => setShowEmailModal(false)}
-                  className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300"
-                >Cancel</button>
+                <Button onClick={handleEmailSubmit}>Submit</Button>
+                <Button variant="secondary" onClick={() => setShowEmailModal(false)}>Cancel</Button>
               </div>
             </div>
           </div>
