@@ -31,9 +31,10 @@ export default function Home() {
         </div>
 
         {/* 🎨 Right-side Lottie animation */}
-        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40vw] h-[40vw] pointer-events-none z-0 opacity-40">
-          <Lottie animationData={animationData} loop autoplay />
-        </div>
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[400px] h-[400px] z-10 opacity-60">
+            <Lottie animationData={animationData} loop autoplay style={{ width: '100%', height: '100%' }} />
+          </div>
+
       </main>
 
       <style jsx>{`
