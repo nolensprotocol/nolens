@@ -102,7 +102,7 @@ export default function Navbar() {
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-center space-x-2 text-gray-900 hover:opacity-90">
-          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-6 h-6" />
+          <img src="/nolens_icon.png" alt="Nolens Logo" className="w-7 h-7 translate-y-[1.5px]" />
           <span className="text-2xl font-extrabold tracking-wide">nolens</span>
         </Link>
 
