@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
+import Button from '../components/Button'
 
 export default function Contribute() {
   const [email, setEmail] = useState('')
@@ -100,12 +101,8 @@ export default function Contribute() {
               </select>
 
               {error && <div className="text-red-600 text-sm">{error}</div>}
-              <button
-                type="submit"
-                className="w-full bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-800 transition"
-              >
-                Submit Interest
-              </button>
+
+              <Button type="submit">Submit Interest</Button>
             </form>
           )}
         </div>
