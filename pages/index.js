@@ -10,22 +10,21 @@ export default function Home() {
         <meta name="description" content="Designed for the next era of shared living." />
       </Head>
 
-      <main className="relative bg-gradient-to-br from-black via-[#0f0f0f] to-[#1a1a1a] text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* Background blur/glow */}
+      <main className="relative bg-gradient-to-br from-black via-neutral-900 to-neutral-800 text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
+        {/* Monochrome background pulses */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute w-[480px] h-[480px] bg-purple-600 rounded-full blur-[160px] opacity-30 top-1/4 left-1/4 animate-pulse-slow" />
-          <div className="absolute w-[360px] h-[360px] bg-indigo-500 rounded-full blur-[120px] opacity-20 bottom-1/4 right-1/4 animate-pulse-slower" />
+          <div className="absolute w-[520px] h-[520px] bg-white/10 rounded-full blur-[160px] top-1/4 left-1/4 animate-pulse-slow" />
+          <div className="absolute w-[400px] h-[400px] bg-white/5 rounded-full blur-[120px] bottom-1/4 right-1/4 animate-pulse-slower" />
         </div>
 
         {/* Hero Content */}
         <div className="z-10 max-w-4xl text-center space-y-8">
           <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight">
-            Own less. <span className="text-purple-400">Access more.</span>
+            Nolens. The protocol for shared living.
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-            Nolens is building a protocol for the access-first economy —
-            powered by contribution, not consumption.
+          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto">
+            Fueled by real contribution.
           </p>
 
           <div className="pt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -43,21 +42,21 @@ export default function Home() {
 
         <style jsx>{`
           @keyframes pulse-slow {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.05); }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.05); }
           }
 
           @keyframes pulse-slower {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.03); }
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.03); }
           }
 
           .animate-pulse-slow {
-            animation: pulse-slow 6s ease-in-out infinite;
+            animation: pulse-slow 7s ease-in-out infinite;
           }
 
           .animate-pulse-slower {
-            animation: pulse-slower 9s ease-in-out infinite;
+            animation: pulse-slower 10s ease-in-out infinite;
           }
         `}</style>
       </main>
