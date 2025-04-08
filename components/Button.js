@@ -1,30 +1,19 @@
-export default function Button({
-  children,
-  onClick,
-  disabled,
-  variant = 'primary',
-  className = '',
-  ...props
-}) {
-  const base =
-    'w-full px-4 py-2 rounded-md font-semibold transition text-sm focus:outline-none focus:ring-2 focus:ring-offset-2'
-
+// components/Button.js
+export default function Button({ children, onClick, type = 'button', variant = 'primary', className = '', disabled }) {
+  const base = 'inline-flex justify-center items-center px-5 py-2.5 font-semibold rounded-full transition-all text-sm';
   const variants = {
-    primary: 'bg-black text-white hover:bg-gray-800',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
-    disabled: 'bg-gray-400 text-white cursor-not-allowed',
+    primary: 'bg-white text-black hover:bg-gray-200',
+    secondary: 'border border-white text-white hover:bg-white hover:text-black',
+    disabled: 'opacity-50 cursor-not-allowed',
   }
 
-  const applied =
-    disabled ? variants.disabled : variants[variant] || variants.primary
+  const style =
+    disabled
+      ? `${base} ${variants.disabled} ${className}`
+      : `${base} ${variants[variant]} ${className}`;
 
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`${base} ${applied} ${className}`}
-      {...props}
-    >
+    <button onClick={onClick} type={type} className={style} disabled={disabled}>
       {children}
     </button>
   )
