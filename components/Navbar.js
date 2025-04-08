@@ -111,13 +111,12 @@ export default function Navbar() {
           {navLink('/earn', 'Earn')}
           {navLink('/contribute', 'Contribute')}
 
-          {/* About Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setAboutOpen(true)}
-            onMouseLeave={() => setAboutOpen(false)}
-          >
-            <button className="flex items-center gap-1 text-gray-600 hover:text-black transition">
+          {/* Clickable About Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setAboutOpen(!aboutOpen)}
+              className="flex items-center gap-1 text-gray-600 hover:text-black transition"
+            >
               About <ChevronDown size={16} />
             </button>
             {aboutOpen && (
@@ -130,7 +129,9 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Wallet Logic */}
+          {navLink('/partners', 'Partners')}
+
+          {/* Wallet dropdown */}
           {mounted && status !== 'connecting' && (
             isConnected && walletType === 'evm' ? (
               <div className="relative">
@@ -188,6 +189,8 @@ export default function Navbar() {
               <Link href="/docs/roadmap" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Roadmap</Link>
               <Link href="/docs/governance" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Governance</Link>
             </div>
+
+            {navLink('/partners', 'Partners')}
 
             {mounted && status !== 'connecting' && (
               isConnected && walletType === 'evm' ? (
