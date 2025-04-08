@@ -56,12 +56,12 @@ export default function Contribute() {
         <meta name="description" content="Join Nolens and help build the future of access-first economies." />
       </Head>
 
-      <main className="relative min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6 overflow-hidden">
+      <main className="relative min-h-screen bg-black text-white pt-32 pb-24 px-6 overflow-hidden">
         <PageSection className="text-center mb-20 fade-in-up">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight text-white">
             Contribute to Nolens
           </h1>
-          <p className="text-lg text-gray-600 fade-in-up delay-200">
+          <p className="text-lg text-white/60 fade-in-up delay-200">
             Nolens is for those building beyond ownership.
             <br />
             A protocol for shared, tokenized access. If you're rethinking how we live, create, and coordinate — you're early.
@@ -70,10 +70,10 @@ export default function Contribute() {
 
         <PageSection className="max-w-xl text-center fade-in-up delay-300">
           <h2 className="text-2xl font-bold mb-4">Become an Early Contributor</h2>
-          <p className="text-sm text-gray-600 mb-6">Leave your email and let us know how you'd like to help. We'll reach out as we grow the Nolens contributor circle.</p>
+          <p className="text-sm text-white/60 mb-6">Leave your email and let us know how you'd like to help. We'll reach out as we grow the Nolens contributor circle.</p>
 
           {submitted ? (
-            <div className="text-green-600 font-medium">Thanks for your interest — we'll be in touch soon.</div>
+            <div className="text-green-400 font-medium">Thanks for your interest — we'll be in touch soon.</div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
@@ -82,14 +82,14 @@ export default function Contribute() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 text-sm border border-white/20 bg-black text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-white/40"
               />
 
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 required
-                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 text-sm border border-white/20 bg-black text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-white/40"
               >
                 <option value="">Select your role</option>
                 <option value="developer">Developer</option>
@@ -99,16 +99,12 @@ export default function Contribute() {
                 <option value="other">Other</option>
               </select>
 
-              {error && <div className="text-red-600 text-sm">{error}</div>}
+              {error && <div className="text-red-400 text-sm">{error}</div>}
 
               <Button type="submit">Submit Interest</Button>
             </form>
           )}
         </PageSection>
-
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-0 opacity-5 pointer-events-none">
-          <img src="/nolens_icon.png" alt="Nolens Logo Subtle Background" className="w-[480px]" />
-        </div>
       </main>
     </>
   )
