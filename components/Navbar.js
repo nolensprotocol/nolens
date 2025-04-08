@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
 import { useIsMounted } from '../lib/useIsMounted'
 
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [walletType, setWalletType] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const [totalPoints, setTotalPoints] = useState(0)
 
   const mounted = useIsMounted()
@@ -108,10 +109,34 @@ export default function Navbar() {
           {navLink('/', 'Home')}
           {navLink('/earn', 'Earn')}
           {navLink('/contribute', 'Contribute')}
-          {navLink('/docs', 'About')}
-          {navLink('/partners', 'Partners')}
 
-          {/* Wallet dropdown – hydration safe */}
+          {/* About dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setAboutOpen(true)}
+            onMouseLeave={() => setAboutOpen(false)}
+          >
+            <button className="flex items-center gap-1 text-gray-600 hover:text-black transition">
+              About <ChevronDown size={16} />
+            </button>
+            {aboutOpen && (
+              <div className="absolute top-full left-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
+                <Link
+                  href="/docs"
+                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                >
+                  Protocol
+                </Link>
+                <Link
+                  href="/partners"
+                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                >
+                  Partners
+                </Link>
+              </div>
+            )}
+          </div>
+
           {mounted && status !== 'connecting' && (
             isConnected && walletType === 'evm' ? (
               <div className="relative">
@@ -159,7 +184,7 @@ export default function Navbar() {
             {navLink('/', 'Home')}
             {navLink('/earn', 'Earn')}
             {navLink('/contribute', 'Contribute')}
-            {navLink('/docs', 'About')}
+            {navLink('/docs', 'Protocol')}
             {navLink('/partners', 'Partners')}
 
             {mounted && status !== 'connecting' && (
