@@ -114,7 +114,7 @@ export default function Navbar() {
         {/* About – clickable label + dropdown chevron */}
         <div className="relative flex items-center">
           <Link
-            href="/docs/index"
+            href="/docs"
             className="text-gray-600 hover:text-black transition"
           >
             About
