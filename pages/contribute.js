@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
 import Button from '../components/Button'
+import PageSection from '../components/PageSection'
 
 export default function Contribute() {
   const [email, setEmail] = useState('')
@@ -38,7 +39,7 @@ export default function Contribute() {
         body: JSON.stringify({ email }),
       })
 
-      if (typeof window !== 'undefined' && window.trackEmailContribute) window.trackEmailContribute()
+      if (window.trackEmailContribute) window.trackEmailContribute()
 
       setSubmitted(true)
       setEmail('')
@@ -56,20 +57,18 @@ export default function Contribute() {
       </Head>
 
       <main className="relative min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6 overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center mb-20">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-normal opacity-0 animate-fade-in-up">
-            <span className="inline-block bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
-              Contribute to Nolens
-            </span>
+        <PageSection className="text-center mb-20 fade-in-up">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-transparent bg-clip-text">
+            Contribute to Nolens
           </h1>
-          <p className="text-lg text-gray-600 opacity-0 animate-fade-in-up delay-200">
+          <p className="text-lg text-gray-600 fade-in-up delay-200">
             Nolens is for those building beyond ownership.
             <br />
             A protocol for shared, tokenized access. If you're rethinking how we live, create, and coordinate — you're early.
           </p>
-        </div>
+        </PageSection>
 
-        <div className="max-w-xl mx-auto text-center">
+        <PageSection className="max-w-xl text-center fade-in-up delay-300">
           <h2 className="text-2xl font-bold mb-4">Become an Early Contributor</h2>
           <p className="text-sm text-gray-600 mb-6">Leave your email and let us know how you'd like to help. We'll reach out as we grow the Nolens contributor circle.</p>
 
@@ -83,14 +82,14 @@ export default function Contribute() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
 
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Select your role</option>
                 <option value="developer">Developer</option>
@@ -105,31 +104,12 @@ export default function Contribute() {
               <Button type="submit">Submit Interest</Button>
             </form>
           )}
-        </div>
+        </PageSection>
 
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-0 opacity-5 pointer-events-none">
           <img src="/nolens_icon.png" alt="Nolens Logo Subtle Background" className="w-[480px]" />
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes fade-in-up {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 1.2s ease-out forwards;
-        }
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-      `}</style>
     </>
   )
 }
