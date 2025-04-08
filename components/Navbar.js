@@ -111,23 +111,31 @@ export default function Navbar() {
           {navLink('/earn', 'Earn')}
           {navLink('/contribute', 'Contribute')}
 
-          {/* Clickable About Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setAboutOpen(!aboutOpen)}
-              className="flex items-center gap-1 text-gray-600 hover:text-black transition"
-            >
-              About <ChevronDown size={16} />
-            </button>
-            {aboutOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
-                <Link href="/docs/token" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Tokenomics</Link>
-                <Link href="/docs/utility" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Utility</Link>
-                <Link href="/docs/roadmap" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Roadmap</Link>
-                <Link href="/docs/governance" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Governance</Link>
-              </div>
-            )}
-          </div>
+        {/* About – clickable label + dropdown chevron */}
+        <div className="relative flex items-center">
+          <Link
+            href="/docs/index"
+            className="text-gray-600 hover:text-black transition"
+          >
+            About
+          </Link>
+          <button
+            onClick={() => setAboutOpen(!aboutOpen)}
+            className="ml-1 text-gray-600 hover:text-black"
+            aria-label="Toggle About Menu"
+          >
+            <ChevronDown size={16} />
+          </button>
+          {aboutOpen && (
+            <div className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
+              <Link href="/docs/token" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Tokenomics</Link>
+              <Link href="/docs/utility" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Utility</Link>
+              <Link href="/docs/roadmap" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Roadmap</Link>
+              <Link href="/docs/governance" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Governance</Link>
+            </div>
+  )}
+</div>
+
 
           {navLink('/partners', 'Partners')}
 
