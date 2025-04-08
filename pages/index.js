@@ -1,4 +1,6 @@
 import Head from 'next/head'
+import Lottie from 'lottie-react'
+import animationData from '../public/nolens_wave_animation.json'
 
 export default function Home() {
   return (
@@ -25,9 +27,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 🎨 Right-side animated visual */}
-        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40vw] h-[40vw] pointer-events-none z-0">
-          <div className="w-full h-full bg-gradient-to-br from-indigo-500/20 to-purple-600/10 blur-3xl rounded-full animate-pulse-slow" />
+        {/* 🎨 Right-side Lottie animation */}
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[40vw] h-[40vw] pointer-events-none z-0 opacity-40">
+          <Lottie animationData={animationData} loop autoplay />
         </div>
       </main>
 
