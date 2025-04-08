@@ -157,10 +157,10 @@ export default function Earn() {
               : [`+${task.points} points`]
 
             return (
-              <Card key={task.id} className={`flex flex-col justify-between min-h-[220px] ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
-                <div>
+              <Card key={task.id} className={`flex flex-col justify-between h-full ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
+                <div className="flex-1 flex flex-col items-center text-center">
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
-                  <p className="text-white/50 text-sm mb-4 flex flex-wrap items-center justify-center gap-2">
+                  <p className="text-white/50 text-sm mb-4 flex flex-wrap justify-center gap-2">
                     {referralSubtext.map((text, i) => (
                       <span key={i} className="inline-block bg-white/10 text-white text-xs font-bold px-2 py-1 rounded-full">
                         {text}
