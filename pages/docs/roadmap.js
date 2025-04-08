@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Card from '../../components/Card'
+import DocsBackLink from '../../components/DocsBackLink'
 
 export default function RoadmapDocs() {
   return (
@@ -62,6 +63,7 @@ export default function RoadmapDocs() {
             </Card>
           </div>
         </div>
+       <DocsBackLink />
       </main>
     </>
   )
