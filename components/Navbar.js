@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Menu, X } from 'lucide-react'
@@ -11,15 +12,18 @@ import { useIsMounted } from '../lib/useIsMounted'
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [walletType, setWalletType] = useState(null)
+  const [totalPoints, setTotalPoints] = useState(0)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const mounted = useIsMounted()
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { address, isConnected, status } = useAccount()
   const { disconnect } = useDisconnect()
+  const router = useRouter()
+  const currentPath = router.pathname
 
   useEffect(() => {
     const savedType = localStorage.getItem('walletType')
-
     if (!walletType && savedType === 'evm' && isConnected && address) {
       setWalletType('evm')
     }
@@ -55,24 +59,30 @@ export default function Navbar() {
       })
   }, [status, address, walletType])
 
+  useEffect(() => {
+    if (address && isConnected) {
+      supabase
+        .from('verified_rewards')
+        .select('points')
+        .eq('wallet', address)
+        .then(({ data }) => {
+          const sum = data?.reduce((acc, row) => acc + (row.points || 0), 0) || 0
+          setTotalPoints(sum)
+        })
+    }
+  }, [address, isConnected])
+
   const connectWallet = async () => {
-    console.log('🧠 connectWallet called')
-
     await new Promise((resolve) => setTimeout(resolve, 200))
-
     if (typeof window.ethereum !== 'undefined') {
-      console.log('✅ MetaMask detected')
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
-
       try {
-        const res = await connect()
-        console.log('🎉 Wallet connected:', res)
+        await connect()
       } catch (err) {
         console.error('❌ connect() error:', err)
       }
     } else {
-      console.warn('❌ MetaMask NOT detected — redirecting')
       window.open('/install-metamask', '_self', 'noopener,noreferrer')
     }
   }
@@ -81,7 +91,19 @@ export default function Navbar() {
     localStorage.removeItem('walletType')
     setWalletType(null)
     disconnect()
+    setDropdownOpen(false)
   }
+
+  const navLink = (href, label) => (
+    <Link
+      href={href}
+      className={`hover:text-black transition ${
+        currentPath === href ? 'text-black font-semibold underline' : 'text-gray-600'
+      }`}
+    >
+      {label}
+    </Link>
+  )
 
   return (
     <header className="fixed top-0 w-full bg-white z-50 shadow-sm">
@@ -90,20 +112,33 @@ export default function Navbar() {
           nolens
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
-          <Link href="/">Home</Link>
-          <Link href="/earn">Earn</Link>
-          <Link href="/contribute">Contribute</Link>
-          <Link href="/docs">About</Link>
-          <Link href="/partners">Partners</Link>
+        <nav className="hidden md:flex items-center space-x-10 text-sm font-medium">
+          {navLink('/', 'Home')}
+          {navLink('/earn', 'Earn')}
+          {navLink('/contribute', 'Contribute')}
+          {navLink('/docs', 'About')}
+          {navLink('/partners', 'Partners')}
 
           {mounted && walletType === 'evm' && isConnected ? (
-            <button
-              onClick={disconnectWallet}
-              className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
-            >
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+              >
+                {address.slice(0, 6)}...{address.slice(-4)} ⌄
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg text-sm z-50">
+                  <div className="px-4 py-2 text-gray-800 border-b">🏆 {totalPoints} points</div>
+                  <button
+                    onClick={disconnectWallet}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              )}
+            </div>
           ) : mounted ? (
             <button
               onClick={connectWallet}
@@ -124,11 +159,11 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
-            <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link href="/earn" onClick={() => setMenuOpen(false)}>Earn</Link>
-            <Link href="/contribute" onClick={() => setMenuOpen(false)}>Contribute</Link>
-            <Link href="/docs" onClick={() => setMenuOpen(false)}>About</Link>
-            <Link href="/partners" onClick={() => setMenuOpen(false)}>Partners</Link>
+            {navLink('/', 'Home')}
+            {navLink('/earn', 'Earn')}
+            {navLink('/contribute', 'Contribute')}
+            {navLink('/docs', 'About')}
+            {navLink('/partners', 'Partners')}
 
             {mounted && walletType === 'evm' && isConnected ? (
               <button
