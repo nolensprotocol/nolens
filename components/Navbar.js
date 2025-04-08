@@ -83,8 +83,8 @@ export default function Navbar() {
   const disconnectWallet = () => {
     localStorage.removeItem('walletType')
     setWalletType(null)
-    disconnect()
     setDropdownOpen(false)
+    disconnect()
   }
 
   const navLink = (href, label) => (
@@ -105,12 +105,13 @@ export default function Navbar() {
           nolens
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-10 text-sm font-medium">
           {navLink('/', 'Home')}
           {navLink('/earn', 'Earn')}
           {navLink('/contribute', 'Contribute')}
 
-          {/* About dropdown */}
+          {/* About Dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setAboutOpen(true)}
@@ -120,23 +121,16 @@ export default function Navbar() {
               About <ChevronDown size={16} />
             </button>
             {aboutOpen && (
-              <div className="absolute top-full left-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
-                <Link
-                  href="/docs"
-                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
-                >
-                  Protocol
-                </Link>
-                <Link
-                  href="/partners"
-                  className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
-                >
-                  Partners
-                </Link>
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
+                <Link href="/docs/token" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Tokenomics</Link>
+                <Link href="/docs/utility" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Utility</Link>
+                <Link href="/docs/roadmap" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Roadmap</Link>
+                <Link href="/docs/governance" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Governance</Link>
               </div>
             )}
           </div>
 
+          {/* Wallet Logic */}
           {mounted && status !== 'connecting' && (
             isConnected && walletType === 'evm' ? (
               <div className="relative">
@@ -171,6 +165,7 @@ export default function Navbar() {
           )}
         </nav>
 
+        {/* Mobile Hamburger */}
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -178,14 +173,21 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white px-6 pb-6 pt-2">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-800">
             {navLink('/', 'Home')}
             {navLink('/earn', 'Earn')}
             {navLink('/contribute', 'Contribute')}
-            {navLink('/docs', 'Protocol')}
-            {navLink('/partners', 'Partners')}
+
+            <div className="space-y-1">
+              <span className="text-gray-800 font-semibold">About</span>
+              <Link href="/docs/token" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Tokenomics</Link>
+              <Link href="/docs/utility" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Utility</Link>
+              <Link href="/docs/roadmap" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Roadmap</Link>
+              <Link href="/docs/governance" onClick={() => setMenuOpen(false)} className="block pl-4 text-sm text-gray-600 hover:underline">Governance</Link>
+            </div>
 
             {mounted && status !== 'connecting' && (
               isConnected && walletType === 'evm' ? (
