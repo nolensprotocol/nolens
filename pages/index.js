@@ -1,4 +1,6 @@
+// pages/index.js
 import Head from 'next/head'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -8,33 +10,56 @@ export default function Home() {
         <meta name="description" content="Designed for the next era of shared living." />
       </Head>
 
-      <main className="relative bg-gray-950 text-white min-h-screen flex flex-col items-center justify-center px-6 md:px-16 overflow-hidden">
-        {/* Decorative corner diamond grid */}
-        <div className="absolute top-0 right-0 hidden md:block opacity-10">
-          <div className="grid grid-cols-3 gap-3 m-12">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-5 h-5 rotate-45 bg-white/10 border border-white/10"
-              />
-            ))}
+      <main className="relative bg-black text-white min-h-screen flex items-center justify-center px-6 overflow-hidden">
+        {/* 🌠 Animated BG or subtle graphic */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+          <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-800 via-black to-black animate-pulse" />
+        </div>
+
+        {/* ⚡ Hero Content */}
+        <div className="z-10 max-w-5xl text-center space-y-8">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight animate-fade-in-up">
+            Own less. <br className="hidden md:block" /> Access more.
+          </h1>
+
+          <p className="text-lg md:text-xl text-gray-300 animate-fade-in-up delay-200">
+            Nolens is a new protocol for shared living, tokenized coordination, and contribution-first access.
+          </p>
+
+          <div className="pt-6 flex flex-col md:flex-row justify-center items-center gap-4 animate-fade-in-up delay-300">
+            <Link href="/contribute" className="w-48 px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition text-center">
+              Contribute
+            </Link>
+            <Link href="/earn" className="w-48 px-6 py-3 border border-white rounded-lg font-semibold hover:bg-white hover:text-black transition text-center">
+              Earn
+            </Link>
+            <Link href="/docs" className="w-48 px-6 py-3 border border-white rounded-lg font-semibold hover:bg-white hover:text-black transition text-center">
+              About
+            </Link>
           </div>
         </div>
 
-        {/* Hero text */}
-        <div className="z-10 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6">
-            Own Less. <br className="md:hidden" /> Access More.
-          </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto">
-            Nolens, designed for the next era of shared living.
-          </p>
-          <div className="mt-12">
-            <a href="/docs" className="text-sm text-gray-500 hover:text-white transition">
-              ↓ Learn more
-            </a>
-          </div>
-        </div>
+        <style jsx>{`
+          @keyframes fade-in-up {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fade-in-up 1.2s ease-out forwards;
+          }
+          .delay-200 {
+            animation-delay: 0.2s;
+          }
+          .delay-300 {
+            animation-delay: 0.3s;
+          }
+        `}</style>
       </main>
     </>
   )
