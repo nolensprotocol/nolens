@@ -12,8 +12,8 @@ import { useIsMounted } from '../lib/useIsMounted'
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [walletType, setWalletType] = useState(null)
-  const [totalPoints, setTotalPoints] = useState(0)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [totalPoints, setTotalPoints] = useState(0)
 
   const mounted = useIsMounted()
   const { connect } = useConnect({ connector: new InjectedConnector() })
@@ -30,12 +30,10 @@ export default function Navbar() {
   }, [isConnected, address, walletType])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (status !== 'connected' || !address || walletType !== 'evm') return
+    if (!address || !isConnected || walletType !== 'evm') return
 
     const localKey = `walletLogged:${address}`
-    const alreadyLogged = localStorage.getItem(localKey)
-    if (alreadyLogged) return
+    if (localStorage.getItem(localKey)) return
 
     supabase
       .from('wallet_connections')
@@ -45,19 +43,13 @@ export default function Navbar() {
       .maybeSingle()
       .then(({ data, error }) => {
         if (!data && !error) {
-          supabase
-            .from('wallet_connections')
-            .insert([{ address, type: 'evm' }])
-            .then(({ error }) => {
-              if (!error) {
-                localStorage.setItem(localKey, 'true')
-              }
-            })
+          supabase.from('wallet_connections').insert([{ address, type: 'evm' }])
+          localStorage.setItem(localKey, 'true')
         } else {
           localStorage.setItem(localKey, 'true')
         }
       })
-  }, [status, address, walletType])
+  }, [address, isConnected, walletType])
 
   useEffect(() => {
     if (address && isConnected) {
@@ -73,17 +65,17 @@ export default function Navbar() {
   }, [address, isConnected])
 
   const connectWallet = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    await new Promise((res) => setTimeout(res, 200))
     if (typeof window.ethereum !== 'undefined') {
       localStorage.setItem('walletType', 'evm')
       setWalletType('evm')
       try {
         await connect()
       } catch (err) {
-        console.error('❌ connect() error:', err)
+        console.error('connect() error:', err)
       }
     } else {
-      window.open('/install-metamask', '_self', 'noopener,noreferrer')
+      window.open('/install-metamask', '_self')
     }
   }
 
@@ -119,18 +111,21 @@ export default function Navbar() {
           {navLink('/docs', 'About')}
           {navLink('/partners', 'Partners')}
 
-          {!mounted ? null : (
+          {/* Wallet dropdown – hydration safe */}
+          {mounted && status !== 'connecting' && (
             isConnected && walletType === 'evm' ? (
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm transition-opacity duration-300"
+                  className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
                 >
                   {address.slice(0, 6)}...{address.slice(-4)} ⌄
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg text-sm z-50">
-                    <div className="px-4 py-2 text-gray-800 border-b">🏆 {totalPoints} points</div>
+                    <div className="px-4 py-2 text-gray-800 border-b">
+                      🏆 {totalPoints} points
+                    </div>
                     <button
                       onClick={disconnectWallet}
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
@@ -143,7 +138,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={connectWallet}
-                className="ml-4 px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 text-sm transition-opacity duration-300"
+                className="ml-4 px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 text-sm"
               >
                 Connect Wallet
               </button>
@@ -167,7 +162,7 @@ export default function Navbar() {
             {navLink('/docs', 'About')}
             {navLink('/partners', 'Partners')}
 
-            {!mounted ? null : (
+            {mounted && status !== 'connecting' && (
               isConnected && walletType === 'evm' ? (
                 <button
                   onClick={disconnectWallet}
