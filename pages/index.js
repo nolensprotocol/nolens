@@ -28,7 +28,7 @@ export default function Home() {
 
         {/* 👉 Animated Wave Bars */}
         <div className="absolute right-24 top-1/2 transform -translate-y-1/2 flex gap-3 h-[28rem] z-0 opacity-30">
-          {[...Array(30)].map((_, i) => (
+          {[...Array(48)].map((_, i) => (
             <div
               key={i}
               className="w-[5px] bg-gray-300 animate-wave"
