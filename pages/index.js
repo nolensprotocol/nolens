@@ -20,10 +20,11 @@ export default function Home() {
         {/* Hero Content */}
         <div className="z-10 max-w-4xl text-center space-y-8">
           <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight">
-            Nolens. The protocol for shared living.
+            Own Less. <span className="text-white/80">Access More.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto">
+            Nolens. The protocol for shared living.<br />
             Fueled by real contribution.
           </p>
 
