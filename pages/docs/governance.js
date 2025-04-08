@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Card from '../../components/Card'
+import DocsBackLink from '../../components/DocsBackLink'
 
 export default function GovernanceDocs() {
   return (
@@ -50,6 +51,7 @@ export default function GovernanceDocs() {
             </Card>
           </div>
         </div>
+       <DocsBackLink />
       </main>
     </>
   )
