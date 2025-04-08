@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Card from '../../components/Card'
 import PageSection from '../../components/PageSection'
+import Link from 'next/link'
 
 export default function Docs() {
   return (
@@ -58,6 +59,26 @@ export default function Docs() {
               In the future, Nolens aims to support identity, governance, and utility layers that power collective ownership — without the need to own.
             </p>
           </Card>
+        </PageSection>
+
+        {/* Learn More Section */}
+        <PageSection className="mt-24 text-center fade-in-up delay-600">
+          <h2 className="text-2xl font-bold mb-4">📚 Learn More</h2>
+          <p className="text-gray-600 mb-6">Dive deeper into how Nolens works:</p>
+          <div className="flex flex-col md:flex-row justify-center gap-6">
+            <Link href="/docs/token" className="text-indigo-600 hover:underline font-medium">
+              🪙 $NOL Token Design
+            </Link>
+            <Link href="/docs/utility" className="text-indigo-600 hover:underline font-medium">
+              🔓 What You Can Unlock
+            </Link>
+            <Link href="/docs/roadmap" className="text-indigo-600 hover:underline font-medium">
+              🛠️ Roadmap & Milestones
+            </Link>
+            <Link href="/docs/governance" className="text-indigo-600 hover:underline font-medium">
+              🧭 Governance & Alignment
+            </Link>
+          </div>
         </PageSection>
       </main>
     </>
