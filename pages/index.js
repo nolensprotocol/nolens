@@ -27,14 +27,14 @@ export default function Home() {
         </div>
 
         {/* 👉 Animated Wave Bars */}
-        <div className="absolute right-12 bottom-12 flex gap-2 h-64 z-0 opacity-30">
-          {[...Array(12)].map((_, i) => (
+        <div className="absolute right-24 top-1/2 transform -translate-y-1/2 flex gap-3 h-[28rem] z-0 opacity-30">
+          {[...Array(30)].map((_, i) => (
             <div
               key={i}
-              className="w-[4px] bg-gray-300 animate-wave"
+              className="w-[5px] bg-gray-300 animate-wave"
               style={{
-                animationDelay: `${i * 0.1}s`,
-                animationDuration: '1.8s'
+                animationDelay: `${i * 0.12}s`,
+                animationDuration: '2.2s'
               }}
             />
           ))}
