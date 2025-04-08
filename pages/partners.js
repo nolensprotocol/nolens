@@ -11,17 +11,17 @@ export default function Partners() {
         <meta name="description" content="Join Nolens as a Pioneer Partner and help build the access-first economy." />
       </Head>
 
-      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24">
+      <main className="min-h-screen bg-black text-white pt-32 pb-24">
         <PageSection className="text-center mb-16 fade-in-up">
           <h1 className="text-4xl font-extrabold mb-4">Become a Nolens Partner</h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-white/60 text-lg">
             We're building a protocol for shared access. If you run a tool, space, or service aligned with our values — let's partner.
           </p>
         </PageSection>
 
-        <PageSection className="space-y-10 text-gray-700 text-base leading-relaxed fade-in-up delay-200">
+        <PageSection className="space-y-10 text-white/70 text-base leading-relaxed fade-in-up delay-200">
           <Card>
-            <h2 className="text-xl font-semibold mb-3">🤝 What You Receive</h2>
+            <h2 className="text-xl font-semibold mb-3">What You Receive</h2>
             <ul className="list-disc pl-6 space-y-2">
               <li>Featured as a Nolens Pioneer Partner</li>
               <li>Access to early contributors (designers, developers, builders)</li>
@@ -31,7 +31,7 @@ export default function Partners() {
           </Card>
 
           <Card>
-            <h2 className="text-xl font-semibold mb-3">🔍 What We Look For</h2>
+            <h2 className="text-xl font-semibold mb-3">What We Look For</h2>
             <p>
               You might be a digital tool, a co-living space, a creative hub, or something we haven’t imagined yet.
               If you're open to offering access (even for just a few contributors), we’d love to connect.
@@ -39,7 +39,7 @@ export default function Partners() {
           </Card>
 
           <Card>
-            <h2 className="text-xl font-semibold mb-3">📝 How to Get Involved</h2>
+            <h2 className="text-xl font-semibold mb-3">How to Get Involved</h2>
             <p>Fill out our short interest form and we’ll reach out personally:</p>
             <div className="mt-4">
               <a
