@@ -2,7 +2,7 @@ import Head from 'next/head'
 import dynamic from 'next/dynamic'
 
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
-import animationData from '@/lib/lotties/nolens_wave_animation.json'
+import animationData from '../lib/lotties/nolens_wave_animation.json'
 
 
 export default function Home() {
