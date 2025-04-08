@@ -119,34 +119,36 @@ export default function Navbar() {
           {navLink('/docs', 'About')}
           {navLink('/partners', 'Partners')}
 
-          {mounted && walletType === 'evm' && isConnected ? (
-            <div className="relative">
+          {!mounted ? null : (
+            isConnected && walletType === 'evm' ? (
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm transition-opacity duration-300"
+                >
+                  {address.slice(0, 6)}...{address.slice(-4)} ⌄
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg text-sm z-50">
+                    <div className="px-4 py-2 text-gray-800 border-b">🏆 {totalPoints} points</div>
+                    <button
+                      onClick={disconnectWallet}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
               <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="ml-4 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 text-sm"
+                onClick={connectWallet}
+                className="ml-4 px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 text-sm transition-opacity duration-300"
               >
-                {address.slice(0, 6)}...{address.slice(-4)} ⌄
+                Connect Wallet
               </button>
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg text-sm z-50">
-                  <div className="px-4 py-2 text-gray-800 border-b">🏆 {totalPoints} points</div>
-                  <button
-                    onClick={disconnectWallet}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
-                  >
-                    Disconnect
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : mounted ? (
-            <button
-              onClick={connectWallet}
-              className="ml-4 px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 text-sm"
-            >
-              Connect Wallet
-            </button>
-          ) : null}
+            )
+          )}
         </nav>
 
         <div className="md:hidden">
@@ -165,21 +167,23 @@ export default function Navbar() {
             {navLink('/docs', 'About')}
             {navLink('/partners', 'Partners')}
 
-            {mounted && walletType === 'evm' && isConnected ? (
-              <button
-                onClick={disconnectWallet}
-                className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
-              >
-                {address.slice(0, 6)}...{address.slice(-4)}
-              </button>
-            ) : mounted ? (
-              <button
-                onClick={connectWallet}
-                className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
-              >
-                Connect Wallet
-              </button>
-            ) : null}
+            {!mounted ? null : (
+              isConnected && walletType === 'evm' ? (
+                <button
+                  onClick={disconnectWallet}
+                  className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md"
+                >
+                  {address.slice(0, 6)}...{address.slice(-4)}
+                </button>
+              ) : (
+                <button
+                  onClick={connectWallet}
+                  className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+                >
+                  Connect Wallet
+                </button>
+              )
+            )}
           </nav>
         </div>
       )}
