@@ -23,20 +23,36 @@ export default function Admin() {
       .select('*')
       .eq('approved', false)
       .eq('rejected', false)
-      .neq('task_id', 'email') // exclude auto-approved email claims
+      .neq('task_id', 'email')
 
     if (data) setPendingRewards(data)
     setLoading(false)
   }
 
   const handleApprove = async (id) => {
-    await supabase.from('verified_rewards').update({ approved: true }).eq('id', id)
-    fetchPending()
+    const { error, data } = await supabase
+      .from('verified_rewards')
+      .update({ approved: true })
+      .eq('id', id)
+
+    console.log('Approve result:', { error, data })
+
+    if (!error) {
+      setPendingRewards(prev => prev.filter(r => r.id !== id))
+    }
   }
 
   const handleReject = async (id) => {
-    await supabase.from('verified_rewards').update({ rejected: true }).eq('id', id)
-    fetchPending()
+    const { error, data } = await supabase
+      .from('verified_rewards')
+      .update({ rejected: true })
+      .eq('id', id)
+
+    console.log('Reject result:', { error, data })
+
+    if (!error) {
+      setPendingRewards(prev => prev.filter(r => r.id !== id))
+    }
   }
 
   return (
