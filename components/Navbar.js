@@ -1,11 +1,4 @@
 'use client'
-useEffect(() => {
-  if (typeof window !== 'undefined') {
-    window.supabase = supabase
-    console.log('✅ Supabase exposed to window')
-  }
-}, [])
-
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -27,6 +20,13 @@ export default function Navbar() {
   const { disconnect } = useDisconnect()
   const router = useRouter()
   const currentPath = router.pathname
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.supabase = supabase
+      console.log('✅ Supabase exposed to window')
+    }
+  }, [])
 
   useEffect(() => {
     const savedType = localStorage.getItem('walletType')
