@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
-import { useWriteContract } from 'wagmi'
+import { useContractWrite } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
 import { NOLENS_CLAIM_ADDRESS, NOLENS_CLAIM_ABI } from '../lib/contractInfo'
 import Card from '../components/Card'
@@ -20,7 +20,12 @@ const initialTasks = [
 
 export default function Earn() {
   const { address, isConnected } = useAccount()
-  const { writeContractAsync } = useWriteContract()
+  const { writeAsync } = useContractWrite({
+    address: NOLENS_CLAIM_ADDRESS,
+    abi: NOLENS_CLAIM_ABI,
+    functionName: 'claim',
+  })
+
 
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
@@ -129,10 +134,7 @@ export default function Earn() {
 
       const { amount, nonce, signature } = await response.json()
 
-      await writeContractAsync({
-        address: NOLENS_CLAIM_ADDRESS,
-        abi: NOLENS_CLAIM_ABI,
-        functionName: 'claim',
+      await writeAsync({
         args: [amount, nonce, signature],
       })
 
@@ -142,6 +144,7 @@ export default function Earn() {
       alert('❌ Claim failed')
     }
   }
+
 
   const isComingSoon = (id) => id === 'vote' || id === 'quiz'
   const isPending = (id) => pending.includes(id)
