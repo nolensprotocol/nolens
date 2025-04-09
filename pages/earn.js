@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabaseClient'
 import { NOLENS_CLAIM_ADDRESS, NOLENS_CLAIM_ABI } from '../lib/contractInfo'
 import Card from '../components/Card'
 import Button from '../components/Button'
+
 import PageSection from '../components/PageSection'
 
 const initialTasks = [
@@ -26,19 +27,20 @@ export default function Earn() {
   })
 
   const [claimed, setClaimed] = useState([])
+  const [pending, setPending] = useState([])
   const [rejected, setRejected] = useState([])
-  const [submittingTask, setSubmittingTask] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
   const [earnedNOL, setEarnedNOL] = useState(0)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [emailInput, setEmailInput] = useState('')
   const [emailError, setEmailError] = useState(null)
-  const [pending, setPending] = useState([])
   const [referralCount, setReferralCount] = useState(0)
 
   useEffect(() => {
     if (!isConnected || !address) return
 
     const fetchData = async () => {
+      const claimedTaskIds = []
       const pendingTasks = []
       const rejectedTasks = []
 
@@ -48,19 +50,22 @@ export default function Earn() {
         .eq('wallet', address)
 
       if (rewardsRes.data) {
-        const claimedTaskIds = []
-        let sum = 0
-
         for (const row of rewardsRes.data) {
           if (row.approved) {
             claimedTaskIds.push(row.task_id)
-            sum += row.points || 0
           } else if (row.rejected) {
             rejectedTasks.push(row.task_id)
+          } else {
+            pendingTasks.push(row.task_id)
           }
         }
 
+        const sum = rewardsRes.data
+          .filter(row => row.approved)
+          .reduce((acc, row) => acc + (row.points || 0), 0)
+
         setClaimed(claimedTaskIds)
+        setPending(pendingTasks)
         setRejected(rejectedTasks)
         setEarnedNOL(sum)
       }
@@ -68,93 +73,49 @@ export default function Earn() {
       const refCountRes = await supabase
         .from('referrals')
         .select('id', { count: 'exact' })
-        .eq('referrer_wallet', address)
+        .eq('referrer', address)
 
       if (refCountRes.count !== null) setReferralCount(refCountRes.count)
-
-      const followPending = await supabase
-        .from('twitter_claims')
-        .select('*')
-        .eq('address', address)
-        .eq('verified', false)
-
-      if (followPending.data?.length > 0) pendingTasks.push('follow')
-
-      const rtPending = await supabase
-        .from('quote_retweet_claims')
-        .select('*')
-        .eq('wallet', address)
-        .eq('verified', false)
-
-      if (rtPending.data?.length > 0) pendingTasks.push('retweet')
-
-      setPending(pendingTasks)
     }
 
     fetchData()
   }, [isConnected, address])
 
   const handleClaim = async (task) => {
-    if (!isConnected || !address || (task.id !== 'refer' && claimed.includes(task.id))) return
-    setSubmittingTask(task.id)
+    if (!isConnected || !address || (task.id !== 'refer' && (claimed.includes(task.id) || pending.includes(task.id)))) return
+    setSubmitting(true)
 
     if (task.id === 'follow') {
       const userHandle = prompt('Enter your X (Twitter) handle:')
-      if (!userHandle) return setSubmittingTask(null)
+      if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'follow', points: 10 }])
-      setClaimed(prev => [...prev, 'follow'])
-      setPending(prev => [...prev, 'follow'])
+      setPending(prev => [...prev, task.id])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
       if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
         alert('Invalid URL')
-        return setSubmittingTask(null)
+        return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'retweet', points: 20 }])
-      setClaimed(prev => [...prev, 'retweet'])
-      setPending(prev => [...prev, 'retweet'])
+      setPending(prev => [...prev, task.id])
     } else if (task.id === 'email') {
-      const { data: existing } = await supabase
-        .from('email_signups_earn')
-        .select('id')
-        .eq('wallet', address)
-        .maybeSingle()
-
-      if (existing) {
-        setClaimed(prev => [...new Set([...prev, 'email'])])
-        setShowEmailModal(false)
-        return setSubmittingTask(null)
-      }
-
       setShowEmailModal(true)
     } else if (task.id === 'refer') {
       navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
       alert('Referral link copied!')
     }
 
-    setSubmittingTask(null)
+    setSubmitting(false)
   }
 
   const handleEmailSubmit = async () => {
     if (!emailInput) return setEmailError('Email required')
 
-    const { data: existing } = await supabase
-      .from('email_signups_earn')
-      .select('id')
-      .eq('wallet', address)
-      .maybeSingle()
-
-    if (existing) {
-      setClaimed(prev => [...new Set([...prev, 'email'])])
-      setShowEmailModal(false)
-      return
-    }
-
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
-      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10, approved: true, rejected: false }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10, approved: true }])
       setClaimed(prev => [...prev, 'email'])
       setShowEmailModal(false)
       setEmailInput('')
@@ -173,9 +134,7 @@ export default function Earn() {
 
       const { amount, nonce, signature } = await response.json()
 
-      await writeAsync({
-        args: [amount, nonce, signature],
-      })
+      await writeAsync({ args: [amount, nonce, signature] })
 
       alert('✅ Claimed $NOL successfully!')
     } catch (err) {
@@ -186,6 +145,7 @@ export default function Earn() {
 
   const isComingSoon = (id) => id === 'vote' || id === 'quiz'
   const isPending = (id) => pending.includes(id)
+  const isRejected = (id) => rejected.includes(id)
 
   const getReferralButtonState = () => {
     if (referralCount >= 25) return 'Maxed Out'
@@ -217,13 +177,12 @@ export default function Earn() {
           {initialTasks.map((task) => {
             const isClaimed = claimed.includes(task.id)
             const pendingState = isPending(task.id)
+            const rejectedState = isRejected(task.id)
             const comingSoon = isComingSoon(task.id)
-            const wasRejected = rejected.includes(task.id)
-            const isSubmitting = submittingTask === task.id
 
             const buttonLabel = task.id === 'refer'
               ? getReferralButtonState()
-              : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : isSubmitting ? 'Submitting...' : 'Claim'
+              : comingSoon ? 'Coming Soon' : rejectedState ? 'Claim' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
 
             const referralSubtext = task.id === 'refer'
               ? [`${referralCount} / 25 referrals`, 'Up to 1300 $NOL']
@@ -240,13 +199,10 @@ export default function Earn() {
                       </span>
                     ))}
                   </p>
-                  {wasRejected && (
-                    <p className="text-sm text-red-500 mt-2">Your claim was rejected. You may try again.</p>
-                  )}
                 </div>
                 <Button
                   onClick={() => handleClaim(task)}
-                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || isSubmitting) && !wasRejected)}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
                 >
                   {buttonLabel}
                 </Button>
