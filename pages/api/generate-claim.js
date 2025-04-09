@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 const privateKey = process.env.SIGNER_PRIVATE_KEY;
 const signerWallet = new ethers.Wallet(privateKey);
 
-// Used by smart contract to prevent replays
+// ✅ Get current nonce (for replay protection)
 const getNonce = async (wallet) => {
   const { data, error } = await supabase
     .from('claim_nonces')
@@ -16,6 +16,7 @@ const getNonce = async (wallet) => {
   return data?.nonce || 0;
 };
 
+// ✅ Increment nonce after issuing a signature
 const incrementNonce = async (wallet, currentNonce) => {
   await supabase
     .from('claim_nonces')
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ✅ Check unclaimed $NOL from Supabase
+    // ✅ Sum all verified task rewards
     const { data: rewards } = await supabase
       .from('verified_rewards')
       .select('points')
@@ -46,16 +47,15 @@ export default async function handler(req, res) {
 
     const nonce = await getNonce(wallet);
 
-    // ✅ Build and sign the message
+    // ✅ Sign the claim payload
     const messageHash = ethers.utils.solidityKeccak256(
       ['address', 'uint256', 'uint256'],
       [wallet, totalNOL, nonce]
     );
 
-    const messageBytes = ethers.utils.arrayify(messageHash);
-    const signature = await signerWallet.signMessage(messageBytes);
+    const signature = await signerWallet.signMessage(ethers.utils.arrayify(messageHash));
 
-    // ✅ Update nonce
+    // ✅ Save new nonce
     await incrementNonce(wallet, nonce);
 
     return res.status(200).json({
