@@ -132,9 +132,27 @@ export default function Earn() {
         body: JSON.stringify({ wallet: address }),
       })
 
-      const { amount, nonce, signature } = await response.json()
+      const text = await response.text()
+      console.log('Raw response from /generate-claim:', text)
 
-      await writeAsync({ args: [amount, nonce, signature] })
+      let result
+      try {
+        result = JSON.parse(text)
+      } catch (parseErr) {
+        throw new Error('Invalid JSON returned from API')
+      }
+
+      const { amount, nonce, signature } = result
+      console.log('Claim payload:', { amount, nonce, signature })
+
+      if (!amount || !nonce || !signature) {
+        console.error('❌ Missing claim payload')
+        return alert('Something went wrong. Try again later.')
+      }
+
+      await writeAsync({
+        args: [BigInt(amount), BigInt(nonce), signature],
+      })
 
       alert('✅ Claimed $NOL successfully!')
     } catch (err) {
