@@ -29,7 +29,7 @@ export default function Contribute() {
 
     try {
       const { error: emailError } = await supabase
-        .from('email_signups_contribute')
+        .from('contributor_emails')
         .insert([{ email, wallet: address, role }])
       if (emailError) throw new Error(emailError.message)
 
