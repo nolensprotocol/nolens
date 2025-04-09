@@ -136,9 +136,9 @@ export default function Earn() {
       <main className="min-h-screen bg-black text-white pt-32 pb-24">
         <PageSection className="text-center mb-10 fade-in-up">
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
-          <p className="text-white/60">Complete simple tasks to support Nolens and earn points toward future rewards.</p>
+          <p className="text-white/60">Complete simple tasks to support Nolens and earn $NOL for early utility.</p>
           <div className="mt-4 text-white font-semibold text-lg">
-            You have earned: <span className="font-bold">{totalPoints}</span> points
+            You have earned: <span className="font-bold">{totalPoints}</span> $NOL
           </div>
         </PageSection>
 
@@ -153,8 +153,8 @@ export default function Earn() {
               : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
 
             const referralSubtext = task.id === 'refer'
-              ? [`${referralCount} / 25 referrals`, 'Up to 1300 points']
-              : [`+${task.points} points`]
+              ? [`${referralCount} / 25 referrals`, 'Up to 1300 $NOL']
+              : [`+${task.points} $NOL`]
 
             return (
               <Card key={task.id} className={`flex flex-col justify-between h-full ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
