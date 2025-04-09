@@ -1,9 +1,12 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
+import { useWriteContract } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
+import { NOLENS_CLAIM_ADDRESS, NOLENS_CLAIM_ABI } from '../lib/contractInfo'
 import Card from '../components/Card'
 import Button from '../components/Button'
+
 import PageSection from '../components/PageSection'
 
 const initialTasks = [
@@ -17,9 +20,11 @@ const initialTasks = [
 
 export default function Earn() {
   const { address, isConnected } = useAccount()
+  const { writeContractAsync } = useWriteContract()
+
   const [claimed, setClaimed] = useState([])
   const [submitting, setSubmitting] = useState(false)
-  const [totalPoints, setTotalPoints] = useState(0)
+  const [earnedNOL, setEarnedNOL] = useState(0)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [emailInput, setEmailInput] = useState('')
   const [emailError, setEmailError] = useState(null)
@@ -41,7 +46,7 @@ export default function Earn() {
         const claimedTaskIds = rewardsRes.data.map(row => row.task_id)
         const sum = rewardsRes.data.reduce((acc, row) => acc + (row.points || 0), 0)
         setClaimed(claimedTaskIds)
-        setTotalPoints(sum)
+        setEarnedNOL(sum)
       }
 
       const refCountRes = await supabase
@@ -81,7 +86,6 @@ export default function Earn() {
       const userHandle = prompt('Enter your X (Twitter) handle:')
       if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
-      if (window.trackFollowX) window.trackFollowX()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
@@ -90,15 +94,12 @@ export default function Earn() {
         return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
-      if (window.trackQuoteTweet) window.trackQuoteTweet()
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'email') {
       setShowEmailModal(true)
     } else if (task.id === 'refer') {
       navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
       alert('Referral link copied!')
-    } else if (task.action) {
-      window.open(task.action, '_blank')
     }
 
     setSubmitting(false)
@@ -110,12 +111,35 @@ export default function Earn() {
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10 }])
-      if (window.trackEmailEarn) window.trackEmailEarn()
       setClaimed(prev => [...prev, 'email'])
       setShowEmailModal(false)
       setEmailInput('')
     } else {
       setEmailError(error.message)
+    }
+  }
+
+  const handleClaimNOL = async () => {
+    try {
+      const response = await fetch('/api/generate-claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address }),
+      })
+
+      const { amount, nonce, signature } = await response.json()
+
+      await writeContractAsync({
+        address: NOLENS_CLAIM_ADDRESS,
+        abi: NOLENS_CLAIM_ABI,
+        functionName: 'claim',
+        args: [amount, nonce, signature],
+      })
+
+      alert('✅ Claimed $NOL successfully!')
+    } catch (err) {
+      console.error('❌ Claim failed:', err)
+      alert('❌ Claim failed')
     }
   }
 
@@ -138,8 +162,14 @@ export default function Earn() {
           <h1 className="text-4xl font-bold mb-4">Earn</h1>
           <p className="text-white/60">Complete simple tasks to support Nolens and earn $NOL for early utility.</p>
           <div className="mt-4 text-white font-semibold text-lg">
-            You have earned: <span className="font-bold">{totalPoints}</span> $NOL
+            You have earned: <span className="font-bold">{earnedNOL}</span> $NOL
           </div>
+
+          {earnedNOL > 0 && (
+            <div className="mt-6">
+              <Button onClick={handleClaimNOL}>Claim $NOL</Button>
+            </div>
+          )}
         </PageSection>
 
         <PageSection className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-200">
