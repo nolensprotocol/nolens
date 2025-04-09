@@ -102,6 +102,8 @@ export default function Earn() {
       const userHandle = prompt('Enter your X (Twitter) handle:')
       if (!userHandle) return setSubmitting(false)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'follow', points: 10 }])
+      setClaimed(prev => [...prev, task.id])
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
@@ -110,8 +112,23 @@ export default function Earn() {
         return setSubmitting(false)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'retweet', points: 20 }])
+      setClaimed(prev => [...prev, task.id])
       setPending(prev => [...prev, task.id])
     } else if (task.id === 'email') {
+      const { data: existing } = await supabase
+        .from('email_signups_earn')
+        .select('id')
+        .eq('wallet', address)
+        .maybeSingle()
+
+      if (existing) {
+        alert('You’ve already submitted this task.')
+        setClaimed(prev => [...new Set([...prev, 'email'])])
+        setShowEmailModal(false)
+        return
+      }
+
       setShowEmailModal(true)
     } else if (task.id === 'refer') {
       navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
@@ -123,6 +140,18 @@ export default function Earn() {
 
   const handleEmailSubmit = async () => {
     if (!emailInput) return setEmailError('Email required')
+
+    const { data: existing } = await supabase
+      .from('email_signups_earn')
+      .select('id')
+      .eq('wallet', address)
+      .maybeSingle()
+
+    if (existing) {
+      setClaimed(prev => [...new Set([...prev, 'email'])])
+      setShowEmailModal(false)
+      return
+    }
 
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
