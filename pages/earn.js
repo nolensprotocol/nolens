@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabaseClient'
 import { NOLENS_CLAIM_ADDRESS, NOLENS_CLAIM_ABI } from '../lib/contractInfo'
 import Card from '../components/Card'
 import Button from '../components/Button'
-
 import PageSection from '../components/PageSection'
 
 const initialTasks = [
@@ -26,8 +25,8 @@ export default function Earn() {
     functionName: 'claim',
   })
 
-
   const [claimed, setClaimed] = useState([])
+  const [rejected, setRejected] = useState([])
   const [submitting, setSubmitting] = useState(false)
   const [earnedNOL, setEarnedNOL] = useState(0)
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -41,16 +40,28 @@ export default function Earn() {
 
     const fetchData = async () => {
       const pendingTasks = []
+      const rejectedTasks = []
 
       const rewardsRes = await supabase
         .from('verified_rewards')
-        .select('task_id, points')
+        .select('task_id, points, approved, rejected')
         .eq('wallet', address)
 
       if (rewardsRes.data) {
-        const claimedTaskIds = rewardsRes.data.map(row => row.task_id)
-        const sum = rewardsRes.data.reduce((acc, row) => acc + (row.points || 0), 0)
+        const claimedTaskIds = []
+        let sum = 0
+
+        for (const row of rewardsRes.data) {
+          if (row.approved) {
+            claimedTaskIds.push(row.task_id)
+            sum += row.points || 0
+          } else if (row.rejected) {
+            rejectedTasks.push(row.task_id)
+          }
+        }
+
         setClaimed(claimedTaskIds)
+        setRejected(rejectedTasks)
         setEarnedNOL(sum)
       }
 
@@ -145,7 +156,6 @@ export default function Earn() {
     }
   }
 
-
   const isComingSoon = (id) => id === 'vote' || id === 'quiz'
   const isPending = (id) => pending.includes(id)
 
@@ -180,6 +190,7 @@ export default function Earn() {
             const isClaimed = claimed.includes(task.id)
             const pendingState = isPending(task.id)
             const comingSoon = isComingSoon(task.id)
+            const wasRejected = rejected.includes(task.id)
 
             const buttonLabel = task.id === 'refer'
               ? getReferralButtonState()
@@ -200,10 +211,13 @@ export default function Earn() {
                       </span>
                     ))}
                   </p>
+                  {wasRejected && (
+                    <p className="text-sm text-red-500 mt-2">Your claim was rejected. You may try again.</p>
+                  )}
                 </div>
                 <Button
                   onClick={() => handleClaim(task)}
-                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting) && !wasRejected)}
                 >
                   {buttonLabel}
                 </Button>
