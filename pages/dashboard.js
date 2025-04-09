@@ -54,40 +54,42 @@ export default function Dashboard() {
         <title>Your Dashboard – Nolens</title>
       </Head>
 
-      <main className="min-h-screen bg-white text-gray-900 pt-32 pb-24 px-6 text-center">
-        <h1 className="text-4xl font-bold mb-6">Your Nolens Dashboard</h1>
+      <main className="min-h-screen bg-black text-white pt-32 pb-24 px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl font-extrabold mb-10 leading-tight">Your Nolens Dashboard</h1>
 
-        {!isConnected ? (
-          <p className="text-gray-600">Please connect your wallet to view your dashboard.</p>
-        ) : (
-          <div className="max-w-xl mx-auto space-y-6">
-            <div className="border rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-2">Wallet Address</h2>
-              <p className="text-sm text-gray-600">{address}</p>
-            </div>
+          {!isConnected ? (
+            <p className="text-gray-400">Please connect your wallet to view your dashboard.</p>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8 text-left">
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow hover:shadow-lg transition-all">
+                <h2 className="text-sm font-medium text-gray-400 uppercase mb-2">Wallet</h2>
+                <p className="text-lg font-semibold break-all">{address}</p>
+              </div>
 
-            <div className="border rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-2">$NOL Balance</h2>
-              <p className="text-2xl font-bold">{nolBalance.toFixed(2)} $NOL</p>
-            </div>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow hover:shadow-lg transition-all">
+                <h2 className="text-sm font-medium text-gray-400 uppercase mb-2">$NOL Balance</h2>
+                <p className="text-3xl font-bold">{nolBalance.toFixed(2)}</p>
+              </div>
 
-            <div className="border rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-2">Contributor NFT</h2>
-              {hasClaimed ? (
-                <p className="text-green-600 font-medium">Already Claimed ✅</p>
-              ) : eligible ? (
-                <Link
-                  href="/claim"
-                  className="inline-block mt-2 px-6 py-3 bg-black text-white rounded-md font-semibold hover:bg-gray-800 transition"
-                >
-                  Claim Contributor NFT
-                </Link>
-              ) : (
-                <p className="text-gray-500">Not yet eligible to claim</p>
-              )}
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow hover:shadow-lg transition-all">
+                <h2 className="text-sm font-medium text-gray-400 uppercase mb-2">Contributor NFT</h2>
+                {hasClaimed ? (
+                  <p className="text-green-400 font-semibold mt-1">Already Claimed ✅</p>
+                ) : eligible ? (
+                  <Link
+                    href="/claim"
+                    className="inline-block mt-2 px-5 py-2 bg-white text-black rounded-md font-semibold hover:bg-gray-200 transition"
+                  >
+                    Claim Contributor NFT
+                  </Link>
+                ) : (
+                  <p className="text-red-400 mt-1">Not eligible yet</p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
     </>
   )
