@@ -1,86 +1,254 @@
-// /pages/api/generate-claim.js
-import { createClient } from '@supabase/supabase-js'
-import { privateKeyToAccount } from 'viem/accounts'
-import { signMessage } from 'viem'
+import Head from 'next/head'
+import { useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { useContractWrite } from 'wagmi'
+import { supabase } from '../lib/supabaseClient'
+import { NOLENS_CLAIM_ADDRESS, NOLENS_CLAIM_ABI } from '../lib/contractInfo'
+import Card from '../components/Card'
+import Button from '../components/Button'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+import PageSection from '../components/PageSection'
 
-const PRIVATE_KEY = process.env.NOLENS_CLAIM_SIGNER
-const SIGNER_ADDRESS = process.env.NOLENS_SIGNER_ADDRESS
-const DOMAIN = {
-  name: 'NolensClaim',
-  version: '1',
-  chainId: 80002, // Polygon Amoy
-  verifyingContract: process.env.NOLENS_CLAIM_ADDRESS,
-}
+const initialTasks = [
+  { id: 'follow', label: 'Follow @nolensprotocol on X', points: 10 },
+  { id: 'retweet', label: 'Quote our pinned tweet', points: 20 },
+  { id: 'email', label: 'Join our email waitlist', points: 10 },
+  { id: 'refer', label: 'Refer a friend with your link', points: 40 },
+  { id: 'vote', label: 'Vote on a feature idea', points: 10 },
+  { id: 'quiz', label: 'Complete the Nolens quiz', points: 10 }
+]
 
-const TYPES = {
-  Claim: [
-    { name: 'wallet', type: 'address' },
-    { name: 'amount', type: 'uint256' },
-    { name: 'nonce', type: 'uint256' },
-  ]
-}
+export default function Earn() {
+  const { address, isConnected } = useAccount()
+  const { writeAsync } = useContractWrite({
+    address: NOLENS_CLAIM_ADDRESS,
+    abi: NOLENS_CLAIM_ABI,
+    functionName: 'claim',
+  })
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+  const [claimed, setClaimed] = useState([])
+  const [pending, setPending] = useState([])
+  const [rejected, setRejected] = useState([])
+  const [submitting, setSubmitting] = useState(false)
+  const [earnedNOL, setEarnedNOL] = useState(0)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailInput, setEmailInput] = useState('')
+  const [emailError, setEmailError] = useState(null)
+  const [referralCount, setReferralCount] = useState(0)
+
+  useEffect(() => {
+    if (!isConnected || !address) return
+
+    const fetchData = async () => {
+      const claimedTaskIds = []
+      const pendingTasks = []
+      const rejectedTasks = []
+
+      const rewardsRes = await supabase
+        .from('verified_rewards')
+        .select('task_id, points, approved, rejected')
+        .eq('wallet', address)
+
+      if (rewardsRes.data) {
+        for (const row of rewardsRes.data) {
+          if (row.approved) {
+            claimedTaskIds.push(row.task_id)
+          } else if (row.rejected) {
+            rejectedTasks.push(row.task_id)
+          } else {
+            pendingTasks.push(row.task_id)
+          }
+        }
+
+        const sum = rewardsRes.data
+          .filter(row => row.approved)
+          .reduce((acc, row) => acc + (row.points || 0), 0)
+
+        setClaimed(claimedTaskIds)
+        setPending(pendingTasks)
+        setRejected(rejectedTasks)
+        setEarnedNOL(sum)
+      }
+
+      const refCountRes = await supabase
+        .from('referrals')
+        .select('id', { count: 'exact' })
+        .eq('referrer', address)
+
+      if (refCountRes.count !== null) setReferralCount(refCountRes.count)
+    }
+
+    fetchData()
+  }, [isConnected, address])
+
+  const handleClaim = async (task) => {
+    if (!isConnected || !address || (task.id !== 'refer' && (claimed.includes(task.id) || pending.includes(task.id)))) return
+    setSubmitting(true)
+
+    if (task.id === 'follow') {
+      const userHandle = prompt('Enter your X (Twitter) handle:')
+      if (!userHandle) return setSubmitting(false)
+      await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'follow', points: 10 }])
+      setPending(prev => [...prev, task.id])
+    } else if (task.id === 'retweet') {
+      const tweetUrl = prompt('Paste the URL of your quote tweet:')
+      if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
+        alert('Invalid URL')
+        return setSubmitting(false)
+      }
+      await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'retweet', points: 20 }])
+      setPending(prev => [...prev, task.id])
+    } else if (task.id === 'email') {
+      setShowEmailModal(true)
+    } else if (task.id === 'refer') {
+      navigator.clipboard.writeText(`https://nolens.xyz/earn?ref=${address}`)
+      alert('Referral link copied!')
+    }
+
+    setSubmitting(false)
   }
 
-  const { wallet } = req.body
-  if (!wallet) return res.status(400).json({ error: 'Missing wallet address' })
+  const handleEmailSubmit = async () => {
+    if (!emailInput) return setEmailError('Email required')
 
-  const rewards = await supabase
-    .from('verified_rewards')
-    .select('points')
-    .eq('wallet', wallet)
-    .eq('approved', true)
-
-  if (!rewards.data || rewards.data.length === 0) {
-    return res.status(400).json({ error: 'No approved rewards to claim' })
+    const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
+    if (!error) {
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10, approved: true }])
+      setClaimed(prev => [...prev, 'email'])
+      setShowEmailModal(false)
+      setEmailInput('')
+    } else {
+      setEmailError(error.message)
+    }
   }
 
-  const amount = rewards.data.reduce((acc, r) => acc + (r.points || 0), 0)
+  const handleClaimNOL = async () => {
+    try {
+      const response = await fetch('/api/generate-claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address }),
+      })
 
-  const nonceRes = await supabase
-    .from('claim_nonces')
-    .select('nonce')
-    .eq('wallet', wallet)
-    .single()
+      const text = await response.text()
+      console.log('Raw response from /generate-claim:', text)
 
-  let nonce = 0
-  if (nonceRes.data) {
-    nonce = nonceRes.data.nonce + 1
-    await supabase
-      .from('claim_nonces')
-      .update({ nonce })
-      .eq('wallet', wallet)
-  } else {
-    await supabase
-      .from('claim_nonces')
-      .insert([{ wallet, nonce }])
+      let result
+      try {
+        result = JSON.parse(text)
+      } catch (parseErr) {
+        throw new Error('Invalid JSON returned from API')
+      }
+
+      const { amount, nonce, signature } = result
+      console.log('Claim payload:', { amount, nonce, signature })
+
+      if (!amount || !nonce || !signature) {
+        console.error('❌ Missing claim payload')
+        return alert('Something went wrong. Try again later.')
+      }
+
+      await writeAsync({
+        args: [BigInt(amount), BigInt(nonce), signature],
+      })
+
+      alert('✅ Claimed $NOL successfully!')
+    } catch (err) {
+      console.error('❌ Claim failed:', err)
+      alert('❌ Claim failed')
+    }
   }
 
-  try {
-    const account = privateKeyToAccount(`0x${PRIVATE_KEY}`)
-    const signature = await signMessage({
-      account,
-      types: TYPES,
-      domain: DOMAIN,
-      primaryType: 'Claim',
-      message: {
-        wallet,
-        amount,
-        nonce,
-      },
-    })
+  const isComingSoon = (id) => id === 'vote' || id === 'quiz'
+  const isPending = (id) => pending.includes(id)
+  const isRejected = (id) => rejected.includes(id)
 
-    return res.status(200).json({ amount, nonce, signature })
-  } catch (err) {
-    console.error('Signer error:', err)
-    return res.status(500).json({ error: 'Signature generation failed' })
+  const getReferralButtonState = () => {
+    if (referralCount >= 25) return 'Maxed Out'
+    if (referralCount >= 10) return 'Keep Going'
+    if (referralCount >= 5) return 'Tier 1 Complete'
+    if (referralCount >= 1) return 'Keep Sharing'
+    return 'Get Link'
   }
+
+  return (
+    <>
+      <Head><title>Earn $NOL – Nolens</title></Head>
+      <main className="min-h-screen bg-black text-white pt-32 pb-24">
+        <PageSection className="text-center mb-10 fade-in-up">
+          <h1 className="text-4xl font-bold mb-4">Earn</h1>
+          <p className="text-white/60">Complete simple tasks to support Nolens and earn $NOL for early utility.</p>
+          <div className="mt-4 text-white font-semibold text-lg">
+            You have earned: <span className="font-bold">{earnedNOL}</span> $NOL
+          </div>
+
+          {earnedNOL > 0 && (
+            <div className="mt-6">
+              <Button onClick={handleClaimNOL}>Claim $NOL</Button>
+            </div>
+          )}
+        </PageSection>
+
+        <PageSection className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-200">
+          {initialTasks.map((task) => {
+            const isClaimed = claimed.includes(task.id)
+            const pendingState = isPending(task.id)
+            const rejectedState = isRejected(task.id)
+            const comingSoon = isComingSoon(task.id)
+
+            const buttonLabel = task.id === 'refer'
+              ? getReferralButtonState()
+              : comingSoon ? 'Coming Soon' : rejectedState ? 'Claim' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
+
+            const referralSubtext = task.id === 'refer'
+              ? [`${referralCount} / 25 referrals`, 'Up to 1300 $NOL']
+              : [`+${task.points} $NOL`]
+
+            return (
+              <Card key={task.id} className={`flex flex-col justify-between h-full ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
+                <div className="flex-1 flex flex-col items-center text-center">
+                  <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
+                  <p className="text-white/50 text-sm mb-4 flex flex-wrap justify-center gap-2">
+                    {referralSubtext.map((text, i) => (
+                      <span key={i} className="inline-block bg-white/10 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {text}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => handleClaim(task)}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
+                >
+                  {buttonLabel}
+                </Button>
+              </Card>
+            )
+          })}
+        </PageSection>
+
+        {showEmailModal && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-neutral-900 rounded-xl shadow-lg p-6 w-full max-w-sm text-center">
+              <h3 className="text-xl font-semibold mb-4">Enter your email</h3>
+              <input
+                type="email"
+                className="w-full px-4 py-2 border border-white/20 bg-black text-white rounded-md mb-3 text-sm"
+                placeholder="you@example.com"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+              />
+              {emailError && <p className="text-sm text-red-400 mb-2">{emailError}</p>}
+              <div className="flex gap-2">
+                <Button onClick={handleEmailSubmit}>Submit</Button>
+                <Button variant="secondary" onClick={() => setShowEmailModal(false)}>Cancel</Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </>
+  )
 }
