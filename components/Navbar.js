@@ -1,4 +1,10 @@
 'use client'
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    window.supabase = supabase
+    console.log('✅ Supabase exposed to window')
+  }
+}, [])
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
