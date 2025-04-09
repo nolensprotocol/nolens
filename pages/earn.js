@@ -27,7 +27,7 @@ export default function Earn() {
 
   const [claimed, setClaimed] = useState([])
   const [rejected, setRejected] = useState([])
-  const [submitting, setSubmitting] = useState(false)
+  const [submittingTask, setSubmittingTask] = useState(null)
   const [earnedNOL, setEarnedNOL] = useState(0)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [emailInput, setEmailInput] = useState('')
@@ -68,7 +68,7 @@ export default function Earn() {
       const refCountRes = await supabase
         .from('referrals')
         .select('id', { count: 'exact' })
-        .eq('referrer', address)
+        .eq('referrer_wallet', address)
 
       if (refCountRes.count !== null) setReferralCount(refCountRes.count)
 
@@ -96,25 +96,25 @@ export default function Earn() {
 
   const handleClaim = async (task) => {
     if (!isConnected || !address || (task.id !== 'refer' && claimed.includes(task.id))) return
-    setSubmitting(true)
+    setSubmittingTask(task.id)
 
     if (task.id === 'follow') {
       const userHandle = prompt('Enter your X (Twitter) handle:')
-      if (!userHandle) return setSubmitting(false)
+      if (!userHandle) return setSubmittingTask(null)
       await supabase.from('twitter_claims').insert([{ address, x_handle: userHandle, verified: false }])
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'follow', points: 10 }])
-      setClaimed(prev => [...prev, task.id])
-      setPending(prev => [...prev, task.id])
+      setClaimed(prev => [...prev, 'follow'])
+      setPending(prev => [...prev, 'follow'])
     } else if (task.id === 'retweet') {
       const tweetUrl = prompt('Paste the URL of your quote tweet:')
       if (!tweetUrl || (!tweetUrl.includes('twitter.com') && !tweetUrl.includes('x.com'))) {
         alert('Invalid URL')
-        return setSubmitting(false)
+        return setSubmittingTask(null)
       }
       await supabase.from('quote_retweet_claims').insert([{ wallet: address, tweet_url: tweetUrl, verified: false }])
       await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'retweet', points: 20 }])
-      setClaimed(prev => [...prev, task.id])
-      setPending(prev => [...prev, task.id])
+      setClaimed(prev => [...prev, 'retweet'])
+      setPending(prev => [...prev, 'retweet'])
     } else if (task.id === 'email') {
       const { data: existing } = await supabase
         .from('email_signups_earn')
@@ -123,10 +123,9 @@ export default function Earn() {
         .maybeSingle()
 
       if (existing) {
-        alert('You’ve already submitted this task.')
         setClaimed(prev => [...new Set([...prev, 'email'])])
         setShowEmailModal(false)
-        return
+        return setSubmittingTask(null)
       }
 
       setShowEmailModal(true)
@@ -135,7 +134,7 @@ export default function Earn() {
       alert('Referral link copied!')
     }
 
-    setSubmitting(false)
+    setSubmittingTask(null)
   }
 
   const handleEmailSubmit = async () => {
@@ -155,7 +154,7 @@ export default function Earn() {
 
     const { error } = await supabase.from('email_signups_earn').insert([{ email: emailInput, wallet: address }])
     if (!error) {
-      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10 }])
+      await supabase.from('verified_rewards').insert([{ wallet: address, task_id: 'email', points: 10, approved: true, rejected: false }])
       setClaimed(prev => [...prev, 'email'])
       setShowEmailModal(false)
       setEmailInput('')
@@ -220,10 +219,11 @@ export default function Earn() {
             const pendingState = isPending(task.id)
             const comingSoon = isComingSoon(task.id)
             const wasRejected = rejected.includes(task.id)
+            const isSubmitting = submittingTask === task.id
 
             const buttonLabel = task.id === 'refer'
               ? getReferralButtonState()
-              : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
+              : comingSoon ? 'Coming Soon' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : isSubmitting ? 'Submitting...' : 'Claim'
 
             const referralSubtext = task.id === 'refer'
               ? [`${referralCount} / 25 referrals`, 'Up to 1300 $NOL']
@@ -246,7 +246,7 @@ export default function Earn() {
                 </div>
                 <Button
                   onClick={() => handleClaim(task)}
-                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting) && !wasRejected)}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || isSubmitting) && !wasRejected)}
                 >
                   {buttonLabel}
                 </Button>
