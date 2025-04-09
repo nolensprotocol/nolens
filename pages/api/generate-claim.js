@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { supabase } from '../../lib/supabaseClient';
 
-const privateKey = process.env.108316d28f3a38ee6df926b34b8511d3e98531a4000cf4f6a6816ed98bd0186a;
+const privateKey = process.env.SIGNER_PRIVATE_KEY;
 const signerWallet = new ethers.Wallet(privateKey);
 
 // Used by smart contract to prevent replays
