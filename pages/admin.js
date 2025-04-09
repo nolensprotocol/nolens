@@ -25,11 +25,13 @@ export default function Admin() {
       .eq('rejected', false)
       .neq('task_id', 'email')
 
+    if (error) console.error('Fetch error:', error)
     if (data) setPendingRewards(data)
     setLoading(false)
   }
 
   const handleApprove = async (id) => {
+    console.log('Trying to approve ID:', id)
     const { error, data } = await supabase
       .from('verified_rewards')
       .update({ approved: true })
@@ -37,12 +39,15 @@ export default function Admin() {
 
     console.log('Approve result:', { error, data })
 
-    if (!error) {
+    if (!error && data?.length > 0) {
       setPendingRewards(prev => prev.filter(r => r.id !== id))
+    } else {
+      console.warn('No rows updated for ID:', id)
     }
   }
 
   const handleReject = async (id) => {
+    console.log('Trying to reject ID:', id)
     const { error, data } = await supabase
       .from('verified_rewards')
       .update({ rejected: true })
@@ -50,8 +55,10 @@ export default function Admin() {
 
     console.log('Reject result:', { error, data })
 
-    if (!error) {
+    if (!error && data?.length > 0) {
       setPendingRewards(prev => prev.filter(r => r.id !== id))
+    } else {
+      console.warn('No rows rejected for ID:', id)
     }
   }
 
