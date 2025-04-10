@@ -1,7 +1,8 @@
-// /pages/api/generate-claim.js
+// Final version using ethers + noble for safe backend signing
 import { createClient } from '@supabase/supabase-js'
-import { privateKeyToAccount } from 'viem/accounts'
-import { signTypedDataSync } from 'viem'
+import { keccak256, toUtf8Bytes, solidityPacked } from 'ethers'
+import { utils } from 'ethers'
+import { signSync } from '@noble/secp256k1'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -9,25 +10,11 @@ const supabase = createClient(
 )
 
 const PRIVATE_KEY = process.env.NOLENS_CLAIM_SIGNER
-const DOMAIN = {
-  name: 'NolensClaim',
-  version: '1',
-  chainId: 80002,
-  verifyingContract: process.env.NOLENS_CLAIM_ADDRESS,
-}
-
-const TYPES = {
-  Claim: [
-    { name: 'wallet', type: 'address' },
-    { name: 'amount', type: 'uint256' },
-    { name: 'nonce', type: 'uint256' },
-  ]
-}
+const CONTRACT = process.env.NOLENS_CLAIM_ADDRESS
+const CHAIN_ID = 80002 // Polygon Amoy
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const { wallet } = req.body
   if (!wallet) return res.status(400).json({ error: 'Missing wallet address' })
@@ -39,7 +26,6 @@ export default async function handler(req, res) {
     .eq('approved', true)
 
   if (!rewards.data || rewards.data.length === 0) {
-    console.log('❌ No approved rewards for:', wallet)
     return res.status(400).json({ error: 'No approved rewards to claim' })
   }
 
@@ -54,37 +40,48 @@ export default async function handler(req, res) {
   let nonce = 0
   if (nonceRes.data) {
     nonce = nonceRes.data.nonce + 1
-    await supabase
-      .from('claim_nonces')
-      .update({ nonce })
-      .eq('wallet', wallet)
+    await supabase.from('claim_nonces').update({ nonce }).eq('wallet', wallet)
   } else {
-    await supabase
-      .from('claim_nonces')
-      .insert([{ wallet, nonce }])
+    await supabase.from('claim_nonces').insert([{ wallet, nonce }])
   }
 
   try {
-    const account = privateKeyToAccount(`0x${PRIVATE_KEY}`)
-    const message = {
-      wallet,
-      amount: parseInt(amount),
-      nonce: parseInt(nonce),
-    }
+    const domainHash = keccak256(
+      utils.defaultAbiCoder.encode(
+        ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
+        [
+          keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
+          keccak256(toUtf8Bytes('NolensClaim')),
+          keccak256(toUtf8Bytes('1')),
+          CHAIN_ID,
+          CONTRACT,
+        ]
+      )
+    )
 
-    console.log('🧾 Signing payload:', { domain: DOMAIN, types: TYPES, message })
+    const structHash = keccak256(
+      utils.defaultAbiCoder.encode(
+        ['bytes32', 'address', 'uint256', 'uint256'],
+        [
+          keccak256(toUtf8Bytes('Claim(address wallet,uint256 amount,uint256 nonce)')),
+          wallet,
+          amount,
+          nonce,
+        ]
+      )
+    )
 
-    const signature = signTypedDataSync({
-      account,
-      types: TYPES,
-      domain: DOMAIN,
-      primaryType: 'Claim',
-      message,
-    })
+    const digest = keccak256(
+      solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
+    )
+
+    const signature = utils.joinSignature(
+      signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
+    )
 
     return res.status(200).json({
-      amount: message.amount.toString(),
-      nonce: message.nonce.toString(),
+      amount: amount.toString(),
+      nonce: nonce.toString(),
       signature,
     })
   } catch (err) {
