@@ -1,9 +1,10 @@
 // Clean restart: /pages/api/generate-claim.js
 import { createClient } from '@supabase/supabase-js'
-import { AbiCoder, keccak256, toUtf8Bytes, solidityPacked, Signature } from 'ethers'
-import { signSync, utils } from '@noble/secp256k1'
+// import { AbiCoder, keccak256, toUtf8Bytes, solidityPacked, Signature } from 'ethers' ← removed
+import { signSync, utils, Signature } from '@noble/secp256k1'
 import { hmac } from '@noble/hashes/hmac'
 import { sha256 } from '@noble/hashes/sha256'
+import { keccak256, toUtf8Bytes, encodeAbiParameters, encodePacked } from 'viem'
 
 // Set hmacSha256Sync for noble compatibility
 utils.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, utils.concatBytes(...msgs))
@@ -50,35 +51,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    const abi = new AbiCoder()
-
     const domainHash = keccak256(
-      abi.encode(
+      encodeAbiParameters(
         ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
         [
           keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
           keccak256(toUtf8Bytes('NolensClaim')),
           keccak256(toUtf8Bytes('1')),
-          CHAIN_ID,
+          BigInt(CHAIN_ID),
           CONTRACT,
         ]
       )
     )
 
     const structHash = keccak256(
-      abi.encode(
+      encodeAbiParameters(
         ['bytes32', 'address', 'uint256', 'uint256'],
         [
           keccak256(toUtf8Bytes('Claim(address wallet,uint256 amount,uint256 nonce)')),
           wallet,
-          amount,
-          nonce,
+          BigInt(amount),
+          BigInt(nonce),
         ]
       )
     )
 
     const digest = keccak256(
-      solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
+      encodePacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
     )
 
     const [sig, recovery] = signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
