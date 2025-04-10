@@ -1,11 +1,11 @@
-// Final-final version with hmacSha256Sync fix
+// Clean restart: /pages/api/generate-claim.js
 import { createClient } from '@supabase/supabase-js'
 import { AbiCoder, keccak256, toUtf8Bytes, solidityPacked, Signature } from 'ethers'
 import { signSync, utils } from '@noble/secp256k1'
 import { hmac } from '@noble/hashes/hmac'
 import { sha256 } from '@noble/hashes/sha256'
 
-// Fix for noble signSync in serverless
+// Set hmacSha256Sync for noble compatibility
 utils.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, utils.concatBytes(...msgs))
 
 const supabase = createClient(
@@ -30,7 +30,6 @@ export default async function handler(req, res) {
     .eq('approved', true)
 
   if (!rewards.data || rewards.data.length === 0) {
-    console.log('❌ No approved rewards for:', wallet)
     return res.status(400).json({ error: 'No approved rewards to claim' })
   }
 
@@ -82,12 +81,8 @@ export default async function handler(req, res) {
       solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
     )
 
-    console.log('🔐 Signing digest:', digest)
-
     const [sig, recovery] = signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
     const signature = Signature.from({ r: sig.slice(0, 64), s: sig.slice(64), v: recovery + 27 }).serialized
-
-    console.log('✅ Signature generated:', signature)
 
     return res.status(200).json({
       amount: amount.toString(),
