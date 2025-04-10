@@ -1,7 +1,12 @@
-// Final ethers v6-compatible generate-claim.js
+// Final-final version with hmacSha256Sync fix
 import { createClient } from '@supabase/supabase-js'
 import { AbiCoder, keccak256, toUtf8Bytes, solidityPacked, Signature } from 'ethers'
-import { signSync } from '@noble/secp256k1'
+import { signSync, utils } from '@noble/secp256k1'
+import { hmac } from '@noble/hashes/hmac'
+import { sha256 } from '@noble/hashes/sha256'
+
+// Fix for noble signSync in serverless
+utils.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, utils.concatBytes(...msgs))
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
