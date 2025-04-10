@@ -12,7 +12,7 @@ const PRIVATE_KEY = process.env.NOLENS_CLAIM_SIGNER
 const DOMAIN = {
   name: 'NolensClaim',
   version: '1',
-  chainId: 80002, // Polygon Amoy
+  chainId: 80002,
   verifyingContract: process.env.NOLENS_CLAIM_ADDRESS,
 }
 
@@ -39,6 +39,7 @@ export default async function handler(req, res) {
     .eq('approved', true)
 
   if (!rewards.data || rewards.data.length === 0) {
+    console.log('❌ No approved rewards for:', wallet)
     return res.status(400).json({ error: 'No approved rewards to claim' })
   }
 
@@ -65,25 +66,29 @@ export default async function handler(req, res) {
 
   try {
     const account = privateKeyToAccount(`0x${PRIVATE_KEY}`)
-    const signature = await signTypedDataSync({
+    const message = {
+      wallet,
+      amount: parseInt(amount),
+      nonce: parseInt(nonce),
+    }
+
+    console.log('🧾 Signing payload:', { domain: DOMAIN, types: TYPES, message })
+
+    const signature = signTypedDataSync({
       account,
       types: TYPES,
       domain: DOMAIN,
       primaryType: 'Claim',
-      message: {
-        wallet,
-        amount,
-        nonce,
-      },
+      message,
     })
 
     return res.status(200).json({
-      amount: amount.toString(),
-      nonce: nonce.toString(),
+      amount: message.amount.toString(),
+      nonce: message.nonce.toString(),
       signature,
     })
   } catch (err) {
-    console.error('Signer error:', err)
-    return res.status(500).json({ error: 'Signature generation failed' })
+    console.error('❌ Signature generation failed:', err)
+    return res.status(500).json({ error: 'Signature generation failed', detail: err.message })
   }
 }
