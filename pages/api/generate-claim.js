@@ -1,7 +1,6 @@
-// Final-final patch with corrected import for defaultAbiCoder
+// Final ethers v6-compatible generate-claim.js
 import { createClient } from '@supabase/supabase-js'
-import { keccak256, toUtf8Bytes, solidityPacked, joinSignature } from 'ethers'
-import { defaultAbiCoder } from 'ethers/lib/utils.js'
+import { AbiCoder, keccak256, toUtf8Bytes, solidityPacked, Signature } from 'ethers'
 import { signSync } from '@noble/secp256k1'
 
 const supabase = createClient(
@@ -47,8 +46,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    const abi = new AbiCoder()
+
     const domainHash = keccak256(
-      defaultAbiCoder.encode(
+      abi.encode(
         ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
         [
           keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
     )
 
     const structHash = keccak256(
-      defaultAbiCoder.encode(
+      abi.encode(
         ['bytes32', 'address', 'uint256', 'uint256'],
         [
           keccak256(toUtf8Bytes('Claim(address wallet,uint256 amount,uint256 nonce)')),
@@ -76,16 +77,10 @@ export default async function handler(req, res) {
       solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
     )
 
-    if (!digest.startsWith('0x')) {
-      throw new Error('Digest does not start with 0x')
-    }
-
     console.log('🔐 Signing digest:', digest)
-    console.log('📦 Using PRIVATE_KEY:', PRIVATE_KEY?.slice(0, 6) + '...')
 
-    const signature = joinSignature(
-      signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
-    )
+    const [sig, recovery] = signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
+    const signature = Signature.from({ r: sig.slice(0, 64), s: sig.slice(64), v: recovery + 27 }).serialized
 
     console.log('✅ Signature generated:', signature)
 
