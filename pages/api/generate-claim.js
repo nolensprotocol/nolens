@@ -1,4 +1,4 @@
-// Final version using ethers + noble with correct abiCoder usage
+// Final patch with debug logs and digest validation
 import { createClient } from '@supabase/supabase-js'
 import { keccak256, toUtf8Bytes, defaultAbiCoder, solidityPacked, joinSignature } from 'ethers'
 import { signSync } from '@noble/secp256k1'
@@ -75,7 +75,18 @@ export default async function handler(req, res) {
       solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
     )
 
-    const signature = joinSignature(signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false }))
+    if (!digest.startsWith('0x')) {
+      throw new Error('Digest does not start with 0x')
+    }
+
+    console.log('🔐 Signing digest:', digest)
+    console.log('📦 Using PRIVATE_KEY:', PRIVATE_KEY?.slice(0, 6) + '...')
+
+    const signature = joinSignature(
+      signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
+    )
+
+    console.log('✅ Signature generated:', signature)
 
     return res.status(200).json({
       amount: amount.toString(),
