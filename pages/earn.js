@@ -1,4 +1,3 @@
-// Full updated earn.js including on-chain claim, task cards, and email modal
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount, useContractWrite } from 'wagmi'
@@ -186,7 +185,7 @@ export default function Earn() {
               : [`+${task.points} $NOL`]
 
             return (
-              <Card key={task.id} className={\`flex flex-col justify-between h-full \${comingSoon && 'border-dashed opacity-60 grayscale'}\`}>
+              <Card key={task.id} className={`flex flex-col justify-between h-full ${comingSoon && 'border-dashed opacity-60 grayscale'}`}>
                 <div className="flex-1 flex flex-col items-center text-center">
                   <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
                   <p className="text-white/50 text-sm mb-4 flex flex-wrap justify-center gap-2">
