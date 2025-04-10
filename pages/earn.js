@@ -1,3 +1,4 @@
+// Full updated earn.js including on-chain claim, task cards, and email modal
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useAccount, useContractWrite } from 'wagmi'
@@ -169,7 +170,63 @@ export default function Earn() {
           )}
         </PageSection>
 
-        {/* ... Task cards and email modal unchanged ... */}
+        <PageSection className="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in-up delay-200">
+          {initialTasks.map((task) => {
+            const isClaimed = claimed.includes(task.id)
+            const pendingState = isPending(task.id)
+            const rejectedState = isRejected(task.id)
+            const comingSoon = isComingSoon(task.id)
+
+            const buttonLabel = task.id === 'refer'
+              ? getReferralButtonState()
+              : comingSoon ? 'Coming Soon' : rejectedState ? 'Claim' : pendingState ? 'Pending' : isClaimed ? 'Claimed' : 'Claim'
+
+            const referralSubtext = task.id === 'refer'
+              ? [`${referralCount} / 25 referrals`, 'Up to 1300 $NOL']
+              : [`+${task.points} $NOL`]
+
+            return (
+              <Card key={task.id} className={\`flex flex-col justify-between h-full \${comingSoon && 'border-dashed opacity-60 grayscale'}\`}>
+                <div className="flex-1 flex flex-col items-center text-center">
+                  <h3 className="text-lg font-semibold mb-2">{task.label}</h3>
+                  <p className="text-white/50 text-sm mb-4 flex flex-wrap justify-center gap-2">
+                    {referralSubtext.map((text, i) => (
+                      <span key={i} className="inline-block bg-white/10 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {text}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => handleClaim(task)}
+                  disabled={comingSoon || (task.id !== 'refer' && (isClaimed || pendingState || submitting))}
+                >
+                  {buttonLabel}
+                </Button>
+              </Card>
+            )
+          })}
+        </PageSection>
+
+        {showEmailModal && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-neutral-900 rounded-xl shadow-lg p-6 w-full max-w-sm text-center">
+              <h3 className="text-xl font-semibold mb-4">Enter your email</h3>
+              <input
+                type="email"
+                className="w-full px-4 py-2 border border-white/20 bg-black text-white rounded-md mb-3 text-sm"
+                placeholder="you@example.com"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+              />
+              {emailError && <p className="text-sm text-red-400 mb-2">{emailError}</p>}
+              <div className="flex gap-2">
+                <Button onClick={handleEmailSubmit}>Submit</Button>
+                <Button variant="secondary" onClick={() => setShowEmailModal(false)}>Cancel</Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </>
   )
