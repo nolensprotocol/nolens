@@ -1,7 +1,7 @@
 // /pages/api/generate-claim.js
 import { createClient } from '@supabase/supabase-js'
 import { privateKeyToAccount } from 'viem/accounts'
-import { signTypedData } from 'viem'
+import { signTypedDataSync } from 'viem'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -65,7 +65,7 @@ export default async function handler(req, res) {
 
   try {
     const account = privateKeyToAccount(`0x${PRIVATE_KEY}`)
-    const signature = await signTypedData({
+    const signature = await signTypedDataSync({
       account,
       types: TYPES,
       domain: DOMAIN,
