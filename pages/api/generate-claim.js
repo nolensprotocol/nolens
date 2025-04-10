@@ -1,7 +1,6 @@
-// Final version using ethers + noble for safe backend signing
+// Final version using ethers + noble with correct abiCoder usage
 import { createClient } from '@supabase/supabase-js'
-import { keccak256, toUtf8Bytes, solidityPacked } from 'ethers'
-import { utils } from 'ethers'
+import { keccak256, toUtf8Bytes, defaultAbiCoder, solidityPacked, joinSignature } from 'ethers'
 import { signSync } from '@noble/secp256k1'
 
 const supabase = createClient(
@@ -26,6 +25,7 @@ export default async function handler(req, res) {
     .eq('approved', true)
 
   if (!rewards.data || rewards.data.length === 0) {
+    console.log('❌ No approved rewards for:', wallet)
     return res.status(400).json({ error: 'No approved rewards to claim' })
   }
 
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
   try {
     const domainHash = keccak256(
-      utils.defaultAbiCoder.encode(
+      defaultAbiCoder.encode(
         ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
         [
           keccak256(toUtf8Bytes('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)')),
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     )
 
     const structHash = keccak256(
-      utils.defaultAbiCoder.encode(
+      defaultAbiCoder.encode(
         ['bytes32', 'address', 'uint256', 'uint256'],
         [
           keccak256(toUtf8Bytes('Claim(address wallet,uint256 amount,uint256 nonce)')),
@@ -75,9 +75,7 @@ export default async function handler(req, res) {
       solidityPacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
     )
 
-    const signature = utils.joinSignature(
-      signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
-    )
+    const signature = joinSignature(signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false }))
 
     return res.status(200).json({
       amount: amount.toString(),
