@@ -1,6 +1,7 @@
-// Final patch with debug logs and digest validation
+// Final-final patch with corrected import for defaultAbiCoder
 import { createClient } from '@supabase/supabase-js'
-import { keccak256, toUtf8Bytes, defaultAbiCoder, solidityPacked, joinSignature } from 'ethers'
+import { keccak256, toUtf8Bytes, solidityPacked, joinSignature } from 'ethers'
+import { defaultAbiCoder } from 'ethers/lib/utils.js'
 import { signSync } from '@noble/secp256k1'
 
 const supabase = createClient(
