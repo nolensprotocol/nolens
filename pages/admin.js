@@ -1,110 +1,88 @@
 import { useEffect, useState } from 'react'
-import Head from 'next/head'
-import { useAccount } from 'wagmi'
 import { supabase } from '../lib/supabaseClient'
 
-const ADMIN_WALLET = '0x2d207059F9EF9452f8542F8Ebe175f18d3779f9E'.toLowerCase()
-
 export default function Admin() {
-  const { address, isConnected } = useAccount()
-  const isAdmin = address?.toLowerCase() === ADMIN_WALLET
-
-  const [pendingRewards, setPendingRewards] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [claims, setClaims] = useState([])
 
   useEffect(() => {
-    if (isAdmin) fetchPending()
-  }, [isAdmin])
+    const fetchClaims = async () => {
+      const { data } = await supabase
+        .from('verified_rewards')
+        .select('*')
+        .eq('approved', false)
+        .eq('rejected', false)
 
-  const fetchPending = async () => {
-    setLoading(true)
-    const { data, error } = await supabase
+      setClaims(data || [])
+    }
+
+    fetchClaims()
+  }, [])
+
+  const handleApprove = async (claim) => {
+    await supabase
       .from('verified_rewards')
-      .select('*')
-      .eq('approved', false)
-      .eq('rejected', false)
-      .neq('task_id', 'email')
+      .update({ approved: true, rejected: false })
+      .eq('wallet', claim.wallet)
+      .eq('task_id', claim.task_id)
 
-    if (error) console.error('Fetch error:', error)
-    if (data) setPendingRewards(data)
-    setLoading(false)
+    if (claim.task_id === 'follow') {
+      await supabase
+        .from('twitter_claims')
+        .update({ verified: true })
+        .eq('address', claim.wallet)
+    }
+
+    if (claim.task_id === 'retweet') {
+      await supabase
+        .from('quote_retweet_claims')
+        .update({ verified: true })
+        .eq('wallet', claim.wallet)
+    }
+
+    setClaims(prev => prev.filter(c => !(c.wallet === claim.wallet && c.task_id === claim.task_id)))
   }
 
-  const handleApprove = async (id) => {
-    console.log('Trying to approve ID:', id)
-    const { error, data } = await supabase
+  const handleReject = async (claim) => {
+    await supabase
       .from('verified_rewards')
-      .update({ approved: true })
-      .eq('id', id)
+      .update({ rejected: true, approved: false })
+      .eq('wallet', claim.wallet)
+      .eq('task_id', claim.task_id)
 
-    console.log('Approve result:', { error, data })
-
-    if (!error && data?.length > 0) {
-      setPendingRewards(prev => prev.filter(r => r.id !== id))
-    } else {
-      console.warn('No rows updated for ID:', id)
-    }
-  }
-
-  const handleReject = async (id) => {
-    console.log('Trying to reject ID:', id)
-    const { error, data } = await supabase
-      .from('verified_rewards')
-      .update({ rejected: true })
-      .eq('id', id)
-
-    console.log('Reject result:', { error, data })
-
-    if (!error && data?.length > 0) {
-      setPendingRewards(prev => prev.filter(r => r.id !== id))
-    } else {
-      console.warn('No rows rejected for ID:', id)
-    }
+    setClaims(prev => prev.filter(c => !(c.wallet === claim.wallet && c.task_id === claim.task_id)))
   }
 
   return (
-    <>
-      <Head><title>Admin Panel – Nolens</title></Head>
-      <main className="min-h-screen bg-black text-white pt-32 px-6 pb-24">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">🛡 Admin Rewards Panel</h1>
-
-          {!isConnected ? (
-            <p className="text-red-400">Please connect your wallet.</p>
-          ) : !isAdmin ? (
-            <p className="text-red-500">Access denied. Admin wallet only.</p>
-          ) : loading ? (
-            <p className="text-white/60">Loading pending rewards...</p>
-          ) : pendingRewards.length === 0 ? (
-            <p className="text-white/50">No pending rewards to approve.</p>
-          ) : (
-            <div className="space-y-4">
-              {pendingRewards.map(r => (
-                <div key={r.id} className="bg-neutral-900 border border-white/10 rounded-xl p-4 flex justify-between items-start">
-                  <div>
-                    <p className="font-mono text-sm text-white/70">{r.wallet}</p>
-                    <p className="text-white font-semibold mt-1">{r.task_id} → +{r.points} $NOL</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(r.id)}
-                      className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md font-medium text-white"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleReject(r.id)}
-                      className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md font-medium text-white"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
-    </>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+      {claims.length === 0 ? (
+        <p className="text-white/60">No pending claims.</p>
+      ) : (
+        <ul className="space-y-4">
+          {claims.map((claim) => (
+            <li key={`${claim.wallet}-${claim.task_id}`} className="bg-neutral-800 p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <p className="font-semibold">{claim.task_id}</p>
+                <p className="text-sm text-white/60">{claim.wallet}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleApprove(claim)}
+                  className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-white text-sm"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(claim)}
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white text-sm"
+                >
+                  Reject
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
