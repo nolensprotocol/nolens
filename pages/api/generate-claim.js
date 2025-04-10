@@ -1,4 +1,3 @@
-// Clean restart: /pages/api/generate-claim.js
 import { createClient } from '@supabase/supabase-js'
 import { signSync, utils, Signature } from '@noble/secp256k1'
 import { hmac } from '@noble/hashes/hmac'
@@ -6,7 +5,6 @@ import { sha256 } from '@noble/hashes/sha256'
 import { keccak256, encodeAbiParameters, encodePacked } from 'viem'
 import { toBytes } from 'viem/utils'
 
-// Set hmacSha256Sync for noble compatibility
 utils.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, utils.concatBytes(...msgs))
 
 const supabase = createClient(
@@ -16,7 +14,7 @@ const supabase = createClient(
 
 const PRIVATE_KEY = process.env.NOLENS_CLAIM_SIGNER
 const CONTRACT = process.env.NOLENS_CLAIM_ADDRESS
-const CHAIN_ID = 80002 // Polygon Amoy
+const CHAIN_ID = 80002
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -59,7 +57,7 @@ export default async function handler(req, res) {
           keccak256(toBytes('NolensClaim')),
           keccak256(toBytes('1')),
           BigInt(CHAIN_ID),
-          CONTRACT,
+          CONTRACT
         ]
       )
     )
@@ -70,3 +68,30 @@ export default async function handler(req, res) {
         [
           keccak256(toBytes('Claim(address wallet,uint256 amount,uint256 nonce)')),
           wallet,
+          BigInt(amount),
+          BigInt(nonce)
+        ]
+      )
+    )
+
+    const digest = keccak256(
+      encodePacked(['string', 'bytes32', 'bytes32'], ['\x19\x01', domainHash, structHash])
+    )
+
+    const [sig, recovery] = signSync(digest.slice(2), PRIVATE_KEY, { recovered: true, der: false })
+    const signature = Signature.from({
+      r: sig.slice(0, 64),
+      s: sig.slice(64),
+      v: recovery + 27
+    }).serialized
+
+    return res.status(200).json({
+      amount: amount.toString(),
+      nonce: nonce.toString(),
+      signature
+    })
+  } catch (err) {
+    console.error('❌ Signature generation failed:', err)
+    return res.status(500).json({ error: 'Signature generation failed', detail: err.message })
+  }
+}
